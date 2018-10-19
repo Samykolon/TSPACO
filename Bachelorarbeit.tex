@@ -8,12 +8,13 @@
 \bibliographystyle{unsrt}
 \TUBAFFakultaet{Fakultät für Mathematik und Informatik}
 \TUBAFInstitut{Institut für Informatik}
-\TUBAFLehrstuhl{Lehrstuhl für Virtuelle Realität und Multimedia}
-\TUBAFTitel[AI]{Ant Colony Optimization Algorithm}
-\TUBAFBetreuer{Steve Grehl}
+\TUBAFLehrstuhl{Lehrstuhl für Künstliche Intelligenz und Datenbanken}
+\TUBAFTitel{Eine Studie zur kombinatorischen Optimierung mit Ameisenalgorithmen}
+\TUBAFBetreuer{Prof. Dr. H. Jasper}
+\TUBAFKorrektor{M. Sc. V. Göhler}
 \TUBAFAutor[S. Dressel]{Samuel Dressel}
 \TUBAFStudiengang{Angewandte Informatik}
-\TUBAFVertiefung{Robotik}
+\TUBAFVertiefung{Künstliche Intelligenz}
 \TUBAFMatrikel{59\,963}
 \TUBAFDatum[2017-09-26]{26. September 2017}
 \begin{document}
@@ -21,12 +22,31 @@
 \tableofcontents
 \newpage
 \section{Einleitung}
-\section{Der Ameisenalgorithmus (Ant Colony Optimization)}
-\subsection{Biologische Grundlagen}
+\section{Grundlagen}
+\subsection{Der Ameisenalgorithmus (Ant Colony Optimization)}
+\subsubsection{Biologische Grundlagen}
 Grundlage der Erörterung über die Funktionsweise des Ameisenalgorithmus bildet sicherlich ein Blick auf die biologischen Grundlagen. Dabei spielt die Kommunikation der Ameisen untereinander die zentrale Rolle. Ein Tierstaat wie er bei den Ameisen zu finden ist funktioniert nur mit einer effektiven und sinnvollen Kommunikation. Methoden zur Verständigung wie das Kommunizieren über Vibrationen und Berührungen sind eher die Ausnahme und kommen nur in speziellen Situationen zum Tragen (\cite{Ameisen}). Dagegen wird zum größten Teil der Informationsaustausch über Duftstoffe (sog. Pheromone) bevorzugt. Diese werden durch verschiedene Drüsen erzeugt und wiederum in unterschiedlicher Kombination und Konzentration abgegeben.
 Diese Pheromone werden zum einen benutzt, um Nestgenossen zu erkennen oder um bei Gefahren Kampf- und Abwehrverhalten auszulösen. Hauptsächlich jedoch nutzen Ameisen die Pheromone um eine Duftspur über ihren Hinterleib abzugeben. Diese dienen ihnen und ihren Nestgefährten als Orientierungshilfe. Zum einen werden damit Straßen zu anderen Kolonien gebildet - zum anderen dient es dazu, anderen Ameisen den Weg zu einer Nahrungsquelle zu zeigen. Die Tatsache, dass ein Weg mit einer höheren Pheromonkonzentration bevorzugt wird, ist Grundlagen das Ameisenalgorithmus.
-\subsection{Der Ameisenalgorithmus}
+\subsubsection{Der Ameisenalgorithmus}
 Der historische Ursprung des Algorithmus findet sich in den Versuchen von Jean-Louis Deneubourg und seine Kollegen (\cite{Biological}). Das sogenannte "Double-Bridge-Experiment" zeigte, dass Ameisen den kürzesten Weg aufgrund der Pheromonmarkierung finden. In dem Experiment ist eine Kolonie von Argentinischen Ameisen durch zwei Brücken mit einer Nahrungsquelle verbunden (\cite{Dorigo:2007}). Dabei können die Ameisen die Futterquelle nur über diese zwei Brücken erreichen. Im ersten Teil des Versuchs sind diese beiden Brücken jeweils gleich lang. Zu Beginn erkunden die Ameisen die Umgebung der Kolonie bis sie eine Entscheidung über die Auswahl der Brücke treffen müssen. Lässt sich aufgrund einer noch nicht stattgefundenen Begehung der Brücken keine Pheromonspur feststellen, so entscheiden die Ameisen rein zufällig welche Brücke sie wählen. Die Wahrscheinlichkeit für beide Wege liegt bei gleichen Bedingungen bei ca. 50 Prozent. Wird der Versuch über längere Zeit durchgeführt, so wird durch Zufall die Pheromonkonzentration der einen Brücke höher sein als die andere. Diese wird dadurch attraktiver für die Ameisen und wird somit letztenendes der favorisierte Weg zur Nahrungsquelle.
+\subsection{Das Travelling-Salesman-Problem}
+\subsubsection{Das Problem im Allgemeinen}
+\subsubsection{Ansätze und Algorithmen zur Lösung des Problems}
+\subsubsection{TSPLib als Quelle für bekannte Probleme}
+\subsubsection{Möglichkeiten der Distanzberechnung}
+\subsubsection{Das Travelling-Salesman-Problem und der Ameisenalgorithmus}
+\section{Implementierung des Problems in C++}
+\subsection{Programmstruktur und Funktionsweise}
+\subsection{Vorgehensweise zur Untersuchung von verschiedenen Datensätzen mit verschiedenen Implementierungen}
+\section{Ergebnisse der Durchführung}
+\subsection{Resultate bei Iteration einzelner Ameisen nacheinander}
+\subsection{Resultate bei paralleler Erschließung}
+\section{Auswertung und Vergleich}
+\subsection{Vergleich der iterativen und parallelen Implementierung}
+\subsection{Vergleich mit der optimalen Lösung}
+\subsection{Vergleich mit der Laufzeit und Komplexität mit anderen Algorithmen}
+\section{Zusammenfassung und Fazit}
+\section{Anhang}
 \newpage
 \bibliography{literatur}{}
 \addcontentsline{toc}{section}{Literatur} 
