@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Bachelorarbeit">
-      <UniqueIdentifier>{05c5e5ec-1703-4fa6-8648-984c5d1d8c82}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ant.h">
@@ -35,13 +32,5 @@
     <ClCompile Include="Main.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Bachelorarbeit.tex">
-      <Filter>Bachelorarbeit</Filter>
-    </None>
-    <None Include="..\..\literatur.bib">
-      <Filter>Bachelorarbeit</Filter>
-    </None>
   </ItemGroup>
 </Project>
