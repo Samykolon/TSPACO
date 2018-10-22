@@ -21,15 +21,27 @@
     <ClInclude Include="City.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Data.h">
+    <ClInclude Include="Route.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Route.h">
+    <ClInclude Include="Data.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Ant.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="City.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Route.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Data.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

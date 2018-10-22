@@ -243,3 +243,6 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/Bachelorarbeit.synctex.gz
+/images/RouteAdv.psd
+/images/RouteTrivial.psd
