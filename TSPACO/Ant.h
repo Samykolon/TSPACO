@@ -45,8 +45,6 @@ private:
 
 	Data *data;
 
-	
-
 public:
 
 	Route route;

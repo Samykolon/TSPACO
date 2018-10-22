@@ -2,7 +2,6 @@
 #include <vector>
 #include "City.h"
 
-
 using namespace std;
 
 class Route {

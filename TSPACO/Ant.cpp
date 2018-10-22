@@ -89,7 +89,7 @@ void Ant::antRoute()
 		i++;
 	}
 	
-	// this->routedistance += distances[nextCity][this->getStartIndex()];
+	//this->routedistance += this->data->distanceMatrix[nextCity][this->getStartIndex()];
 
 	reducePheromone();
 	ShortestDistance(this->routedistance);

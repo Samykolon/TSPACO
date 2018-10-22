@@ -27,6 +27,9 @@
     <ClInclude Include="Data.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="ImportTSP.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
