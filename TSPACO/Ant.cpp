@@ -1,5 +1,8 @@
 #include "Ant.h"
 
+double Ant::shortestdistance = 9999999.9;
+int Ant::iterationsshortestpath = 0;
+
 void Ant::printAnt()
 {
 	cout << "Index: " << getAntNumber() << " StartCity: " << getStartIndex() << endl;
@@ -85,9 +88,12 @@ void Ant::antRoute()
 		updatePheromone(tempCity, nextCity, this->data->distanceMatrix[tempCity][nextCity]);
 		i++;
 	}
+	
 	// this->routedistance += distances[nextCity][this->getStartIndex()];
 
 	reducePheromone();
+	ShortestDistance(this->routedistance);
+	this->iterationsshortestpath++;
 }
 
 void Ant::updatePheromone(int i, int j, double distance)
@@ -123,4 +129,14 @@ void Ant::printRouteWithCity()
 		cout << this->data->cities[this->route.getIndex(i)].getName() << " | ";
 
 	cout << "Distance: " << this->routedistance << endl;
+}
+
+void Ant::ShortestDistance(double distance)
+{
+	if (this->shortestdistance > distance) {
+		this->shortestdistance = distance;
+		printRouteWithCity();
+		this->iterationsshortestpath = 0;
+	}
+		
 }

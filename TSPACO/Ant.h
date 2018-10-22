@@ -30,7 +30,10 @@ public:
 private:
 
 	int datacitycount;
-	//static double shortestdistance;
+
+	static double shortestdistance;
+	static int iterationsshortestpath;
+
 	double routedistance;
 	int antnumber;
 	int startindex;
@@ -54,8 +57,15 @@ public:
 	int getVisitedCount() { return countvisitedCities; }
 	void setVisited(int index) { visitedVector[index] = 1; }
 	void setProbability(int index) { probabilityVector[index] = -1; }
-	//int getShortestDistance() { return this->shortestdistance; }
-	//void setShortestDistance(double distance) { this->shortestdistance = distance; }
+
+	double getShortestDistance() { return this->shortestdistance; }
+	void setShortestDistance(double distance) { this->shortestdistance = distance; }
+
+	double getRouteDistance() { return this->routedistance; }
+
+	int getIterations() { return this->iterationsshortestpath;}
+	void setIterations(int iterations) { this->iterationsshortestpath = iterations; }
+	
 	int getBool(int index) { return visitedVector[index]; }
 
 	void printAnt();
@@ -67,6 +77,7 @@ public:
 	void updatePheromone(int i, int j, double distance);
 	void reducePheromone();
 	void printRouteWithCity();	
+	void ShortestDistance(double distance);
 
 };
 

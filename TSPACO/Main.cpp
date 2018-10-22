@@ -7,6 +7,7 @@ using namespace std;
 using namespace std::chrono;
 
 #define NUMBERANTS 500      // Anzahl an Ameisen
+#define ITERATIONSMAX 100   // Maximale Anzahl an Iterationen in den keine kürzere Route gefunden wird
 
 const vector<City> MyCities{ City("Boston", 42.3601, -71.0589),
 City("Houston", 29.7604, -95.3698), City("Austin", 30.2672, -97.7431),
@@ -28,17 +29,18 @@ int main() {
 		antarmy.push_back(Ant(data1));
 	}
 
-	int currentAntNumber = 1;	
+	int currentAntNumber = 1;
 
+	
 	for (auto ant = antarmy.begin(); ant != antarmy.end(); ++ant) {
-		ant->setNumber(currentAntNumber);
-		currentAntNumber++;
-		ant->antRoute();
-		if (currentAntNumber == 3 || currentAntNumber == 50 || currentAntNumber == 150 || currentAntNumber == 399 || currentAntNumber == 500) {
-			ant->printRouteWithCity();
-			ant->route.printRoute();			
-		}			
+		if(ant->getIterations() < ITERATIONSMAX) {
+			ant->setNumber(currentAntNumber);
+			currentAntNumber++;
+			ant->antRoute();			
+		}
 	}
+
+	cout << "Algorithmus stopped at Ant Number: " << currentAntNumber << endl;
 
 	system("pause");
 	return 0;
