@@ -4,10 +4,10 @@
 
 #define REDUCE 0.01       // Paramter für die Reduktion des Pheromons auf allen Kanten
 
-#define PHEROMONEDEPOSIT 20	// Parameter für die Menge des platzierten Pheromons
+#define PHEROMONEDEPOSIT 5	// Parameter für die Menge des platzierten Pheromons
 #define PHEROMONEREDUCTION 0.1	    // Paramter für die Reduktion des Pheromons
 
-#define ALPHA 0.9   // Parameter für die Wichtigkeit des Pheromons
+#define ALPHA 0.1   // Parameter für die Wichtigkeit des Pheromons
 #define BETA 9.5		// Parameter für die Wichtigkeit der Distanz
 
 using namespace std;
