@@ -20,56 +20,34 @@ void AntThread(Ant ant, int currentAntNumber) {
 
 int main() {
 	
-	srand(time(NULL) - _getpid());
-	auto runt = 999999999999;
-	double at, bt, ct, dt;
-
-	
+	srand(time(NULL) - _getpid());	
 	// Iteration
-	for (double a = 0.1; a <= 0.7; a += 0.1)
-		for (double b = 0.05; b <= 0.3; b += 0.05)
-			for (double c = 0.4; c <= 1.4; c += 0.2)
-				for (double d = 0.5; d <= 12; d += 2) {
-					Data data1(convertCities());
-					double st;
-					high_resolution_clock::time_point t1 = high_resolution_clock::now();
-					if (data1.getCityCount() > 0) {
-						
-						vector<Ant> antarmy;
-						antarmy.reserve(NUMBERANTS);
-						for (int i = 0; i < NUMBERANTS; ++i)
-						{
-							antarmy.push_back(Ant(data1, a, b, c, d));
-						}
+	Data data1(convertCities());
+	if (data1.getCityCount() > 0) {
+		vector<Ant> antarmy;
+		antarmy.reserve(NUMBERANTS);
+		for (int i = 0; i < NUMBERANTS; ++i)
+		{
+			antarmy.push_back(Ant(data1));
+		}
 
-						int currentAntNumber = 1;
+		int currentAntNumber = 1;
 
 
-						for (auto ant = antarmy.begin(); ant != antarmy.end(); ++ant) {
-							if (ant->getIterations() < ITERATIONSMAX) {
-								ant->setNumber(currentAntNumber);
-								currentAntNumber++;
-								ant->antRoute();
-								st = ant->getShortestDistance();
-							}
+		for (auto ant = antarmy.begin(); ant != antarmy.end(); ++ant) {
+			if (ant->getIterations() < ITERATIONSMAX) {
+				ant->setNumber(currentAntNumber);
+				currentAntNumber++;
+				ant->antRoute();
+			}
 
-						}
+		}
 
-						//cout << "Algorithmus stopped at Ant Number: " << currentAntNumber << endl;
-					}
-					high_resolution_clock::time_point t2 = high_resolution_clock::now();
-					auto duration = duration_cast<microseconds>(t2 - t1).count();
-					if (duration < runt && st < 2800 ) {
-						runt = duration;
-						at = a; bt = b; ct = c; dt = d;
-					}
+		cout << "Algorithmus stopped at Ant Number: " << currentAntNumber << endl;
+	}
 
-					if(st < 2700)
-						cout << a << " " << b << " " << c << " " << d << " time: " << duration << " distance: " << st << endl;
-
-				}
 	
-	cout << at << " " << bt << " " << ct << " " << dt << " time: " << runt << endl;
+
 
 	// Parallel
 

@@ -16,7 +16,7 @@ class Ant {
 
 public:
 
-	Ant(Data &_data, double _a, double _b, double _c, double _d) : route(_data.getCityCount()) {
+	Ant(Data &_data) : route(_data.getCityCount()) {
 		this->data = &_data;
 		datacitycount = _data.getCityCount();
 		startindex = rand() % _data.getCityCount();
@@ -24,8 +24,7 @@ public:
 		countvisitedCities = 1;
 		visitedVector[startindex] = 1;
 		routedistance = 0.0;
-		probabilityVector = vector<double>(_data.getCityCount());
-		ma = _a; mb = _b; mc = _c, md = _d;
+		probabilityVector = vector<double>(_data.getCityCount());		
 	}
 	~Ant();
 
@@ -46,8 +45,6 @@ private:
 	int countvisitedCities;
 
 	Data *data;
-
-	double ma, mb, mc, md;
 
 public:
 
