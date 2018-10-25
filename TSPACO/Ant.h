@@ -4,8 +4,8 @@
 
 #define REDUCE 0.01       // Paramter für die Reduktion des Pheromons auf allen Kanten
 
-#define PHEROMONEDEPOSIT 5	// Parameter für die Menge des platzierten Pheromons
-#define PHEROMONEREDUCTION 0.1	    // Paramter für die Reduktion des Pheromons
+#define PHEROMONEDEPOSIT 80	// Parameter für die Menge des platzierten Pheromons
+#define PHEROMONEREDUCTION 2	    // Paramter für die Reduktion des Pheromons
 
 #define ALPHA 0.5   // Parameter für die Wichtigkeit des Pheromons
 #define BETA 0.8		// Parameter für die Wichtigkeit der Distanz

@@ -8,8 +8,8 @@
 using namespace std;
 using namespace std::chrono;
 
-#define NUMBERANTS 300     // Anzahl an Ameisen
-#define ITERATIONSMAX 200 // Maximale Anzahl an Iterationen in den keine kürzere Route gefunden wird
+#define NUMBERANTS 2000     // Anzahl an Ameisen
+#define ITERATIONSMAX 1500 // Maximale Anzahl an Iterationen in den keine kürzere Route gefunden wird
 
 void AntThread(Ant ant, int currentAntNumber) {
 	if (ant.getIterations() < ITERATIONSMAX) {
