@@ -2,13 +2,13 @@
 #include "Route.h"
 #include "Data.h"
 
-#define REDUCE 0.01       // Paramter für die Reduktion des Pheromons auf allen Kanten
+#define REDUCE 0.001       // Paramter für die Reduktion des Pheromons auf allen Kanten
 
-#define PHEROMONEDEPOSIT 80	// Parameter für die Menge des platzierten Pheromons
-#define PHEROMONEREDUCTION 2	    // Paramter für die Reduktion des Pheromons
+#define PHEROMONEDEPOSIT 40	// Parameter für die Menge des platzierten Pheromons
+#define PHEROMONEREDUCTION 0.15	    // Paramter für die Reduktion des Pheromons
 
-#define ALPHA 0.5   // Parameter für die Wichtigkeit des Pheromons
-#define BETA 0.8		// Parameter für die Wichtigkeit der Distanz
+#define ALPHA 0.8   // Parameter für die Wichtigkeit des Pheromons
+#define BETA 0.5		// Parameter für die Wichtigkeit der Distanz
 
 using namespace std;
 
@@ -24,9 +24,8 @@ public:
 		countvisitedCities = 1;
 		visitedVector[startindex] = 1;
 		routedistance = 0.0;
-		probabilityVector = vector<double>(_data.getCityCount());		
+		probabilityVector = vector<double>(_data.getCityCount());
 	}
-	~Ant();
 
 private:
 
@@ -41,7 +40,7 @@ private:
 
 	vector<bool> visitedVector;
 	vector<double> probabilityVector;
-	
+
 	int countvisitedCities;
 
 	Data *data;
@@ -49,7 +48,7 @@ private:
 public:
 
 	Route route;
-	
+
 	int getAntNumber() { return antnumber; }
 	void setNumber(int number) { antnumber = number; }
 	int getStartIndex() { return startindex; }
@@ -62,9 +61,9 @@ public:
 
 	double getRouteDistance() { return this->routedistance; }
 
-	int getIterations() { return this->iterationsshortestpath;}
+	int getIterations() { return this->iterationsshortestpath; }
 	void setIterations(int iterations) { this->iterationsshortestpath = iterations; }
-	
+
 	int getBool(int index) { return visitedVector[index]; }
 
 	void printAnt();
@@ -75,8 +74,7 @@ public:
 	void antRoute();
 	void updatePheromone(int i, int j, double distance);
 	void reducePheromone();
-	void printRouteWithCity();	
+	void printRouteWithCity();
 	void ShortestDistance(double distance);
 
 };
-
