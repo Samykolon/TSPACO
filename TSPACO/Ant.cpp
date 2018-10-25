@@ -3,6 +3,12 @@
 double Ant::shortestdistance = 9999999.9;
 int Ant::iterationsshortestpath = 0;
 
+Ant::~Ant()
+{
+	this->iterationsshortestpath = 0;
+	this->shortestdistance = 9999999;
+}
+
 void Ant::printAnt()
 {
 	cout << "Index: " << getAntNumber() << " StartCity: " << getStartIndex() << endl;
@@ -48,8 +54,8 @@ double Ant::probPheromone(int i, int j)
 
 
 
-	double ETAij = pow(1 / this->data->distanceMatrix[i][j], BETA);
-	double TAUij = pow(pheromoneLevel, ALPHA);
+	double ETAij = pow(1 / this->data->distanceMatrix[i][j], md);
+	double TAUij = pow(pheromoneLevel, mc);
 
 	double sum = 0.0;
 	for (int c = 0; c < datacitycount; c++) {
@@ -57,8 +63,8 @@ double Ant::probPheromone(int i, int j)
 		double pheromoneLevelCity = this->data->pheromoneMatrix[i][c];
 
 		if (visitedVector[c] == 0) {
-			double ETA = pow(1 / this->data->distanceMatrix[i][c], BETA);
-			double TAU = pow(pheromoneLevelCity, ALPHA);
+			double ETA = pow(1 / this->data->distanceMatrix[i][c], md);
+			double TAU = pow(pheromoneLevelCity, mc);
 			sum += ETA * TAU;
 		}
 	}
@@ -89,7 +95,7 @@ void Ant::antRoute()
 		i++;
 	}
 	
-	this->routedistance += this->data->distanceMatrix[nextCity][this->getStartIndex()];
+	//this->routedistance += this->data->distanceMatrix[nextCity][this->getStartIndex()];
 
 	reducePheromone();
 	ShortestDistance(this->routedistance);
@@ -99,7 +105,7 @@ void Ant::antRoute()
 void Ant::updatePheromone(int i, int j, double distance)
 {
 	double currentpheromone = this->data->pheromoneMatrix[i][j];
-	double updatedpheromone = (1 - PHEROMONEREDUCTION)*currentpheromone + PHEROMONEDEPOSIT / distance;
+	double updatedpheromone = (1 - mb)*currentpheromone + ma / distance;
 
 	if (updatedpheromone < 0.0) {
 		this->data->pheromoneMatrix[i][j] = 0;
@@ -135,7 +141,7 @@ void Ant::ShortestDistance(double distance)
 {
 	if (this->shortestdistance > distance) {
 		this->shortestdistance = distance;
-		printRouteWithCity();
+		//printRouteWithCity();
 		this->iterationsshortestpath = 0;
 	}
 		

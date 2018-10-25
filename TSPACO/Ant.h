@@ -7,8 +7,8 @@
 #define PHEROMONEDEPOSIT 5	// Parameter für die Menge des platzierten Pheromons
 #define PHEROMONEREDUCTION 0.1	    // Paramter für die Reduktion des Pheromons
 
-#define ALPHA 0.1   // Parameter für die Wichtigkeit des Pheromons
-#define BETA 9.5		// Parameter für die Wichtigkeit der Distanz
+#define ALPHA 0.5   // Parameter für die Wichtigkeit des Pheromons
+#define BETA 0.8		// Parameter für die Wichtigkeit der Distanz
 
 using namespace std;
 
@@ -16,7 +16,7 @@ class Ant {
 
 public:
 
-	Ant(Data &_data) : route(_data.getCityCount()) {
+	Ant(Data &_data, double _a, double _b, double _c, double _d) : route(_data.getCityCount()) {
 		this->data = &_data;
 		datacitycount = _data.getCityCount();
 		startindex = rand() % _data.getCityCount();
@@ -25,7 +25,9 @@ public:
 		visitedVector[startindex] = 1;
 		routedistance = 0.0;
 		probabilityVector = vector<double>(_data.getCityCount());
+		ma = _a; mb = _b; mc = _c, md = _d;
 	}
+	~Ant();
 
 private:
 
@@ -44,6 +46,8 @@ private:
 	int countvisitedCities;
 
 	Data *data;
+
+	double ma, mb, mc, md;
 
 public:
 
