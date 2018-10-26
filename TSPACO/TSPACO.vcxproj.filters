@@ -30,6 +30,9 @@
     <ClInclude Include="ImportTSP.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="XMLData.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -45,6 +48,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="Data.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="XMLData.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

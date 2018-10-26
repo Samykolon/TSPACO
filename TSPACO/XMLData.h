@@ -1,13 +1,17 @@
 #pragma once
 #include "City.h"
+#include <fstream>
+#include <sstream>
 
 #define PHEROMONEINIT 0.5   // Paramter für den maximalen Pheromonstartwert wenn dieser zu Beginn zufällig generiert wird
 
-class Data {
+using namespace std;
+
+class XMLData {
 
 public:
-	
-	Data(vector<City> _cities);
+
+	XMLData(string path, int citynumber);
 
 	vector<vector<double>> const &getPheromoneMatrix() const;
 	vector<vector<double>> const &getDistanceMatrix() const;
@@ -22,14 +26,10 @@ public:
 	void printPheromoneMatrix();
 	void printDistanceMatrix();
 
-	
+
 
 private:
 
-	int citycount;	
+	int citycount;
 
 };
-
-
-
-

@@ -42,13 +42,13 @@ double Ant::probPheromone(int i, int j)
 	double prob = 0.0;
 	double pheromoneLevel = this->data->pheromoneMatrix[i][j];
 
-	/*if (pheromoneLevel != 0.0)
-	prob = pow(pheromoneLevel, ALPHA) * pow(1 / distanceMatrix[i][j], BETA);	//vereinfachte Form (Test)
-	return prob;*/
+	if (pheromoneLevel != 0.0)
+	prob = pow(pheromoneLevel, ALPHA) * pow(1 / this->data->distanceMatrix[i][j], BETA);	//vereinfachte Form (Test)
+	return prob;
 
 
 
-	double ETAij = pow(1 / this->data->distanceMatrix[i][j], BETA);
+	/*double ETAij = pow(1 / this->data->distanceMatrix[i][j], BETA);
 	double TAUij = pow(pheromoneLevel, ALPHA);
 
 	double sum = 0.0;
@@ -63,7 +63,7 @@ double Ant::probPheromone(int i, int j)
 		}
 	}
 
-	return (ETAij * TAUij) / sum;
+	return (ETAij * TAUij) / sum;*/
 }
 
 void Ant::antRoute()
@@ -76,7 +76,7 @@ void Ant::antRoute()
 	this->setProbability(nextCity);
 	this->setVisited(nextCity);
 	this->route.setCity(1, nextCity);
-	updatePheromone(this->getStartIndex(), nextCity, this->data->distanceMatrix[this->getStartIndex()][nextCity]);
+	updatePheromone(this->getStartIndex(), nextCity, routedistance);
 
 	while (this->getVisitedCount() < datacitycount) {
 		tempCity = nextCity;
@@ -85,13 +85,13 @@ void Ant::antRoute()
 		this->setVisited(nextCity);
 		this->route.setCity(i, nextCity);
 		this->routedistance += this->data->distanceMatrix[tempCity][nextCity];
-		updatePheromone(tempCity, nextCity, this->data->distanceMatrix[tempCity][nextCity]);
+		updatePheromone(tempCity, nextCity, routedistance);
 		i++;
 	}
 
 	this->routedistance += this->data->distanceMatrix[nextCity][this->getStartIndex()];
 
-	reducePheromone();
+	//reducePheromone();
 	ShortestDistance(this->routedistance);
 	this->iterationsshortestpath++;
 }
@@ -113,11 +113,12 @@ void Ant::updatePheromone(int i, int j, double distance)
 
 void Ant::reducePheromone()
 {
-	for (int i = 0; i < datacitycount; ++i) {
-		for (int j = 0; j < datacitycount; ++j) {
-			this->data->pheromoneMatrix[i][j] -= REDUCE * this->data->pheromoneMatrix[i][j];
-			if (this->data->pheromoneMatrix[i][j] < 0)
-				this->data->pheromoneMatrix[i][j] = 0;
+	for (int x = 0; x < datacitycount; x++) {
+		for (int y = 0; y < datacitycount; y++) {
+			if(REDUCE * this->data->pheromoneMatrix[x][y] < 0)
+				this->data->pheromoneMatrix[x][y] = 0.0;
+			else
+				this->data->pheromoneMatrix[x][y] -= REDUCE * this->data->pheromoneMatrix[x][y];			
 		}
 	}
 }

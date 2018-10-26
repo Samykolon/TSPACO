@@ -1,6 +1,7 @@
 #include <chrono>
 #include <thread>
 #include "Data.h"
+#include "XMLData.h"
 #include "Ant.h"
 #include "ImportTSP.h"
 
@@ -8,8 +9,8 @@
 using namespace std;
 using namespace std::chrono;
 
-#define NUMBERANTS 2000     // Anzahl an Ameisen
-#define ITERATIONSMAX 1500   // Maximale Anzahl an Iterationen in den keine kürzere Route gefunden wird
+#define NUMBERANTS 4000    // Anzahl an Ameisen
+#define ITERATIONSMAX 3000   // Maximale Anzahl an Iterationen in den keine kürzere Route gefunden wird
 
 void AntThread(Ant ant, int currentAntNumber) {
 	if (ant.getIterations() < ITERATIONSMAX) {
@@ -22,8 +23,9 @@ int main() {
 
 	srand(time(NULL) - _getpid());
 
-	Data data1(convertCities());
-
+	XMLData data1("TSPLIB/burma14.xml", 14);
+	data1.printDistanceMatrix();
+	data1.printPheromoneMatrix();
 	// Iteration
 
 	if (data1.getCityCount() > 0) {
@@ -71,6 +73,8 @@ int main() {
 	th.join();
 	}
 	}*/
+
+	
 
 	system("pause");
 	return 0;

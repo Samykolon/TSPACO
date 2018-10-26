@@ -57,3 +57,19 @@ void Data::printPheromoneMatrix()
 	}
 	cout << endl;
 }
+
+void Data::printDistanceMatrix()
+{
+	cout.precision(4);
+
+	for (int i = 0; i < citycount; ++i) {
+		for (int j = 0; j < citycount; ++j) {
+			if (i == j)
+				cout << setw(12) << fixed << "X";
+			else
+				cout << setw(12) << fixed << distanceMatrix[i][j];
+		}
+		cout << endl;
+	}
+	cout << endl;
+}

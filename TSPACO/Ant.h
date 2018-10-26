@@ -1,14 +1,15 @@
 #pragma once
 #include "Route.h"
 #include "Data.h"
+#include "XMLData.h"
 
-#define REDUCE 0.001       // Paramter für die Reduktion des Pheromons auf allen Kanten
+#define REDUCE (double) 0.001     // Paramter für die Reduktion des Pheromons auf allen Kanten
 
-#define PHEROMONEDEPOSIT 40	// Parameter für die Menge des platzierten Pheromons
-#define PHEROMONEREDUCTION 0.15	    // Paramter für die Reduktion des Pheromons
+#define PHEROMONEDEPOSIT (double) 40	// Parameter für die Menge des platzierten Pheromons
+#define PHEROMONEREDUCTION (double) 0.15	    // Paramter für die Reduktion des Pheromons
 
-#define ALPHA 0.8   // Parameter für die Wichtigkeit des Pheromons
-#define BETA 0.5		// Parameter für die Wichtigkeit der Distanz
+#define ALPHA (double) 0.8  // Parameter für die Wichtigkeit des Pheromons
+#define BETA (double) 0.5		// Parameter für die Wichtigkeit der Distanz
 
 using namespace std;
 
@@ -16,7 +17,7 @@ class Ant {
 
 public:
 
-	Ant(Data &_data) : route(_data.getCityCount()) {
+	Ant(XMLData &_data) : route(_data.getCityCount()) {
 		this->data = &_data;
 		datacitycount = _data.getCityCount();
 		startindex = rand() % _data.getCityCount();
@@ -43,7 +44,7 @@ private:
 
 	int countvisitedCities;
 
-	Data *data;
+	XMLData *data;
 
 public:
 

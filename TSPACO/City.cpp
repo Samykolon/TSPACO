@@ -3,8 +3,8 @@
 City::City(string _name, double _latitude, double _longitude)
 {
 	name = _name;
-	longitude = _longitude * PI / 180.0;
-	latitude = _latitude * PI / 180.0;
+	longitude = _longitude * (PI / 180.0);
+	latitude = _latitude * (PI / 180.0);
 }
 
 const string City::getName() const
