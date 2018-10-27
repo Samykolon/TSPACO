@@ -8,7 +8,7 @@ class Route {
 
 public:
 
-	Route(int size) : theRoute(size) { }	
+	Route(int _size) : theRoute(_size) { }	
 
 	vector<int> const &get() const;
 	void setCity(int pos, int value);

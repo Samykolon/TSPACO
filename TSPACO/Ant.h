@@ -1,6 +1,6 @@
 #pragma once
 #include "Route.h"
-#include "Data.h"
+#include "ManualData.h"
 #include "XMLData.h"
 
 #define REDUCE (double) 0.001     // Paramter für die Reduktion des Pheromons auf allen Kanten
@@ -17,18 +17,21 @@ class Ant {
 
 public:
 
-	Ant(XMLData &_data) : route(_data.getCityCount()) {
+	Ant(XMLData &_data, int _probalgorithm) : route(_data.getCityCount()) {
 		this->data = &_data;
 		datacitycount = _data.getCityCount();
 		startindex = rand() % _data.getCityCount();
 		visitedVector.assign(_data.getCityCount(), 0);
-		countvisitedCities = 1;
+		countvisitedcities = 1;
 		visitedVector[startindex] = 1;
 		routedistance = 0.0;
 		probabilityVector = vector<double>(_data.getCityCount());
+		probabilityalgorithm = _probalgorithm;
 	}
 
 private:
+
+	int probabilityalgorithm;
 
 	int datacitycount;
 
@@ -42,7 +45,9 @@ private:
 	vector<bool> visitedVector;
 	vector<double> probabilityVector;
 
-	int countvisitedCities;
+	int countvisitedcities;
+
+	int tempcity; int nextcity;
 
 	XMLData *data;
 
@@ -53,7 +58,7 @@ public:
 	int getAntNumber() { return antnumber; }
 	void setNumber(int number) { antnumber = number; }
 	int getStartIndex() { return startindex; }
-	int getVisitedCount() { return countvisitedCities; }
+	int getVisitedCount() { return countvisitedcities; }
 	void setVisited(int index) { visitedVector[index] = 1; }
 	void setProbability(int index) { probabilityVector[index] = -1; }
 
@@ -72,7 +77,12 @@ public:
 	int getNextCity(int currentCity);
 	int probabilityCity(int x);
 	double probPheromone(int i, int j);
+
 	void antRoute();
+	void antParallelRoute(int currentCity);
+
+	void backToStart();
+
 	void updatePheromone(int i, int j, double distance);
 	void reducePheromone();
 	void printRouteWithCity();

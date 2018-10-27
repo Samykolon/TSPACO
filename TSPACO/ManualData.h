@@ -3,11 +3,11 @@
 
 #define PHEROMONEINIT 0.5   // Paramter für den maximalen Pheromonstartwert wenn dieser zu Beginn zufällig generiert wird
 
-class Data {
+class ManualData {
 
 public:
 	
-	Data(vector<City> _cities);
+	ManualData(vector<City> _cities);
 
 	vector<vector<double>> const &getPheromoneMatrix() const;
 	vector<vector<double>> const &getDistanceMatrix() const;

@@ -89,6 +89,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -103,6 +104,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,15 +150,14 @@
   <ItemGroup>
     <ClInclude Include="Ant.h" />
     <ClInclude Include="City.h" />
-    <ClInclude Include="Data.h" />
-    <ClInclude Include="ImportTSP.h" />
+    <ClInclude Include="ManualData.h" />
     <ClInclude Include="Route.h" />
     <ClInclude Include="XMLData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Ant.cpp" />
     <ClCompile Include="City.cpp" />
-    <ClCompile Include="Data.cpp" />
+    <ClCompile Include="ManualData.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Route.cpp" />
     <ClCompile Include="XMLData.cpp" />

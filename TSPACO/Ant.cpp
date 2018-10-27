@@ -18,7 +18,7 @@ void Ant::printVisited()
 int Ant::getNextCity(int currentCity)
 {
 	int nextCity = probabilityCity(currentCity);
-	countvisitedCities++;
+	countvisitedcities++;
 	return nextCity;
 }
 
@@ -42,28 +42,32 @@ double Ant::probPheromone(int i, int j)
 	double prob = 0.0;
 	double pheromoneLevel = this->data->pheromoneMatrix[i][j];
 
-	if (pheromoneLevel != 0.0)
-	prob = pow(pheromoneLevel, ALPHA) * pow(1 / this->data->distanceMatrix[i][j], BETA);	//vereinfachte Form (Test)
-	return prob;
 
-
-
-	/*double ETAij = pow(1 / this->data->distanceMatrix[i][j], BETA);
-	double TAUij = pow(pheromoneLevel, ALPHA);
-
-	double sum = 0.0;
-	for (int c = 0; c < datacitycount; c++) {
-
-		double pheromoneLevelCity = this->data->pheromoneMatrix[i][c];
-
-		if (visitedVector[c] == 0) {
-			double ETA = pow(1 / this->data->distanceMatrix[i][c], BETA);
-			double TAU = pow(pheromoneLevelCity, ALPHA);
-			sum += ETA * TAU;
-		}
+	if (probabilityalgorithm == 0) {
+		if (pheromoneLevel != 0.0)
+			prob = pow(pheromoneLevel, ALPHA) * pow(1 / this->data->distanceMatrix[i][j], BETA);	//vereinfachte Form (Test)
+		return prob;
 	}
 
-	return (ETAij * TAUij) / sum;*/
+	else {
+
+		double ETAij = pow(1 / this->data->distanceMatrix[i][j], BETA);
+		double TAUij = pow(pheromoneLevel, ALPHA);
+
+		double sum = 0.0;
+		for (int c = 0; c < datacitycount; c++) {
+
+			double pheromoneLevelCity = this->data->pheromoneMatrix[i][c];
+
+			if (visitedVector[c] == 0) {
+				double ETA = pow(1 / this->data->distanceMatrix[i][c], BETA);
+				double TAU = pow(pheromoneLevelCity, ALPHA);
+				sum += ETA * TAU;
+			}
+		}
+
+		return (ETAij * TAUij) / sum;
+	}
 }
 
 void Ant::antRoute()
@@ -94,6 +98,33 @@ void Ant::antRoute()
 	//reducePheromone();
 	ShortestDistance(this->routedistance);
 	this->iterationsshortestpath++;
+}
+
+void Ant::antParallelRoute(int currentCity)
+{
+	if (currentCity == 0) {
+		this->route.setCity(0, this->getStartIndex());
+		nextcity = this->getNextCity(this->getStartIndex());
+		this->routedistance += this->data->distanceMatrix[this->getStartIndex()][nextcity];
+		this->setProbability(nextcity);
+		this->setVisited(nextcity);
+		this->route.setCity(1, nextcity);
+		updatePheromone(this->getStartIndex(), nextcity, routedistance);
+	}
+	else if (currentCity > 0) {
+		tempcity = nextcity;
+		nextcity = this->getNextCity(nextcity);
+		this->setProbability(nextcity);
+		this->setVisited(nextcity);
+		this->route.setCity(currentCity, nextcity);
+		this->routedistance += this->data->distanceMatrix[tempcity][nextcity];
+		updatePheromone(tempcity, nextcity, routedistance);
+	}
+}
+
+void Ant::backToStart()
+{
+	this->routedistance += this->data->distanceMatrix[nextcity][this->getStartIndex()];	
 }
 
 void Ant::updatePheromone(int i, int j, double distance)

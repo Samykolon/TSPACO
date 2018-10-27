@@ -1,7 +1,7 @@
-#include "Data.h"
+#include "ManualData.h"
 
 
-Data::Data(const vector<City> _cities)
+ManualData::ManualData(const vector<City> _cities)
 {
 	srand(time(NULL) - _getpid());
 	this->cities = _cities;
@@ -27,22 +27,22 @@ Data::Data(const vector<City> _cities)
 	}
 }
 
-vector<vector<double>> const & Data::getPheromoneMatrix() const
+vector<vector<double>> const & ManualData::getPheromoneMatrix() const
 {
 	return pheromoneMatrix;
 }
 
-vector<vector<double>> const & Data::getDistanceMatrix() const
+vector<vector<double>> const & ManualData::getDistanceMatrix() const
 {
 	return distanceMatrix;
 }
 
-int Data::getCityCount()
+int ManualData::getCityCount()
 {
 	return this->citycount;
 }
 
-void Data::printPheromoneMatrix()
+void ManualData::printPheromoneMatrix()
 {
 	cout.precision(9);
 
@@ -58,7 +58,7 @@ void Data::printPheromoneMatrix()
 	cout << endl;
 }
 
-void Data::printDistanceMatrix()
+void ManualData::printDistanceMatrix()
 {
 	cout.precision(4);
 

@@ -1,22 +1,22 @@
 #include "XMLData.h"
 
-XMLData::XMLData(string path, int citynumber)
+XMLData::XMLData(string _path, int _numberofcities)
 {
-	citycount = citynumber;
+	numberofcities = _numberofcities;
 	
-	cities.reserve(citynumber);
-	for (int k = 0; k < citynumber; k++)
+	cities.reserve(_numberofcities);
+	for (int k = 0; k < _numberofcities; k++)
 		cities.push_back(City(to_string(k), 0.0, 0.0));
 
 	srand(time(NULL) - _getpid());
 
 	double random, pheromonerandom;
 
-	pheromoneMatrix.assign(citynumber, vector<double>(citynumber, 0));
-	distanceMatrix.assign(citynumber, vector<double>(citynumber, 0));
+	pheromoneMatrix.assign(_numberofcities, vector<double>(_numberofcities, 0));
+	distanceMatrix.assign(_numberofcities, vector<double>(_numberofcities, 0));
 
-	for (int i = 0; i < citycount; i++) {
-		for (int j = 0; j < citycount; j++) {
+	for (int i = 0; i < numberofcities; i++) {
+		for (int j = 0; j < numberofcities; j++) {
 			if (pheromoneMatrix[j][i] == 0 && i != j) {
 				random = (rand() % 1000);
 				pheromonerandom = random / 1000 * PHEROMONEINIT;
@@ -28,8 +28,8 @@ XMLData::XMLData(string path, int citynumber)
 	}
 
 	string line;
-	ifstream in(path);
-	int currentCityCount = 0;
+	ifstream in(_path);
+	int maincitycount = 0;
 	int currentCity = 0;
 	bool begindata = false;
 	while (getline(in, line)) {
@@ -60,18 +60,16 @@ XMLData::XMLData(string path, int citynumber)
 			size_t pos = tmp.find("\"");
 			string doubletmp = tmp.substr(pos + 1, 21);
 			double d = stod(doubletmp);
-			if (currentCity == currentCityCount)
-				currentCityCount++;
-			distanceMatrix[currentCity][currentCityCount] = d;
-			currentCityCount++;
-			if (currentCityCount >= citynumber) {
+			if (currentCity == maincitycount)
+				maincitycount++;
+			distanceMatrix[currentCity][maincitycount] = d;
+			maincitycount++;
+			if (maincitycount >= _numberofcities) {
 				currentCity++;
-				currentCityCount = 0;
-			}
-				
+				maincitycount = 0;
+			}				
 		}
 	}
-
 }
 
 vector<vector<double>> const & XMLData::getPheromoneMatrix() const
@@ -86,15 +84,15 @@ vector<vector<double>> const & XMLData::getDistanceMatrix() const
 
 int XMLData::getCityCount()
 {
-	return citycount;
+	return numberofcities;
 }
 
 void XMLData::printPheromoneMatrix()
 {
 	cout.precision(9);
 
-	for (int i = 0; i < citycount; ++i) {
-		for (int j = 0; j < citycount; ++j) {
+	for (int i = 0; i < numberofcities; ++i) {
+		for (int j = 0; j < numberofcities; ++j) {
 			if (i == j)
 				cout << setw(12) << fixed << "X";
 			else
@@ -109,8 +107,8 @@ void XMLData::printDistanceMatrix()
 {
 	cout.precision(4);
 
-	for (int i = 0; i < citycount; ++i) {
-		for (int j = 0; j < citycount; ++j) {
+	for (int i = 0; i < numberofcities; ++i) {
+		for (int j = 0; j < numberofcities; ++j) {
 			if (i == j)
 				cout << setw(12) << fixed << "X";
 			else
