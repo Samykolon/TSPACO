@@ -3,13 +3,13 @@
 #include "ManualData.h"
 #include "XMLData.h"
 
-#define REDUCE (double) 0.001     // Paramter für die Reduktion des Pheromons auf allen Kanten
-
-#define PHEROMONEDEPOSIT (double) 40	// Parameter für die Menge des platzierten Pheromons
-#define PHEROMONEREDUCTION (double) 0.15	    // Paramter für die Reduktion des Pheromons
-
-#define ALPHA (double) 0.8  // Parameter für die Wichtigkeit des Pheromons
-#define BETA (double) 0.5		// Parameter für die Wichtigkeit der Distanz
+//#define REDUCE (double) 0.001     // Paramter für die Reduktion des Pheromons auf allen Kanten
+//
+//#define PHEROMONEDEPOSIT (double) 40	// Parameter für die Menge des platzierten Pheromons
+//#define PHEROMONEREDUCTION (double) 0.15	    // Paramter für die Reduktion des Pheromons
+//
+//#define ALPHA (double) 0.8  // Parameter für die Wichtigkeit des Pheromons
+//#define BETA (double) 0.5		// Parameter für die Wichtigkeit der Distanz
 
 using namespace std;
 
@@ -17,7 +17,7 @@ class Ant {
 
 public:
 
-	Ant(XMLData &_data, int _probalgorithm) : route(_data.getCityCount()) {
+	Ant(XMLData &_data, double _reductionvalue, double _pheromonedeposit, double _pheromonereduction, double _alpha, double _beta, int _boolreduce, int _probalgorithm) : route(_data.getCityCount()) {
 		this->data = &_data;
 		datacitycount = _data.getCityCount();
 		startindex = rand() % _data.getCityCount();
@@ -26,11 +26,23 @@ public:
 		visitedVector[startindex] = 1;
 		routedistance = 0.0;
 		probabilityVector = vector<double>(_data.getCityCount());
+		reductionvalue = _reductionvalue;
+		pheromonedeposit = _pheromonedeposit;
+		pheromonereduction = _pheromonereduction;
+		alpha = _alpha;
+		beta = _beta;
+		boolreduce = _boolreduce;
 		probabilityalgorithm = _probalgorithm;
 	}
 
 private:
 
+	double reductionvalue;
+	double pheromonedeposit;
+	double pheromonereduction;
+	double alpha;
+	double beta;
+	int boolreduce;
 	int probabilityalgorithm;
 
 	int datacitycount;
@@ -85,7 +97,9 @@ public:
 
 	void updatePheromone(int i, int j, double distance);
 	void reducePheromone();
+
 	void printRouteWithCity();
+	void printOnlyRoute();
 	void ShortestDistance(double distance);
 
 };

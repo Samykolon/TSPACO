@@ -1,4 +1,9 @@
 #pragma once
+#include <shlobj.h>
+#include <shlwapi.h>
+#include <objbase.h>
+#include <string.h>
+#include <msclr\marshal_cppstd.h>
 
 namespace TSPACOGUI {
 
@@ -8,6 +13,9 @@ namespace TSPACOGUI {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace System::IO;
+	using namespace System::Diagnostics;
+	using namespace std;
 
 	/// <summary>
 	/// Zusammenfassung für MainFrame
@@ -19,6 +27,15 @@ namespace TSPACOGUI {
 		{
 			InitializeComponent();
 			tbReduction->Enabled = false;
+
+			tbAlpha->Text = alpha.ToString();
+			tbBeta->Text = beta.ToString();
+			tbNumberAnts->Text = numberants.ToString();
+			tbPheromoneDeposit->Text = pheromonedeposit.ToString();
+			tbPheromoneReduction->Text = pheromonereduction.ToString();
+			tbReduction->Text = reducevalue.ToString();
+			tbIteration->Text = iterationsmax.ToString();
+			bOpenXML->Enabled = false;
 		}
 
 	protected:
@@ -40,7 +57,7 @@ namespace TSPACOGUI {
 	private: System::Windows::Forms::Button^  bOpenXML;
 	private: System::Windows::Forms::Label^  lNumberAnts;
 	private: System::Windows::Forms::GroupBox^  gpSettings;
-	private: System::Windows::Forms::Label^  lAlgorithm;
+
 	private: System::Windows::Forms::TextBox^  tbIteration;
 	private: System::Windows::Forms::Label^  lIteration;
 	private: System::Windows::Forms::RadioButton^  rbParallel;
@@ -56,12 +73,15 @@ namespace TSPACOGUI {
 	private: System::Windows::Forms::TextBox^  tbAlpha;
 	private: System::Windows::Forms::Label^  lAlpha;
 	private: System::Windows::Forms::TextBox^  tbNumberAnts;
+	private: System::Windows::Forms::TextBox^  textBox1;
+	private: System::Windows::Forms::GroupBox^  gpAlgorithm;
+	private: System::Windows::Forms::GroupBox^  gpProbAlgorithm;
+	private: System::Windows::Forms::RadioButton^  rbProbKomplex;
+	private: System::Windows::Forms::RadioButton^  rbProbSimple;
 
 
 	private:
-		/// <summary>
-		/// Erforderliche Designervariable.
-		/// </summary>
+		
 		System::ComponentModel::Container ^components;
 
 #pragma region Windows Form Designer generated code
@@ -78,11 +98,6 @@ namespace TSPACOGUI {
 			this->bOpenXML = (gcnew System::Windows::Forms::Button());
 			this->lNumberAnts = (gcnew System::Windows::Forms::Label());
 			this->gpSettings = (gcnew System::Windows::Forms::GroupBox());
-			this->lAlgorithm = (gcnew System::Windows::Forms::Label());
-			this->tbIteration = (gcnew System::Windows::Forms::TextBox());
-			this->lIteration = (gcnew System::Windows::Forms::Label());
-			this->rbParallel = (gcnew System::Windows::Forms::RadioButton());
-			this->rbIterative = (gcnew System::Windows::Forms::RadioButton());
 			this->tbReduction = (gcnew System::Windows::Forms::TextBox());
 			this->cbReduction = (gcnew System::Windows::Forms::CheckBox());
 			this->tbPheromoneReduction = (gcnew System::Windows::Forms::TextBox());
@@ -94,7 +109,18 @@ namespace TSPACOGUI {
 			this->tbAlpha = (gcnew System::Windows::Forms::TextBox());
 			this->lAlpha = (gcnew System::Windows::Forms::Label());
 			this->tbNumberAnts = (gcnew System::Windows::Forms::TextBox());
+			this->tbIteration = (gcnew System::Windows::Forms::TextBox());
+			this->lIteration = (gcnew System::Windows::Forms::Label());
+			this->rbParallel = (gcnew System::Windows::Forms::RadioButton());
+			this->rbIterative = (gcnew System::Windows::Forms::RadioButton());
+			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
+			this->gpAlgorithm = (gcnew System::Windows::Forms::GroupBox());
+			this->gpProbAlgorithm = (gcnew System::Windows::Forms::GroupBox());
+			this->rbProbKomplex = (gcnew System::Windows::Forms::RadioButton());
+			this->rbProbSimple = (gcnew System::Windows::Forms::RadioButton());
 			this->gpSettings->SuspendLayout();
+			this->gpAlgorithm->SuspendLayout();
+			this->gpProbAlgorithm->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// lXML
@@ -126,15 +152,17 @@ namespace TSPACOGUI {
 			this->tbLoadXML->Name = L"tbLoadXML";
 			this->tbLoadXML->Size = System::Drawing::Size(349, 20);
 			this->tbLoadXML->TabIndex = 2;
+			this->tbLoadXML->TextChanged += gcnew System::EventHandler(this, &MainFrame::tbLoadXML_TextChanged);
 			// 
 			// bOpenXML
 			// 
-			this->bOpenXML->Location = System::Drawing::Point(15, 341);
+			this->bOpenXML->Location = System::Drawing::Point(15, 448);
 			this->bOpenXML->Name = L"bOpenXML";
 			this->bOpenXML->Size = System::Drawing::Size(563, 23);
 			this->bOpenXML->TabIndex = 3;
 			this->bOpenXML->Text = L"Start";
 			this->bOpenXML->UseVisualStyleBackColor = true;
+			this->bOpenXML->Click += gcnew System::EventHandler(this, &MainFrame::bOpenXML_Click);
 			// 
 			// lNumberAnts
 			// 
@@ -147,11 +175,6 @@ namespace TSPACOGUI {
 			// 
 			// gpSettings
 			// 
-			this->gpSettings->Controls->Add(this->lAlgorithm);
-			this->gpSettings->Controls->Add(this->tbIteration);
-			this->gpSettings->Controls->Add(this->lIteration);
-			this->gpSettings->Controls->Add(this->rbParallel);
-			this->gpSettings->Controls->Add(this->rbIterative);
 			this->gpSettings->Controls->Add(this->tbReduction);
 			this->gpSettings->Controls->Add(this->cbReduction);
 			this->gpSettings->Controls->Add(this->tbPheromoneReduction);
@@ -166,58 +189,10 @@ namespace TSPACOGUI {
 			this->gpSettings->Controls->Add(this->lNumberAnts);
 			this->gpSettings->Location = System::Drawing::Point(15, 48);
 			this->gpSettings->Name = L"gpSettings";
-			this->gpSettings->Size = System::Drawing::Size(563, 287);
+			this->gpSettings->Size = System::Drawing::Size(563, 201);
 			this->gpSettings->TabIndex = 5;
 			this->gpSettings->TabStop = false;
 			this->gpSettings->Text = L"Settings";
-			// 
-			// lAlgorithm
-			// 
-			this->lAlgorithm->AutoSize = true;
-			this->lAlgorithm->Location = System::Drawing::Point(242, 206);
-			this->lAlgorithm->Name = L"lAlgorithm";
-			this->lAlgorithm->Size = System::Drawing::Size(85, 13);
-			this->lAlgorithm->TabIndex = 21;
-			this->lAlgorithm->Text = L"Switch Algorithm";
-			// 
-			// tbIteration
-			// 
-			this->tbIteration->Location = System::Drawing::Point(271, 254);
-			this->tbIteration->Name = L"tbIteration";
-			this->tbIteration->Size = System::Drawing::Size(135, 20);
-			this->tbIteration->TabIndex = 20;
-			// 
-			// lIteration
-			// 
-			this->lIteration->AutoSize = true;
-			this->lIteration->Location = System::Drawing::Point(154, 257);
-			this->lIteration->Name = L"lIteration";
-			this->lIteration->Size = System::Drawing::Size(53, 13);
-			this->lIteration->TabIndex = 19;
-			this->lIteration->Text = L"Iterations:";
-			// 
-			// rbParallel
-			// 
-			this->rbParallel->AutoSize = true;
-			this->rbParallel->Location = System::Drawing::Point(347, 228);
-			this->rbParallel->Name = L"rbParallel";
-			this->rbParallel->Size = System::Drawing::Size(59, 17);
-			this->rbParallel->TabIndex = 18;
-			this->rbParallel->Text = L"Parallel";
-			this->rbParallel->UseVisualStyleBackColor = true;
-			// 
-			// rbIterative
-			// 
-			this->rbIterative->AutoSize = true;
-			this->rbIterative->Checked = true;
-			this->rbIterative->Location = System::Drawing::Point(157, 228);
-			this->rbIterative->Name = L"rbIterative";
-			this->rbIterative->Size = System::Drawing::Size(63, 17);
-			this->rbIterative->TabIndex = 17;
-			this->rbIterative->TabStop = true;
-			this->rbIterative->Text = L"Iterative";
-			this->rbIterative->UseVisualStyleBackColor = true;
-			this->rbIterative->CheckedChanged += gcnew System::EventHandler(this, &MainFrame::rbIterative_CheckedChanged);
 			// 
 			// tbReduction
 			// 
@@ -225,6 +200,7 @@ namespace TSPACOGUI {
 			this->tbReduction->Name = L"tbReduction";
 			this->tbReduction->Size = System::Drawing::Size(135, 20);
 			this->tbReduction->TabIndex = 16;
+			this->tbReduction->TextChanged += gcnew System::EventHandler(this, &MainFrame::tbReduction_TextChanged);
 			// 
 			// cbReduction
 			// 
@@ -243,6 +219,7 @@ namespace TSPACOGUI {
 			this->tbPheromoneReduction->Name = L"tbPheromoneReduction";
 			this->tbPheromoneReduction->Size = System::Drawing::Size(135, 20);
 			this->tbPheromoneReduction->TabIndex = 13;
+			this->tbPheromoneReduction->Leave += gcnew System::EventHandler(this, &MainFrame::tbPheromoneReduction_Leave);
 			// 
 			// lPheromoneReduction
 			// 
@@ -259,6 +236,7 @@ namespace TSPACOGUI {
 			this->tbPheromoneDeposit->Name = L"tbPheromoneDeposit";
 			this->tbPheromoneDeposit->Size = System::Drawing::Size(135, 20);
 			this->tbPheromoneDeposit->TabIndex = 11;
+			this->tbPheromoneDeposit->Leave += gcnew System::EventHandler(this, &MainFrame::tbPheromoneDeposit_Leave);
 			// 
 			// lPheromoneDeposit
 			// 
@@ -275,6 +253,7 @@ namespace TSPACOGUI {
 			this->tbBeta->Name = L"tbBeta";
 			this->tbBeta->Size = System::Drawing::Size(135, 20);
 			this->tbBeta->TabIndex = 9;
+			this->tbBeta->Leave += gcnew System::EventHandler(this, &MainFrame::tbBeta_Leave);
 			// 
 			// lBeta
 			// 
@@ -287,10 +266,12 @@ namespace TSPACOGUI {
 			// 
 			// tbAlpha
 			// 
+			this->tbAlpha->BackColor = System::Drawing::SystemColors::Window;
 			this->tbAlpha->Location = System::Drawing::Point(159, 58);
 			this->tbAlpha->Name = L"tbAlpha";
 			this->tbAlpha->Size = System::Drawing::Size(135, 20);
 			this->tbAlpha->TabIndex = 7;
+			this->tbAlpha->Leave += gcnew System::EventHandler(this, &MainFrame::tbAlpha_Leave);
 			// 
 			// lAlpha
 			// 
@@ -303,16 +284,118 @@ namespace TSPACOGUI {
 			// 
 			// tbNumberAnts
 			// 
+			this->tbNumberAnts->BackColor = System::Drawing::SystemColors::Window;
 			this->tbNumberAnts->Location = System::Drawing::Point(159, 23);
 			this->tbNumberAnts->Name = L"tbNumberAnts";
 			this->tbNumberAnts->Size = System::Drawing::Size(135, 20);
 			this->tbNumberAnts->TabIndex = 5;
+			this->tbNumberAnts->Leave += gcnew System::EventHandler(this, &MainFrame::tbNumberAnts_Leave);
+			// 
+			// tbIteration
+			// 
+			this->tbIteration->Location = System::Drawing::Point(268, 56);
+			this->tbIteration->Name = L"tbIteration";
+			this->tbIteration->Size = System::Drawing::Size(135, 20);
+			this->tbIteration->TabIndex = 20;
+			this->tbIteration->Leave += gcnew System::EventHandler(this, &MainFrame::tbIteration_Leave);
+			// 
+			// lIteration
+			// 
+			this->lIteration->AutoSize = true;
+			this->lIteration->Location = System::Drawing::Point(151, 59);
+			this->lIteration->Name = L"lIteration";
+			this->lIteration->Size = System::Drawing::Size(53, 13);
+			this->lIteration->TabIndex = 19;
+			this->lIteration->Text = L"Iterations:";
+			// 
+			// rbParallel
+			// 
+			this->rbParallel->AutoSize = true;
+			this->rbParallel->Location = System::Drawing::Point(344, 30);
+			this->rbParallel->Name = L"rbParallel";
+			this->rbParallel->Size = System::Drawing::Size(59, 17);
+			this->rbParallel->TabIndex = 18;
+			this->rbParallel->Text = L"Parallel";
+			this->rbParallel->UseVisualStyleBackColor = true;
+			// 
+			// rbIterative
+			// 
+			this->rbIterative->AutoSize = true;
+			this->rbIterative->Checked = true;
+			this->rbIterative->Location = System::Drawing::Point(154, 30);
+			this->rbIterative->Name = L"rbIterative";
+			this->rbIterative->Size = System::Drawing::Size(63, 17);
+			this->rbIterative->TabIndex = 17;
+			this->rbIterative->TabStop = true;
+			this->rbIterative->Text = L"Iterative";
+			this->rbIterative->UseVisualStyleBackColor = true;
+			this->rbIterative->CheckedChanged += gcnew System::EventHandler(this, &MainFrame::rbIterative_CheckedChanged);
+			// 
+			// textBox1
+			// 
+			this->textBox1->Location = System::Drawing::Point(15, 477);
+			this->textBox1->Multiline = true;
+			this->textBox1->Name = L"textBox1";
+			this->textBox1->ReadOnly = true;
+			this->textBox1->ScrollBars = System::Windows::Forms::ScrollBars::Vertical;
+			this->textBox1->Size = System::Drawing::Size(563, 187);
+			this->textBox1->TabIndex = 6;
+			// 
+			// gpAlgorithm
+			// 
+			this->gpAlgorithm->Controls->Add(this->tbIteration);
+			this->gpAlgorithm->Controls->Add(this->rbIterative);
+			this->gpAlgorithm->Controls->Add(this->rbParallel);
+			this->gpAlgorithm->Controls->Add(this->lIteration);
+			this->gpAlgorithm->Location = System::Drawing::Point(15, 256);
+			this->gpAlgorithm->Name = L"gpAlgorithm";
+			this->gpAlgorithm->Size = System::Drawing::Size(563, 100);
+			this->gpAlgorithm->TabIndex = 22;
+			this->gpAlgorithm->TabStop = false;
+			this->gpAlgorithm->Text = L"Switch Algorithm";
+			// 
+			// gpProbAlgorithm
+			// 
+			this->gpProbAlgorithm->Controls->Add(this->rbProbKomplex);
+			this->gpProbAlgorithm->Controls->Add(this->rbProbSimple);
+			this->gpProbAlgorithm->Location = System::Drawing::Point(15, 363);
+			this->gpProbAlgorithm->Name = L"gpProbAlgorithm";
+			this->gpProbAlgorithm->Size = System::Drawing::Size(563, 79);
+			this->gpProbAlgorithm->TabIndex = 23;
+			this->gpProbAlgorithm->TabStop = false;
+			this->gpProbAlgorithm->Text = L"Switch Probabilty-Function";
+			// 
+			// rbProbKomplex
+			// 
+			this->rbProbKomplex->AutoSize = true;
+			this->rbProbKomplex->Location = System::Drawing::Point(338, 38);
+			this->rbProbKomplex->Name = L"rbProbKomplex";
+			this->rbProbKomplex->Size = System::Drawing::Size(65, 17);
+			this->rbProbKomplex->TabIndex = 1;
+			this->rbProbKomplex->Text = L"Komplex";
+			this->rbProbKomplex->UseVisualStyleBackColor = true;
+			// 
+			// rbProbSimple
+			// 
+			this->rbProbSimple->AutoSize = true;
+			this->rbProbSimple->Checked = true;
+			this->rbProbSimple->Location = System::Drawing::Point(154, 38);
+			this->rbProbSimple->Name = L"rbProbSimple";
+			this->rbProbSimple->Size = System::Drawing::Size(56, 17);
+			this->rbProbSimple->TabIndex = 0;
+			this->rbProbSimple->TabStop = true;
+			this->rbProbSimple->Text = L"Simple";
+			this->rbProbSimple->UseVisualStyleBackColor = true;
+			this->rbProbSimple->CheckedChanged += gcnew System::EventHandler(this, &MainFrame::rbProbSimple_CheckedChanged);
 			// 
 			// MainFrame
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(593, 376);
+			this->ClientSize = System::Drawing::Size(593, 676);
+			this->Controls->Add(this->gpProbAlgorithm);
+			this->Controls->Add(this->gpAlgorithm);
+			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->gpSettings);
 			this->Controls->Add(this->bOpenXML);
 			this->Controls->Add(this->tbLoadXML);
@@ -325,11 +408,31 @@ namespace TSPACOGUI {
 			this->Text = L"TSP with ACO";
 			this->gpSettings->ResumeLayout(false);
 			this->gpSettings->PerformLayout();
+			this->gpAlgorithm->ResumeLayout(false);
+			this->gpAlgorithm->PerformLayout();
+			this->gpProbAlgorithm->ResumeLayout(false);
+			this->gpProbAlgorithm->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
 		}
 #pragma endregion
+	private:
+		int algorithm = 0;
+		int numberants = 500;
+		int iterationsmax = 300;
+		int probabilityalgorithm = 0;
+		int reduce = 0;
+		double reducevalue = 0.001;
+		double pheromonedeposit = 40;
+		double pheromonereduction = 0.15;
+		double alpha = 0.8;
+		double beta = 0.5;
+		int numbercities = 14;
+		String^ filename;
+
+
+
 	private: System::Void bXMLFileDialog_Click(System::Object^  sender, System::EventArgs^  e) {
 
 		ofdxml->FileName = "";
@@ -339,7 +442,7 @@ namespace TSPACOGUI {
 
 		try {
 			if (ofdxml->ShowDialog() == System::Windows::Forms::DialogResult::OK) {
-				String^ filename = ofdxml->FileName;
+				filename = ofdxml->FileName;
 				filename = filename->Replace(L"\\", L"/");
 				tbLoadXML->Text = filename;
 			}
@@ -351,17 +454,251 @@ namespace TSPACOGUI {
 
 	}
 	private: System::Void rbIterative_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
-		if (rbIterative->Checked == true)
+		if (rbIterative->Checked == true) {
 			tbIteration->Enabled = true;
-		else if (rbIterative->Checked == false)
+			algorithm = 0;
+		}
+		else if (rbIterative->Checked == false) {
 			tbIteration->Enabled = false;
+			algorithm = 1;
+		}
 	}
 
 private: System::Void cbReduction_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
-	if (cbReduction->Checked == true)
+	if (cbReduction->Checked == true) {
 		tbReduction->Enabled = true;
-	else if (cbReduction->Checked == false)
+		reduce = 1;
+	}
+	else if (cbReduction->Checked == false) {
 		tbReduction->Enabled = false;
+		reduce = 0;
+	}
+}
+
+
+private: System::Void bOpenXML_Click(System::Object^  sender, System::EventArgs^  e) {
+
+	try {
+		StreamWriter^ OutputStream;
+
+		String^ strNumberAnts = tbNumberAnts->Text;
+		String^ strIterations = tbIteration->Text;
+		String^ strReductionValue = tbReduction->Text;
+		String^ strPheromoneDeposit = tbPheromoneDeposit->Text;
+		String^ strPheromoneReduction = tbPheromoneReduction->Text;
+		String^ strAlpha = tbAlpha->Text;
+		String^ strBeta = tbBeta->Text;
+		String^ strReduce = reduce.ToString();
+		String^ strAlgorithm = algorithm.ToString();
+		String^ strProbabilityAlgorithm = probabilityalgorithm.ToString();
+		String^ strNumberCities = numbercities.ToString();
+
+
+		strReductionValue = strReductionValue->Replace(",", ".");
+		strPheromoneDeposit = strPheromoneDeposit->Replace(",", ".");
+		strPheromoneReduction = strPheromoneReduction->Replace(",", ".");
+		strAlpha = strAlpha->Replace(",", ".");
+		strBeta = strBeta->Replace(",", ".");
+		String^ daadsdsa = "DD";
+
+		String^ parameters = tbLoadXML->Text + " " + tbNumberAnts->Text + " " + tbIteration->Text + " " + strReductionValue + " " + strPheromoneDeposit + " " + strPheromoneReduction + " " + strAlpha + " " + strBeta + " " + reduce.ToString() + " " + algorithm.ToString() + " " + probabilityalgorithm.ToString() + " " + numbercities.ToString();
+
+		ProcessStartInfo^ startInfo = gcnew ProcessStartInfo();
+		startInfo->FileName = "TSPACO.exe";
+		startInfo->Arguments = parameters;
+		startInfo->UseShellExecute = false;
+		startInfo->CreateNoWindow = true;
+		startInfo->RedirectStandardOutput = true;
+		
+		Process^ process = gcnew Process();
+		process->StartInfo = startInfo;
+		process->Start();
+
+		StreamReader^ reader = process->StandardOutput;
+		String^ output = reader->ReadToEnd();
+
+		textBox1->Text += output;
+
+		process->WaitForExit();
+		process->Close();
+	}
+	catch (Exception^ ex) {
+		MessageBox::Show(ex->Message);
+	}	
+
+}
+private: System::Void rbProbSimple_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
+	if (rbProbSimple->Checked == true)
+		probabilityalgorithm = 0;
+	else if (rbProbSimple->Checked == false)
+		probabilityalgorithm = 1;
+}
+private: System::Void tbNumberAnts_Leave(System::Object^  sender, System::EventArgs^  e) {
+	int na;
+	
+	try {
+		na = Convert::ToInt32(tbNumberAnts->Text);
+		if (na <= 0 || na > 20000) {
+			bOpenXML->Enabled = false;
+			MessageBox::Show("Ant-Number has to be between 1 and 20000");
+			this->tbNumberAnts->BackColor = System::Drawing::Color::Salmon;
+			
+		}
+		else {
+			bOpenXML->Enabled = true;
+			this->tbNumberAnts->BackColor = System::Drawing::SystemColors::Window;
+		}
+		
+	}
+	catch (Exception^ ex) {
+		bOpenXML->Enabled = false;
+		MessageBox::Show("Invalid Input!");
+		this->tbNumberAnts->BackColor = System::Drawing::Color::Salmon;
+	}
+}
+private: System::Void tbIteration_Leave(System::Object^  sender, System::EventArgs^  e) {
+	double na;
+
+	try {
+		na = Convert::ToDouble(tbIteration->Text);
+		if (na <= 0 || na > 20000) {
+			bOpenXML->Enabled = false;
+			MessageBox::Show("Iteration-Value has to be between 1 and 20000");
+			this->tbIteration->BackColor = System::Drawing::Color::Salmon;
+
+		}
+		else {
+			bOpenXML->Enabled = true;
+			this->tbIteration->BackColor = System::Drawing::SystemColors::Window;
+		}
+
+	}
+	catch (Exception^ ex) {
+		bOpenXML->Enabled = false;
+		MessageBox::Show("Invalid Input!");
+		this->tbIteration->BackColor = System::Drawing::Color::Salmon;
+	}
+}
+private: System::Void tbAlpha_Leave(System::Object^  sender, System::EventArgs^  e) {
+	double na;
+
+	try {
+		na = Convert::ToDouble(tbAlpha->Text);
+		if (na <= 0 || na > 50) {
+			bOpenXML->Enabled = false;
+			MessageBox::Show("Alpha has to be between 0 and 50");
+			this->tbAlpha->BackColor = System::Drawing::Color::Salmon;
+
+		}
+		else {
+			bOpenXML->Enabled = true;
+			this->tbAlpha->BackColor = System::Drawing::SystemColors::Window;
+		}
+
+	}
+	catch (Exception^ ex) {
+		bOpenXML->Enabled = false;
+		MessageBox::Show("Invalid Input!");
+		this->tbAlpha->BackColor = System::Drawing::Color::Salmon;
+	}
+}
+private: System::Void tbBeta_Leave(System::Object^  sender, System::EventArgs^  e) {
+	double na;
+
+	try {
+		na = Convert::ToDouble(tbBeta->Text);
+		if (na <= 0 || na > 50) {
+			bOpenXML->Enabled = false;
+			MessageBox::Show("Beta has to be between 0 and 50");
+			this->tbBeta->BackColor = System::Drawing::Color::Salmon;
+
+		}
+		else {
+			bOpenXML->Enabled = true;
+			this->tbBeta->BackColor = System::Drawing::SystemColors::Window;
+		}
+
+	}
+	catch (Exception^ ex) {
+		bOpenXML->Enabled = false;
+		MessageBox::Show("Invalid Input!");
+		this->tbBeta->BackColor = System::Drawing::Color::Salmon;
+	}
+}
+private: System::Void tbPheromoneDeposit_Leave(System::Object^  sender, System::EventArgs^  e) {
+	double na;
+
+	try {
+		na = Convert::ToDouble(tbPheromoneDeposit->Text);
+		if (na <= 0 || na > 80) {
+			bOpenXML->Enabled = false;
+			MessageBox::Show("PheromoneDeposit has to be between 0 and 80");
+			this->tbPheromoneDeposit->BackColor = System::Drawing::Color::Salmon;
+
+		}
+		else {
+			bOpenXML->Enabled = true;
+			this->tbPheromoneDeposit->BackColor = System::Drawing::SystemColors::Window;
+		}
+
+	}
+	catch (Exception^ ex) {
+		bOpenXML->Enabled = false;
+		MessageBox::Show("Invalid Input!");
+		this->tbPheromoneDeposit->BackColor = System::Drawing::Color::Salmon;
+	}
+}
+private: System::Void tbPheromoneReduction_Leave(System::Object^  sender, System::EventArgs^  e) {
+	double na;
+
+	try {
+		na = Convert::ToDouble(tbPheromoneReduction->Text);
+		if (na <= 0 || na > 80) {
+			bOpenXML->Enabled = false;
+			MessageBox::Show("PheromoneReduction has to be between 0 and 80");
+			this->tbPheromoneReduction->BackColor = System::Drawing::Color::Salmon;
+
+		}
+		else {
+			bOpenXML->Enabled = true;
+			this->tbPheromoneReduction->BackColor = System::Drawing::SystemColors::Window;
+		}
+
+	}
+	catch (Exception^ ex) {
+		bOpenXML->Enabled = false;
+		MessageBox::Show("Invalid Input!");
+		this->tbPheromoneReduction->BackColor = System::Drawing::Color::Salmon;
+	}
+}
+private: System::Void tbReduction_TextChanged(System::Object^  sender, System::EventArgs^  e) {
+	double na;
+
+	try {
+		na = Convert::ToDouble(tbReduction->Text);
+		if (na <= 0 || na > 1) {
+			bOpenXML->Enabled = false;
+			MessageBox::Show("Overall-Reduction has to be between 0 and 1");
+			this->tbReduction->BackColor = System::Drawing::Color::Salmon;
+
+		}
+		else {
+			bOpenXML->Enabled = true;
+			this->tbReduction->BackColor = System::Drawing::SystemColors::Window;
+		}
+
+	}
+	catch (Exception^ ex) {
+		bOpenXML->Enabled = false;
+		MessageBox::Show("Invalid Input!");
+		this->tbReduction->BackColor = System::Drawing::Color::Salmon;
+	}
+}
+private: System::Void tbLoadXML_TextChanged(System::Object^  sender, System::EventArgs^  e) {
+	if (tbLoadXML->Text == "" || tbLoadXML->Text == " ")
+		bOpenXML->Enabled = false;
+	else
+		bOpenXML->Enabled = true;
 }
 };
 }

@@ -45,14 +45,14 @@ double Ant::probPheromone(int i, int j)
 
 	if (probabilityalgorithm == 0) {
 		if (pheromoneLevel != 0.0)
-			prob = pow(pheromoneLevel, ALPHA) * pow(1 / this->data->distanceMatrix[i][j], BETA);	//vereinfachte Form (Test)
+			prob = pow(pheromoneLevel, alpha) * pow(1 / this->data->distanceMatrix[i][j], beta);	//vereinfachte Form (Test)
 		return prob;
 	}
 
 	else {
 
-		double ETAij = pow(1 / this->data->distanceMatrix[i][j], BETA);
-		double TAUij = pow(pheromoneLevel, ALPHA);
+		double ETAij = pow(1 / this->data->distanceMatrix[i][j], beta);
+		double TAUij = pow(pheromoneLevel, alpha);
 
 		double sum = 0.0;
 		for (int c = 0; c < datacitycount; c++) {
@@ -60,8 +60,8 @@ double Ant::probPheromone(int i, int j)
 			double pheromoneLevelCity = this->data->pheromoneMatrix[i][c];
 
 			if (visitedVector[c] == 0) {
-				double ETA = pow(1 / this->data->distanceMatrix[i][c], BETA);
-				double TAU = pow(pheromoneLevelCity, ALPHA);
+				double ETA = pow(1 / this->data->distanceMatrix[i][c], beta);
+				double TAU = pow(pheromoneLevelCity, alpha);
 				sum += ETA * TAU;
 			}
 		}
@@ -130,7 +130,7 @@ void Ant::backToStart()
 void Ant::updatePheromone(int i, int j, double distance)
 {
 	double currentpheromone = this->data->pheromoneMatrix[i][j];
-	double updatedpheromone = (1 - PHEROMONEREDUCTION)*currentpheromone + (PHEROMONEDEPOSIT / distance);
+	double updatedpheromone = (1 - pheromonereduction)*currentpheromone + (pheromonedeposit / distance);
 
 	if (updatedpheromone < 0.0) {
 		this->data->pheromoneMatrix[i][j] = 0;
@@ -146,10 +146,10 @@ void Ant::reducePheromone()
 {
 	for (int x = 0; x < datacitycount; x++) {
 		for (int y = 0; y < datacitycount; y++) {
-			if(REDUCE * this->data->pheromoneMatrix[x][y] < 0)
+			if(reductionvalue * this->data->pheromoneMatrix[x][y] < 0)
 				this->data->pheromoneMatrix[x][y] = 0.0;
 			else
-				this->data->pheromoneMatrix[x][y] -= REDUCE * this->data->pheromoneMatrix[x][y];			
+				this->data->pheromoneMatrix[x][y] -= reductionvalue * this->data->pheromoneMatrix[x][y];			
 		}
 	}
 }
@@ -161,6 +161,12 @@ void Ant::printRouteWithCity()
 		cout << this->data->cities[this->route.getIndex(i)].getName() << " | ";
 
 	cout << "Distance: " << this->routedistance << endl;
+}
+
+void Ant::printOnlyRoute()
+{
+	for (int i = 0; i < datacitycount; i++)
+		cout << this->data->cities[this->route.getIndex(i)].getName() << " | ";
 }
 
 void Ant::ShortestDistance(double distance)

@@ -4,49 +4,8 @@ http://www.math.uwaterloo.ca/tsp/concorde/benchmarks/bench99.html
 Die TSPLIB mit den Benchmark Instanzen:
 https://wwwproxy.iwr.uni-heidelberg.de/groups/comopt/software/TSPLIB95/
 
-To-Do:
+TSPACO:
+- Reduce-Pheromone-Funktion implementieren
+- Paralleler Algorithmus überspringt eine Stadt (Index-Fehler?)
 
-Arbeit:
-* in LaTeX
-* Bibliografie mit JabRef ist einfacher)
-* Struktur wie besprochen umsetzen [+++]
-* Grundlagenkapitel schreiben  [+]
-
-Coding:
-* zwei Algorithmusimplementierungen vergleichbar machen [+]
-* eventuell eine GUI bauen [-]
-* Einlesen der Benchmarkprobleme aus TSPLIB [++]
-* Vergleich von einzelnen Ameisen iterativ mit mehreren Ameisen zur
-selben Zeit [+]
-* Algorithmus dahingehend ändern das eine bessere Lösung kontinuierlich
-gespeichert wird und abgebrochen wird wenn sich in X (Ameisen,
-Iterationen ?) nichs ändert [++]
-
-Struktur:
-
-Inhaltsverzeichnis
-
-Einleitung/Motivation
-Researchquestion
-
-Grundlagen ACO / TSP
- - mit Pseudocode/Darstellung
-Beispielsdaten (Herkunft, TSPLib)
-
-Distanzberechnung
-
-Versuchsaufbau (Implementierung; UML)
-Programmablauf
-
-Experimente (Was und Ergebnisse)
-Zwei Algorithmen - und Parallelisierung/Einzelne Ameisen
-von einfachen bis schwierigen Problemen
-evtl. grafische Darstellung
-
-Auswertung - hier definitiv grafische Darstellung
-Vergleich mit Optimallösung
-
-Zusammenfassung/Fazit/Ausblick
-
-Quellen/Anhänge
 
