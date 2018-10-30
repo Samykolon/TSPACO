@@ -11,7 +11,7 @@ class XMLData {
 
 public:
 
-	XMLData(string _path, int _numberofcities);
+	XMLData(string _path);
 
 	vector<vector<double>> const &getPheromoneMatrix() const;
 	vector<vector<double>> const &getDistanceMatrix() const;

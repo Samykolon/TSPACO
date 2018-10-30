@@ -1,19 +1,50 @@
 #include "XMLData.h"
+#include <regex>
+#include <string>
+#include <iostream>
 
-XMLData::XMLData(string _path, int _numberofcities)
+
+XMLData::XMLData(string _path)
 {
-	numberofcities = _numberofcities;
-	
-	cities.reserve(_numberofcities);
-	for (int k = 0; k < _numberofcities; k++)
+	string nbline;
+	ifstream nbin(_path);
+	while (getline(nbin, nbline)) {
+		std::string nbtmp;
+
+		for (int i = 0; i < nbline.length(); i++)
+		{
+			if (nbline[i] == ' ' && nbtmp.size() == 0)
+			{
+			}
+			else
+			{
+				nbtmp += nbline[i];
+			}
+		}
+
+		if (nbtmp.find("name") != std::string::npos) {
+			string strNumber = nbtmp;
+			std::size_t const n = strNumber.find_first_of("0123456789");
+			if (n != std::string::npos)
+			{
+				std::size_t const m = strNumber.find_first_not_of("0123456789", n);
+				strNumber = strNumber.substr(n, m != std::string::npos ? m - n : m);
+			}
+
+			numberofcities = stoi(strNumber);
+		}
+	}
+
+	cities.reserve(numberofcities);
+	for (int k = 0; k < numberofcities; k++)
 		cities.push_back(City(to_string(k), 0.0, 0.0));
 
 	srand(time(NULL) - _getpid());
 
 	double random, pheromonerandom;
 
-	pheromoneMatrix.assign(_numberofcities, vector<double>(_numberofcities, 0));
-	distanceMatrix.assign(_numberofcities, vector<double>(_numberofcities, 0));
+	pheromoneMatrix.assign(numberofcities, vector<double>(numberofcities, 0));
+	distanceMatrix.assign(numberofcities, vector<double>(numberofcities, 0));
 
 	for (int i = 0; i < numberofcities; i++) {
 		for (int j = 0; j < numberofcities; j++) {
@@ -56,7 +87,7 @@ XMLData::XMLData(string _path, int _numberofcities)
 			begindata = false;
 		}
 
-		if (begindata) {
+		if (begindata && numberofcities != 0) {
 			size_t pos = tmp.find("\"");
 			string doubletmp = tmp.substr(pos + 1, 21);
 			double d = stod(doubletmp);
@@ -64,10 +95,10 @@ XMLData::XMLData(string _path, int _numberofcities)
 				maincitycount++;
 			distanceMatrix[currentCity][maincitycount] = d;
 			maincitycount++;
-			if (maincitycount >= _numberofcities) {
+			if (maincitycount >= numberofcities) {
 				currentCity++;
 				maincitycount = 0;
-			}				
+			}
 		}
 	}
 }

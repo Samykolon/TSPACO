@@ -29,11 +29,11 @@ int numbercities = 14;
 
 
 
-void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, double Vpheromonedeposit, double Vpheromonereduction, double Valpha, double Vbeta, int Vreduce, int Valgorithm, int VprobAlgorithm, int Vnumberofcities) {
+void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, double Vpheromonedeposit, double Vpheromonereduction, double Valpha, double Vbeta, int Vreduce, int Valgorithm, int VprobAlgorithm) {
 
 	srand(time(NULL) - _getpid());
 
-	XMLData data1(Vpath, Vnumberofcities);
+	XMLData data1(Vpath);
 
 	if (data1.getCityCount() > 0) {
 
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
 	string strReduce = argv[9];
 	string strAlgorithm = argv[10];
 	string strProbabilityAlgorithm = argv[11];
-	string strNumberOfCities = argv[12];
+	
 
 	numberants = stoi(strAntNumber);
 	iterationsmax = stoi(strIteration);
@@ -120,11 +120,10 @@ int main(int argc, char *argv[]) {
 	pheromonedeposit = stod(strPheromoneDeposit);
 	pheromonereduction = stod(strPheromoneReduction);
 	alpha = stod(strAlpha);
-	beta = stod(strBeta);
-	numbercities = stoi(strNumberOfCities);
+	beta = stod(strBeta);	
 	probabilityalgorithm = stoi(strProbabilityAlgorithm);
 
-	ACO(filepath, numberants, iterationsmax, reduceValue, pheromonedeposit, pheromonereduction, alpha, beta, reduce, algorithm, probabilityalgorithm, numbercities);
+	ACO(filepath, numberants, iterationsmax, reduceValue, pheromonedeposit, pheromonereduction, alpha, beta, reduce, algorithm, probabilityalgorithm);
 	system("pause");
 	return 0;
 }
