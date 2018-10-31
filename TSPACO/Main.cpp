@@ -11,19 +11,19 @@ using namespace std::chrono;
 //#define ALGORITHM 1 // Entscheidet, ob die Lösung iterativ oder parallel gefunden werden soll : 0 = iterativ; 1 = parallel
 //#define PROBABILTYALGORITHM 0 // Entscheidet, welcher Algorithmus zur Berechnung der Wahrscheinlichkeit des nächsten Knotens verwendet werden soll: 0 = einfach; 1 = komplex
 
-int numberants = 500;
-int iterationsmax = 300;
-int algorithm = 1;
-int probabilityalgorithm = 0;
+int numberants = 3000;
+int iterationsmax = 700;
+int algorithm = 0;
+int probabilityalgorithm = 1;
 int reduce = 0;
 
 string filepath = "TSPLIB/burma14.xml";
 
 double reduceValue = 0.001;
-double pheromonedeposit = 40.0;
-double pheromonereduction = 0.15;
-double alpha = 0.8;
-double beta = 0.5;
+double pheromonedeposit = 2;
+double pheromonereduction = 0.13;
+double alpha = 0.7;
+double beta = 0.9;
 
 int numbercities = 14;
 
@@ -70,7 +70,7 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 					}
 					else {
 						ant->antParallelRoute(j);
-						if (j == data1.getCityCount() - 1)
+						if (j == (data1.getCityCount() - 1))
 							ant->backToStart();
 					}
 				}

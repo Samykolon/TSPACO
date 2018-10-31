@@ -80,7 +80,7 @@ void Ant::antRoute()
 	this->setProbability(nextCity);
 	this->setVisited(nextCity);
 	this->route.setCity(1, nextCity);
-	updatePheromone(this->getStartIndex(), nextCity, routedistance);
+	updatePheromone(this->getStartIndex(), nextCity, this->routedistance);
 
 	while (this->getVisitedCount() < datacitycount) {
 		tempCity = nextCity;
@@ -89,13 +89,13 @@ void Ant::antRoute()
 		this->setVisited(nextCity);
 		this->route.setCity(i, nextCity);
 		this->routedistance += this->data->distanceMatrix[tempCity][nextCity];
-		updatePheromone(tempCity, nextCity, routedistance);
+		updatePheromone(tempCity, nextCity, this->routedistance);
 		i++;
 	}
 
 	this->routedistance += this->data->distanceMatrix[nextCity][this->getStartIndex()];
-
-	//reducePheromone();
+	if(boolreduce == 1)
+		reducePheromone();
 	ShortestDistance(this->routedistance);
 	this->iterationsshortestpath++;
 }
@@ -110,15 +110,19 @@ void Ant::antParallelRoute(int currentCity)
 		this->setVisited(nextcity);
 		this->route.setCity(1, nextcity);
 		updatePheromone(this->getStartIndex(), nextcity, routedistance);
+		if (boolreduce == 1)
+			reducePheromone();
 	}
-	else if (currentCity > 0) {
+	else if (currentCity > 0 && currentCity < data->getCityCount() - 1) {
 		tempcity = nextcity;
 		nextcity = this->getNextCity(nextcity);
 		this->setProbability(nextcity);
 		this->setVisited(nextcity);
-		this->route.setCity(currentCity, nextcity);
+		this->route.setCity(currentCity+1, nextcity);
 		this->routedistance += this->data->distanceMatrix[tempcity][nextcity];
 		updatePheromone(tempcity, nextcity, routedistance);
+		if (boolreduce == 1)
+			reducePheromone();
 	}
 }
 

@@ -51,7 +51,7 @@ XMLData::XMLData(string _path)
 			if (pheromoneMatrix[j][i] == 0 && i != j) {
 				random = (rand() % 1000);
 				pheromonerandom = random / 1000 * PHEROMONEINIT;
-				pheromoneMatrix[i][j] = 0.1; // pheromonerandom;
+				pheromoneMatrix[i][j] = 0.01; //pheromonerandom;
 			}
 			else
 				pheromoneMatrix[i][j] = pheromoneMatrix[j][i];

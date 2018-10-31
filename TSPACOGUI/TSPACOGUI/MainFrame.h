@@ -501,7 +501,7 @@ private: System::Void bOpenXML_Click(System::Object^  sender, System::EventArgs^
 		strBeta = strBeta->Replace(",", ".");
 		String^ daadsdsa = "DD";
 
-		String^ parameters = tbLoadXML->Text + " " + tbNumberAnts->Text + " " + tbIteration->Text + " " + strReductionValue + " " + strPheromoneDeposit + " " + strPheromoneReduction + " " + strAlpha + " " + strBeta + " " + reduce.ToString() + " " + algorithm.ToString() + " " + probabilityalgorithm.ToString() + " " + numbercities.ToString();
+		String^ parameters = tbLoadXML->Text + " " + tbNumberAnts->Text + " " + tbIteration->Text + " " + strReductionValue + " " + strPheromoneDeposit + " " + strPheromoneReduction + " " + strAlpha + " " + strBeta + " " + reduce.ToString() + " " + algorithm.ToString() + " " + probabilityalgorithm.ToString();
 
 		ProcessStartInfo^ startInfo = gcnew ProcessStartInfo();
 		startInfo->FileName = "TSPACO.exe";
