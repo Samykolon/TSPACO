@@ -19,7 +19,7 @@
 \TUBAFStudiengang{Angewandte Informatik}
 \TUBAFVertiefung{Künstliche Intelligenz}
 \TUBAFMatrikel{59\,963}
-\TUBAFDatum[2017-09-26]{26. September 2017}
+\TUBAFDatum[2018-11-05]{05. November 2018}
 \begin{document}
 \maketitle
 \tableofcontents
@@ -74,9 +74,29 @@ Ist der Graph \(G\), der dieses Problem modelliert, ein ungerichteter Graph, so 
 \end{algorithmic}
 \end{algorithm}
 Ein weiterer bekannter heuristischer Algorithmus ist die \textit{Minimal-Spaaning-Tree-Heuristik, kurz MST}. Dabei wird zunächst ein minimaler Spannbaum $B$ für den Graphen $G$ ermittelt (\cite{Groetschel2005}). Zur Ermittlung dieses minimalen Spannbaumes stehen mehrere Algorithmen zur Verfügung (Algorithmus von Prim, Algorithmus von Kruskal, ...) (\cite{MST}). Danach wird jede Kante innerhalb des Spannbaumes verdoppelt; es entsteht eulersche Graph $G^\prime$. Nun wählt man einen beliebigen Startknoten und folgt den Kanten im Sinne einer Eulertour. Bereits besuchte Kanten werden dabei gestrichen und stattdessen die direkte Verbindung zwischen den jeweils verbleibenden Knoten gewählt. Das \textit{Verfahren von Christofides} baut auf diesem Algorithmus und erweitert diesen dadurch, dass der minimale Spannbaum nicht verdoppelt wird, sondern das minimale Matching von den Knoten in $B$ sucht, die einen ungeraden Grad haben. Nach der Dreiecksungleich gilt, dass die Summe der Längen zweier Seiten $a$ und $b$ stets mindestens so groß ist wie die Länge der dritten Seite (formal: $c \leq a + b$). Die MST-Heuristik ist deswegen höchstens doppelt so lang, die Christofides-Heuristik höchstens höchstens 1,5-mal so lang wie die optimale Lösung(\cite{Groetschel2005}).
-\subsubsection{TSPLib als Quelle für bekannte Probleme}
+\subsubsection{TSPLIB als Quelle für bekannte Probleme} \label{TSPLIB}
+Die in dieser Arbeit untersuchten Probleme stammen aus der TSPLIB der Universität Heidelberg. Bekannte Probleme wurden dort in ein einheitliches Datenformat gebracht und eignen sich deswegen gut zur Auswertung von Implementierungen des TSP. Vor allem die Existenz der Daten als XML-Datei (Extensible Markup-Language-File) vereinfacht die Anwendung der Lösungsalgorithmik auf viele verschiedene Probleme sehr einfach (\cite{TSPLIB}).
 \subsubsection{Möglichkeiten der Distanzberechnung}
-\subsubsection{Das Travelling-Salesman-Problem und der Ameisenalgorithmus}
+Um das TSP lösen zu können benötigt man Informationen über die Distanzen bzw. die Wegkosten zwischen den einzelnen Knoten. In der TSPLIB (\ref{TSPLIB}) sind dabei die Kantenwerte schon berechnet worden. Dieser Berechnung hängt vom Format der Positionsinformationen der einzelnen Knoten ab. Die zwei wichtigsten Distanzarten, die auch den Daten in dieser Arbeit zu grade liegen, sind die \textit{Euklidische Distanz} und die \textit{Geographische Distanz}. Die Euklidische Distanz (auch euklidischer Abstand) ist der triviale Abstand zwischen zwei Punkten den man auch durch Messung mit einem einfachem Längenmessgerät wie einem Lineal ermittelt (\cite{Distanz}). Die Distanz $d_{xy}$ der Punkte $x$ und $y$ in einer Ebene mit den Koordinaten $x = (x_1, x_2)$ und $y = (y_1, y_2)$ ergibt sich dabei aus folgender Formel:
+\begin{align}
+\label{eq:Euclid}
+d_{xy} = \left\| x - y \right\|_2 = \sqrt{{(y_1-x_1)}^2+{(y_2-x_2)}^2}
+\end{align}
+Die Ermittlung der geographischen Distanz ist dagegen etwas komplizierter. Dies hat die Ursache, dass die Koordinaten im Fall der Erde auf einer Kugel liegen. Betrachtet man die Erde als ideale Kugel mit einem Radius $r = 6378,388 \,km$ und liegen die Koordinaten in der Dezimalschreibweise vor, ergibt sich für die für zwei Städte $i$ und $j$ folgende Berechnung:
+\begin{algorithm}
+\caption{Geographische Distanz}
+\label{geodistance}
+\begin{algorithmic}[1]
+\State $r = 6378,388$
+\State $latitude_i = latitude_i \cdot \pi / 180; \,latitude_j = latitude_j \cdot \pi / 180$
+\State $longitude_i = longitude_i \cdot \pi / 180;\, longitude_j =longitude_j \cdot \pi / 180$
+\State $q_1 = cos(longitude_i - longitude_j)$
+\State $q_2 = cos(latitude_i - latitude_j)$
+\State $q_3 = cos(latitude_i + latitude_j)$
+\State \textbf{$d_{ij} = r * arccos(0,5 \cdot ((1 + q_1) \cdot q_2 - (1 - q_1) \cdot q_3)) + 1)$}
+\end{algorithmic}
+\end{algorithm}
+\subsection{Das Travelling-Salesman-Problem und der Ameisenalgorithmus}
 \section{Implementierung des Problems in C++}
 \subsection{Programmstruktur und Funktionsweise}
 \subsection{Vorgehensweise zur Untersuchung von verschiedenen Datensätzen mit verschiedenen Implementierungen}
