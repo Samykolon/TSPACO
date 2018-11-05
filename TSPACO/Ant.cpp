@@ -177,7 +177,7 @@ void Ant::ShortestDistance(double distance)
 {
 	if (this->shortestdistance > distance) {
 		this->shortestdistance = distance;
-		printRouteWithCity();
+		//printRouteWithCity();
 		this->iterationsshortestpath = 0;
 	}
 

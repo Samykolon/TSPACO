@@ -27,9 +27,11 @@ double beta = 0.9;
 
 int numbercities = 14;
 
+int csv = 0;
 
 
-void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, double Vpheromonedeposit, double Vpheromonereduction, double Valpha, double Vbeta, int Vreduce, int Valgorithm, int VprobAlgorithm) {
+
+void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, double Vpheromonedeposit, double Vpheromonereduction, double Valpha, double Vbeta, int Vreduce, int Valgorithm, int VprobAlgorithm, int Vcsv) {
 
 	srand(time(NULL) - _getpid());
 
@@ -56,8 +58,13 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 					ant->antRoute();
 				}
 			}
-
-			cout << "Algorithmus stopped at Ant Number: " << currentAntNumber << endl;
+			if (Vcsv == 0) {
+				cout << "Algorithmus stopped at Ant Number: " << currentAntNumber << endl;
+				antarmy[currentAntNumber - 2].printRouteWithCity();
+			}
+			else {
+				cout << currentAntNumber << ";" << antarmy[currentAntNumber - 2].getShortestDistance();
+			}
 
 		}
 		else if (Valgorithm == 1) {
@@ -85,10 +92,14 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 					shortestPathAntNumber = ant->getAntNumber();
 				}
 			}
-
-			cout << "Shortest Path was found by ant number: " << shortestPathAntNumber << endl;
-			cout << "Distance: " << shortestPath << endl;
-			antarmy[shortestPathAntNumber - 1].printOnlyRoute();
+			if (Vcsv == 0) {
+				cout << "Shortest Path was found by ant number: " << shortestPathAntNumber << endl;
+				cout << "Distance: " << shortestPath << endl;
+				antarmy[shortestPathAntNumber - 1].printOnlyRoute();
+			}
+			else {
+				cout << shortestPathAntNumber << ";" << shortestPath;
+			}
 
 
 		}
@@ -110,6 +121,7 @@ int main(int argc, char *argv[]) {
 	string strReduce = argv[9];
 	string strAlgorithm = argv[10];
 	string strProbabilityAlgorithm = argv[11];
+	string strCSV = argv[12];
 	
 
 	numberants = stoi(strAntNumber);
@@ -122,8 +134,9 @@ int main(int argc, char *argv[]) {
 	alpha = stod(strAlpha);
 	beta = stod(strBeta);	
 	probabilityalgorithm = stoi(strProbabilityAlgorithm);
+	csv = stoi(strCSV);
 
-	ACO(filepath, numberants, iterationsmax, reduceValue, pheromonedeposit, pheromonereduction, alpha, beta, reduce, algorithm, probabilityalgorithm);
-	system("pause");
+	ACO(filepath, numberants, iterationsmax, reduceValue, pheromonedeposit, pheromonereduction, alpha, beta, reduce, algorithm, probabilityalgorithm, csv);
+	//system("pause");
 	return 0;
 }

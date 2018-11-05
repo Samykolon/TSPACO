@@ -4,6 +4,7 @@
 #include <objbase.h>
 #include <string.h>
 #include <msclr\marshal_cppstd.h>
+#include <fstream>
 
 namespace TSPACOGUI {
 
@@ -83,6 +84,7 @@ namespace TSPACOGUI {
 	private: System::Windows::Forms::TextBox^  tbRuns;
 	private: System::Windows::Forms::Button^  bClear;
 	private: System::Windows::Forms::ProgressBar^  progressBar1;
+	private: System::Windows::Forms::CheckBox^  cbCSV;
 
 
 	private:
@@ -127,6 +129,7 @@ namespace TSPACOGUI {
 			this->tbRuns = (gcnew System::Windows::Forms::TextBox());
 			this->bClear = (gcnew System::Windows::Forms::Button());
 			this->progressBar1 = (gcnew System::Windows::Forms::ProgressBar());
+			this->cbCSV = (gcnew System::Windows::Forms::CheckBox());
 			this->gpSettings->SuspendLayout();
 			this->gpAlgorithm->SuspendLayout();
 			this->gpProbAlgorithm->SuspendLayout();
@@ -431,11 +434,23 @@ namespace TSPACOGUI {
 			this->progressBar1->Size = System::Drawing::Size(563, 23);
 			this->progressBar1->TabIndex = 26;
 			// 
+			// cbCSV
+			// 
+			this->cbCSV->AutoSize = true;
+			this->cbCSV->Location = System::Drawing::Point(467, 44);
+			this->cbCSV->Name = L"cbCSV";
+			this->cbCSV->Size = System::Drawing::Size(114, 17);
+			this->cbCSV->TabIndex = 27;
+			this->cbCSV->Text = L"Write into CSV File";
+			this->cbCSV->UseVisualStyleBackColor = true;
+			this->cbCSV->CheckedChanged += gcnew System::EventHandler(this, &MainFrame::cbCSV_CheckedChanged);
+			// 
 			// MainFrame
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(593, 730);
+			this->Controls->Add(this->cbCSV);
 			this->Controls->Add(this->progressBar1);
 			this->Controls->Add(this->bClear);
 			this->Controls->Add(this->tbRuns);
@@ -478,6 +493,7 @@ namespace TSPACOGUI {
 		double beta = 1.0;
 		int numbercities = 14;
 		String^ filename;
+		int csv = 0;
 
 
 
@@ -527,8 +543,6 @@ private: System::Void cbReduction_CheckedChanged(System::Object^  sender, System
 private: System::Void bOpenXML_Click(System::Object^  sender, System::EventArgs^  e) {
 
 	try {
-		StreamWriter^ OutputStream;
-
 		String^ strNumberAnts = tbNumberAnts->Text;
 		String^ strIterations = tbIteration->Text;
 		String^ strReductionValue = tbReduction->Text;
@@ -554,7 +568,10 @@ private: System::Void bOpenXML_Click(System::Object^  sender, System::EventArgs^
 
 			textBox1->Text += "PheromoneReduction = " + j.ToString() + "\r\n";*/
 
-			String^ parameters = tbLoadXML->Text + " " + tbNumberAnts->Text + " " + tbIteration->Text + " " + strReductionValue + " " + strPheromoneDeposit + " " + strPheromoneReduction + " " + strAlpha + " " + strBeta + " " + reduce.ToString() + " " + algorithm.ToString() + " " + probabilityalgorithm.ToString();
+			String^ parameters = tbLoadXML->Text + " " + tbNumberAnts->Text + " " + tbIteration->Text + " " + strReductionValue + " " + strPheromoneDeposit + " " + strPheromoneReduction + " " + strAlpha + " " + strBeta + " " + reduce.ToString() + " " + algorithm.ToString() + " " + probabilityalgorithm.ToString() + " " + csv.ToString();
+
+			std::ofstream file;
+			file.open("Data.csv");
 
 			for (int i = 1; i <= runs; i++) {
 				ProcessStartInfo^ startInfo = gcnew ProcessStartInfo();
@@ -572,13 +589,17 @@ private: System::Void bOpenXML_Click(System::Object^  sender, System::EventArgs^
 				String^ output = reader->ReadToEnd();
 
 				textBox1->Text += output;
+				if (csv == 1) {
+					std::string unmanaged = msclr::interop::marshal_as<std::string>(output);
+					file << unmanaged << endl;					
+				}
 
 				process->WaitForExit();
 				process->Close();
 				textBox1->Text += "\r\n";
 				progressBar1->Value += 100 / runs;
 			}
-
+			file.close();
 			progressBar1->Value = 0;
 
 			
@@ -787,6 +808,12 @@ private: System::Void tbRuns_Leave(System::Object^  sender, System::EventArgs^  
 }
 private: System::Void bClear_Click(System::Object^  sender, System::EventArgs^  e) {
 	textBox1->Text = "";
+}
+private: System::Void cbCSV_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
+	if (cbCSV->Checked == true)
+		csv = 1;
+	else
+		csv = 0;
 }
 };
 }
