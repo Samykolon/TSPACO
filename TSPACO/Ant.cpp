@@ -2,6 +2,7 @@
 
 double Ant::shortestdistance = 9999999.9;
 int Ant::iterationsshortestpath = 0;
+int Ant::ovAnt = 0;
 
 void Ant::printAnt()
 {
@@ -126,6 +127,46 @@ void Ant::antParallelRoute(int currentCity)
 	}
 }
 
+void Ant::ovRoute()
+{
+	this->route.setCity(0, this->getStartIndex());
+	int nextCity = this->getNextCity(this->getStartIndex());
+	this->routedistance += this->data->distanceMatrix[this->getStartIndex()][nextCity];
+	int tempCity;
+	int i = 2;
+	this->setProbability(nextCity);
+	this->setVisited(nextCity);
+	this->route.setCity(1, nextCity);	
+
+	while (this->getVisitedCount() < datacitycount) {
+		tempCity = nextCity;
+		nextCity = this->getNextCity(nextCity);
+		this->setProbability(nextCity);
+		this->setVisited(nextCity);
+		this->route.setCity(i, nextCity);
+		this->routedistance += this->data->distanceMatrix[tempCity][nextCity];		
+		i++;
+	}
+
+	this->routedistance += this->data->distanceMatrix[nextCity][this->getStartIndex()];
+	ovShortestDistance(this->routedistance);
+	
+}
+
+void Ant::ovUpdatePheromone()
+{
+	vector<int> ovr = this->route.get();
+	for (int i = 0; i < ovr.size() - 1; i++)
+		updatePheromone(ovr[i], ovr[i + 1], this->routedistance);
+}
+
+void Ant::reset()
+{
+	shortestdistance = 9999999.9;
+	iterationsshortestpath = 0;
+	ovAnt = 0;
+}
+
 void Ant::backToStart()
 {
 	this->routedistance += this->data->distanceMatrix[nextcity][this->getStartIndex()];	
@@ -181,4 +222,12 @@ void Ant::ShortestDistance(double distance)
 		this->iterationsshortestpath = 0;
 	}
 
+}
+
+void Ant::ovShortestDistance(double distance)
+{
+	if (this->shortestdistance > distance) {
+		this->shortestdistance = distance;
+		ovAnt = this->antnumber;		
+	}
 }

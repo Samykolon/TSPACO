@@ -37,6 +37,7 @@ namespace TSPACOGUI {
 			tbPheromoneReduction->Text = pheromonereduction.ToString();
 			tbReduction->Text = reducevalue.ToString();
 			tbIteration->Text = iterationsmax.ToString();
+			tbOV->Text = ovit.ToString();
 			bOpenXML->Enabled = false;
 		}
 
@@ -85,6 +86,10 @@ namespace TSPACOGUI {
 	private: System::Windows::Forms::Button^  bClear;
 	private: System::Windows::Forms::ProgressBar^  progressBar1;
 	private: System::Windows::Forms::CheckBox^  cbCSV;
+	private: System::Windows::Forms::TextBox^  tbOV;
+	private: System::Windows::Forms::Label^  lOV;
+	private: System::Windows::Forms::RadioButton^  rbOV;
+
 
 
 	private:
@@ -122,6 +127,9 @@ namespace TSPACOGUI {
 			this->rbIterative = (gcnew System::Windows::Forms::RadioButton());
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->gpAlgorithm = (gcnew System::Windows::Forms::GroupBox());
+			this->tbOV = (gcnew System::Windows::Forms::TextBox());
+			this->lOV = (gcnew System::Windows::Forms::Label());
+			this->rbOV = (gcnew System::Windows::Forms::RadioButton());
 			this->gpProbAlgorithm = (gcnew System::Windows::Forms::GroupBox());
 			this->rbProbKomplex = (gcnew System::Windows::Forms::RadioButton());
 			this->rbProbSimple = (gcnew System::Windows::Forms::RadioButton());
@@ -305,16 +313,16 @@ namespace TSPACOGUI {
 			// 
 			// tbIteration
 			// 
-			this->tbIteration->Location = System::Drawing::Point(268, 56);
+			this->tbIteration->Location = System::Drawing::Point(94, 56);
 			this->tbIteration->Name = L"tbIteration";
-			this->tbIteration->Size = System::Drawing::Size(135, 20);
+			this->tbIteration->Size = System::Drawing::Size(100, 20);
 			this->tbIteration->TabIndex = 20;
 			this->tbIteration->Leave += gcnew System::EventHandler(this, &MainFrame::tbIteration_Leave);
 			// 
 			// lIteration
 			// 
 			this->lIteration->AutoSize = true;
-			this->lIteration->Location = System::Drawing::Point(151, 59);
+			this->lIteration->Location = System::Drawing::Point(24, 59);
 			this->lIteration->Name = L"lIteration";
 			this->lIteration->Size = System::Drawing::Size(53, 13);
 			this->lIteration->TabIndex = 19;
@@ -323,7 +331,7 @@ namespace TSPACOGUI {
 			// rbParallel
 			// 
 			this->rbParallel->AutoSize = true;
-			this->rbParallel->Location = System::Drawing::Point(344, 30);
+			this->rbParallel->Location = System::Drawing::Point(246, 30);
 			this->rbParallel->Name = L"rbParallel";
 			this->rbParallel->Size = System::Drawing::Size(59, 17);
 			this->rbParallel->TabIndex = 18;
@@ -334,7 +342,7 @@ namespace TSPACOGUI {
 			// 
 			this->rbIterative->AutoSize = true;
 			this->rbIterative->Checked = true;
-			this->rbIterative->Location = System::Drawing::Point(154, 30);
+			this->rbIterative->Location = System::Drawing::Point(69, 30);
 			this->rbIterative->Name = L"rbIterative";
 			this->rbIterative->Size = System::Drawing::Size(63, 17);
 			this->rbIterative->TabIndex = 17;
@@ -355,6 +363,9 @@ namespace TSPACOGUI {
 			// 
 			// gpAlgorithm
 			// 
+			this->gpAlgorithm->Controls->Add(this->tbOV);
+			this->gpAlgorithm->Controls->Add(this->lOV);
+			this->gpAlgorithm->Controls->Add(this->rbOV);
 			this->gpAlgorithm->Controls->Add(this->tbIteration);
 			this->gpAlgorithm->Controls->Add(this->rbIterative);
 			this->gpAlgorithm->Controls->Add(this->rbParallel);
@@ -365,6 +376,34 @@ namespace TSPACOGUI {
 			this->gpAlgorithm->TabIndex = 22;
 			this->gpAlgorithm->TabStop = false;
 			this->gpAlgorithm->Text = L"Switch Algorithm";
+			// 
+			// tbOV
+			// 
+			this->tbOV->Location = System::Drawing::Point(420, 56);
+			this->tbOV->Name = L"tbOV";
+			this->tbOV->Size = System::Drawing::Size(100, 20);
+			this->tbOV->TabIndex = 23;
+			this->tbOV->Leave += gcnew System::EventHandler(this, &MainFrame::tbOV_Leave);
+			// 
+			// lOV
+			// 
+			this->lOV->AutoSize = true;
+			this->lOV->Location = System::Drawing::Point(350, 59);
+			this->lOV->Name = L"lOV";
+			this->lOV->Size = System::Drawing::Size(53, 13);
+			this->lOV->TabIndex = 22;
+			this->lOV->Text = L"Iterations:";
+			// 
+			// rbOV
+			// 
+			this->rbOV->AutoSize = true;
+			this->rbOV->Location = System::Drawing::Point(410, 30);
+			this->rbOV->Name = L"rbOV";
+			this->rbOV->Size = System::Drawing::Size(57, 17);
+			this->rbOV->TabIndex = 21;
+			this->rbOV->TabStop = true;
+			this->rbOV->Text = L"MMAS";
+			this->rbOV->UseVisualStyleBackColor = true;
 			// 
 			// gpProbAlgorithm
 			// 
@@ -494,6 +533,7 @@ namespace TSPACOGUI {
 		int numbercities = 14;
 		String^ filename;
 		int csv = 0;
+		int ovit = 20;
 
 
 
@@ -520,12 +560,20 @@ namespace TSPACOGUI {
 	private: System::Void rbIterative_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
 		if (rbIterative->Checked == true) {
 			tbIteration->Enabled = true;
+			tbOV->Enabled = false;
 			algorithm = 0;
 		}
-		else if (rbIterative->Checked == false) {
+		else if (rbParallel->Checked == true) {
 			tbIteration->Enabled = false;
+			tbOV->Enabled = false;
 			algorithm = 1;
 		}
+		else if (rbOV->Checked == true) {
+			tbIteration->Enabled = false;
+			tbOV->Enabled = true;
+			algorithm = 2;
+		}
+		
 	}
 
 private: System::Void cbReduction_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
@@ -555,6 +603,7 @@ private: System::Void bOpenXML_Click(System::Object^  sender, System::EventArgs^
 		String^ strProbabilityAlgorithm = probabilityalgorithm.ToString();
 		String^ strNumberCities = numbercities.ToString();
 		String^ strRuns = tbRuns->Text;
+		String^ strOV = tbOV->Text;
 
 
 		strReductionValue = strReductionValue->Replace(",", ".");
@@ -568,10 +617,36 @@ private: System::Void bOpenXML_Click(System::Object^  sender, System::EventArgs^
 
 			textBox1->Text += "PheromoneReduction = " + j.ToString() + "\r\n";*/
 
-			String^ parameters = tbLoadXML->Text + " " + tbNumberAnts->Text + " " + tbIteration->Text + " " + strReductionValue + " " + strPheromoneDeposit + " " + strPheromoneReduction + " " + strAlpha + " " + strBeta + " " + reduce.ToString() + " " + algorithm.ToString() + " " + probabilityalgorithm.ToString() + " " + csv.ToString();
+		String^ parameters = tbLoadXML->Text + " " + tbNumberAnts->Text + " " + tbIteration->Text + " " + strReductionValue + " " + strPheromoneDeposit + " " + strPheromoneReduction + " " + strAlpha + " " + strBeta + " " + reduce.ToString() + " " + algorithm.ToString() + " " + probabilityalgorithm.ToString() + " " + csv.ToString() + " " + tbOV->Text;
 
 			std::ofstream file;
 			file.open("Data.csv");
+			if (csv == 1) {
+				if (algorithm == 0)
+					file << "Algorithm:;Iterativ" << endl;
+				else if (algorithm == 1)
+					file << "Algorithm:;Parallel" << endl;
+				else
+					file << "Algorithm:;MMAS-Adaption" << endl;
+				file << "Number of Ants:;" << msclr::interop::marshal_as<std::string>(strNumberAnts) << endl;
+				if (algorithm == 0)
+					file << "Iterations:;" << msclr::interop::marshal_as<std::string>(strIterations) << endl;
+				else if (algorithm == 1)
+					;
+				else
+					file << "Iterations:;" << msclr::interop::marshal_as<std::string>(strOV) << endl;
+				if (reduce == 1)
+					file << "Overall Reductionvalue:;" << msclr::interop::marshal_as<std::string>(strReductionValue) << endl;
+				file << "Pheromonedeposit:;" << msclr::interop::marshal_as<std::string>(strPheromoneDeposit) << endl;
+				file << "Pheromonereduction:;" << msclr::interop::marshal_as<std::string>(strPheromoneReduction) << endl;
+				file << "Alpha:;" << msclr::interop::marshal_as<std::string>(strAlpha) << endl;
+				file << "Beta:;" << msclr::interop::marshal_as<std::string>(strBeta) << endl;
+				if (probabilityalgorithm == 0)
+					file << "ProbabilityAlgorithm:;Simple" << endl;
+				else
+					file << "ProbabilityAlgorithm:;Komplex" << endl << endl;
+				file << "Runs:;" << msclr::interop::marshal_as<std::string>(strRuns) << endl;
+			}
 
 			for (int i = 1; i <= runs; i++) {
 				ProcessStartInfo^ startInfo = gcnew ProcessStartInfo();
@@ -589,9 +664,8 @@ private: System::Void bOpenXML_Click(System::Object^  sender, System::EventArgs^
 				String^ output = reader->ReadToEnd();
 
 				textBox1->Text += output;
-				if (csv == 1) {
-					std::string unmanaged = msclr::interop::marshal_as<std::string>(output);
-					file << unmanaged << endl;					
+				if (csv == 1) {					
+					file << msclr::interop::marshal_as<std::string>(output) << endl;
 				}
 
 				process->WaitForExit();
@@ -814,6 +888,29 @@ private: System::Void cbCSV_CheckedChanged(System::Object^  sender, System::Even
 		csv = 1;
 	else
 		csv = 0;
+}
+private: System::Void tbOV_Leave(System::Object^  sender, System::EventArgs^  e) {
+	int na;
+
+	try {
+		na = Convert::ToInt32(tbOV->Text);
+		if (na <= 0 || na > 2000) {
+			bOpenXML->Enabled = false;
+			MessageBox::Show("Ant-Number has to be between 1 and 2000");
+			this->tbOV->BackColor = System::Drawing::Color::Salmon;
+
+		}
+		else {
+			bOpenXML->Enabled = true;
+			this->tbOV->BackColor = System::Drawing::SystemColors::Window;
+		}
+
+	}
+	catch (Exception^ ex) {
+		bOpenXML->Enabled = false;
+		MessageBox::Show("Invalid Input!");
+		this->tbOV->BackColor = System::Drawing::Color::Salmon;
+	}
 }
 };
 }

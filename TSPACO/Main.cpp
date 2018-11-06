@@ -13,6 +13,7 @@ using namespace std::chrono;
 
 int numberants = 3000;
 int iterationsmax = 700;
+int overalliterations = 20;
 int algorithm = 0;
 int probabilityalgorithm = 1;
 int reduce = 0;
@@ -31,7 +32,7 @@ int csv = 0;
 
 
 
-void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, double Vpheromonedeposit, double Vpheromonereduction, double Valpha, double Vbeta, int Vreduce, int Valgorithm, int VprobAlgorithm, int Vcsv) {
+void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, double Vpheromonedeposit, double Vpheromonereduction, double Valpha, double Vbeta, int Vreduce, int Valgorithm, int VprobAlgorithm, int Vcsv, int VoverallIterions) {
 
 	srand(time(NULL) - _getpid());
 
@@ -39,17 +40,17 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 
 	if (data1.getCityCount() > 0) {
 
-		vector<Ant> antarmy;
-		antarmy.reserve(Vnumberants);
-		for (int i = 0; i < Vnumberants; ++i)
-		{
-			antarmy.push_back(Ant(data1, Vreductionvalue, Vpheromonedeposit, Vpheromonereduction, Valpha, Vbeta, Vreduce, VprobAlgorithm));
-		}
-
 		int currentAntNumber = 1;
 
 
 		if (Valgorithm == 0) {
+
+			vector<Ant> antarmy;
+			antarmy.reserve(Vnumberants);
+			for (int i = 0; i < Vnumberants; ++i)
+			{
+				antarmy.push_back(Ant(data1, Vreductionvalue, Vpheromonedeposit, Vpheromonereduction, Valpha, Vbeta, Vreduce, VprobAlgorithm));
+			}
 
 			for (auto ant = antarmy.begin(); ant != antarmy.end(); ++ant) {
 				if (ant->getIterations() < Viteration) {
@@ -68,6 +69,14 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 
 		}
 		else if (Valgorithm == 1) {
+
+			vector<Ant> antarmy;
+			antarmy.reserve(Vnumberants);
+			for (int i = 0; i < Vnumberants; ++i)
+			{
+				antarmy.push_back(Ant(data1, Vreductionvalue, Vpheromonedeposit, Vpheromonereduction, Valpha, Vbeta, Vreduce, VprobAlgorithm));
+			}
+
 			for (int j = 0; j < data1.getCityCount(); j++) {
 				for (auto ant = antarmy.begin(); ant != antarmy.end(); ++ant) {
 					if (j == 0) {
@@ -103,6 +112,43 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 
 
 		}
+		else if (Valgorithm == 2) {
+			for (int k = 1; k <= VoverallIterions; k++) {
+
+				vector<Ant> antarmy;
+				antarmy.reserve(Vnumberants);
+				for (int i = 0; i < Vnumberants; ++i)
+				{
+					antarmy.push_back(Ant(data1, Vreductionvalue, Vpheromonedeposit, Vpheromonereduction, Valpha, Vbeta, Vreduce, VprobAlgorithm));
+				}
+
+				for (auto ant = antarmy.begin(); ant != antarmy.end(); ++ant) {
+					ant->setNumber(currentAntNumber);
+					currentAntNumber++;
+					ant->ovRoute();
+				}
+
+				currentAntNumber = 1;
+
+				int ovAnt = antarmy[0].getOvAnt();
+				antarmy[ovAnt - 1].ovUpdatePheromone();
+
+				if (Vcsv == 0) {
+					cout << "Shortest Path was found by ant number: " << ovAnt << endl;
+					cout << "Distance: " << antarmy[ovAnt - 1].getRouteDistance() << endl;
+					antarmy[ovAnt - 1].printOnlyRoute();
+					data1.printPheromoneMatrix();
+				}
+				else {
+					cout << ovAnt << ";" << antarmy[ovAnt - 1].getRouteDistance() << endl;
+				}
+
+				antarmy[0].reset();
+				antarmy.clear();
+
+			}
+
+		}
 		else
 			cout << "Invalid Algorithm-Number Input" << endl;
 	}
@@ -122,6 +168,7 @@ int main(int argc, char *argv[]) {
 	string strAlgorithm = argv[10];
 	string strProbabilityAlgorithm = argv[11];
 	string strCSV = argv[12];
+	string strOverallIterations = argv[13];
 	
 
 	numberants = stoi(strAntNumber);
@@ -135,8 +182,9 @@ int main(int argc, char *argv[]) {
 	beta = stod(strBeta);	
 	probabilityalgorithm = stoi(strProbabilityAlgorithm);
 	csv = stoi(strCSV);
+	overalliterations = stoi(strOverallIterations);
 
-	ACO(filepath, numberants, iterationsmax, reduceValue, pheromonedeposit, pheromonereduction, alpha, beta, reduce, algorithm, probabilityalgorithm, csv);
+	ACO(filepath, numberants, iterationsmax, reduceValue, pheromonedeposit, pheromonereduction, alpha, beta, reduce, algorithm, probabilityalgorithm, csv, overalliterations);
 	//system("pause");
 	return 0;
 }
