@@ -7,6 +7,7 @@
 \usepackage{algorithm}
 \usepackage{algorithmicx}
 \usepackage[noend]{algpseudocode}
+\newcommand*\rfrac[2]{{}^{#1}\!/_{#2}}
 \captionsetup{compatibility=false}
 \bibliographystyle{unsrt}
 \TUBAFFakultaet{Fakultät für Mathematik und Informatik}
@@ -97,6 +98,34 @@ Die Ermittlung der geographischen Distanz ist dagegen etwas komplizierter. Dies 
 \end{algorithmic}
 \end{algorithm}
 \subsection{Das Travelling-Salesman-Problem und der Ameisenalgorithmus}
+Betrachtet man den Ameisenalgorithmus bzw. das Ant Colony Optimization Problem - so ähnelt dies dem TSP sehr stark. Dies war auch der Grund, warum der Ameisenalgorithmus zuerst als Lösung für das TSP zur Anwendung kam.
+\\Es bietet sich an, dass TSP hierzu als Graphenproblem zu modellieren (\cite{MaxMin}):
+Hat mein ein TSP mit $n$ Städten, so benötig man neben einer $n\times n$-Matrix $D$ mit den verschiedenen Distanzen zwischen den Knoten auch einer $n\times n$-Matrix $T$ mit den verschiedenen Pheromonkonzentrationen. Dabei ist das Element $\tau_{ij}$ die Pheromonkonzentration auf der Kante zwischen Knoten $i$ und $j$, analog ist die Distanz $d_{ij}$ die Distanz zwischen den Knoten $i$ und $j$. Ist das verwendete TSP symmetrisch, dann ist auch die Pheromonspur symmetrisch; das heißt: $\tau_{ij} = \tau_{ji}$.
+Abstrakt gesehen werden dann zunächst alle $m$ Ameisen einer Menge $M$ auf verschiedene zufällig gewählte Knoten gesetzt. Danach bewegt sich jede Ameise $m_k$ in jedem darauffolgenden Iterationsschritt zu einem weiteren Knoten, falls sie diesen vorher noch nicht besucht hat und insgesamt nicht alle Knoten schon besucht wurden. Der Entscheidung, welcher Knoten als nächstes besucht wird, liegen gewisse Regeln zugrunde. Zum einen hat die Pheromonkonzentration der jeweiligen Kanten zu den anderen Knoten Einfluss auf die Entscheidung, zum anderen die heuristische Information $\eta_{ij}$. Die heuristische Information ergibt sich dabei aus der Distanz:
+\begin{align}
+\label{eq:Heuristic}
+\eta_{ij} = \rfrac{1}{d_{ij}}
+\end{align}
+Bei der Wahl des nächsten Knotens bevorzugen die Ameisen solche Knoten, die relativ nah gelegen sind und die durch eine Kante mit hoher Pheromonkonzentration verbunden sind.
+Die Wahrscheinlichkeit, mit der eine Ameise $k \in M$ ausgehend von eines Knotens $i$ den nächsten Knoten $j$ besucht, kann durch folgende Gleichung ausgedrückt werden:
+\begin{align}
+\label{eq:Prob}
+p^k_{ij} = \frac{[\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta}{\sum\nolimits_{l\in N^k_i} [\tau_{il}]^\alpha \, [\eta_{il}]^\beta} \; \; \text{if}\: j \in N^k_i
+\end{align}
+Dabei sind $\alpha$ und $\beta$ Parameter, die im Fall von $\alpha$ die Wichtigkeit der Pheromonkonzentration und im Fall von $\beta$ die Wichtigkeit der Distanzinformationen zur Entscheidungsfindung angeben. $N^k_i$ ist die Menge der erreichbaren Knoten der Ameise $m_k$, wobei diese Menge die Menge der unbesuchten Knoten darstellt. Jede Ameise merkt sich zudem die Reihenfolge der besuchten Knoten in einer Liste. Falls eine Ameise $m_k$ alle Knoten $n$ besucht hat, kehrt sie zu ihrem Anfangsknoten zurück und beendet ihre Tour. Anhand der Liste mit den besuchten Knoten lässt sich nun ein valider Hamiltonkreis ableiten. Außerdem ist diese Liste notwendig, um die Pheromonkonzentration der benutzten Kanten zu aktualisieren.
+\\Für ein Pheromonupdate gibt es verschiedene Möglichkeiten, die für 2. bis 4. im Rahmen dieser Bachelorarbeit auch umgesetzt wurden: 
+\begin{enumerate}
+\item Aktualisierung des Pheromonlevels nachdem alle Ameisen ihre Tour beendet haben
+\item Aktualisierung des Pheromonlevels iterativ nach der erfolgreichen Tourkonstruktion jeder einzelnen Ameise $m_k$
+\item Aktualisierung des Pheromonlevels für alle Ameisen $m \in M$ parallel, nachdem der jeweils nächste Knoten erreicht wurde
+\item Aktualisierung des Pheromonlevels nur durch die Ameise, welche nach Beendigung der Tour den kürzesten Weg gefunden hat
+\end{enumerate}
+Die Berechnung der neuen Pheromonkonzentration auf einer Kante $\tau_{ij}$ zum Zeitpunkt $t + 1$ ist für alle Varianten gleich und berechnet sich wie folgt:
+\begin{align}
+\label{eq:Pheromone}
+\tau_{ij}(t+1) = \rho \, \tau_{ij}(t) + \sum_{k=1}^m \Delta \tau^k_{ij}(t)
+\end{align}
+$\Delta \tau^k_{ij}(t)$ stellt dabei die Menge an Pheromon dar, die eine Ameise $k$ auf der jeweilige Kante $\{i,j\}$ ablegt. $1-\rho$ ist die verfliegende Menge an Pheromon. Dieser Verdunstungsmechanismus, der durch den Parameter $\rho$ gegeben ist, hilft dabei, ungünstige Kanten mit der Zeit zu \glqq vergessen\grqq. 
 \section{Implementierung des Problems in C++}
 \subsection{Programmstruktur und Funktionsweise}
 \subsection{Vorgehensweise zur Untersuchung von verschiedenen Datensätzen mit verschiedenen Implementierungen}
