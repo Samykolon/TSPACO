@@ -154,19 +154,86 @@ Jede Ameise merkt sich zudem die Reihenfolge der besuchten Knoten in einer Liste
 \\Außerdem ist diese Liste notwendig, um die Pheromonkonzentration der benutzten Kanten zu aktualisieren.
 \\Für ein Pheromonupdate gibt es verschiedene Möglichkeiten, die für 2., 3. und 4. im Rahmen dieser Bachelorarbeit auch umgesetzt wurden: 
 \begin{enumerate}
+\label{enum:Update}
 \item Aktualisierung der Pheromonkonzentration nachdem alle Ameisen $m \in M$ ihre Tour beendet haben
 \item Aktualisierung der Pheromonkonzentration iterativ nach der erfolgreichen Tourkonstruktion jeder einzelnen Ameise $m_k$
-\item Aktualisierung der Pheromonkonzentration für alle Ameisen $m \in M$ parallel, nachdem der jeweils nächste Knoten erreicht wurde
 \item Aktualisierung der Pheromonkonzentration nur durch die Ameise $m_k$, welche nach Beendigung der Tour die kürzeste Tour gefunden hat
+\item Aktualisierung der Pheromonkonzentration für alle Ameisen $m \in M$ parallel, nachdem der jeweils nächste Knoten erreicht wurde
 \end{enumerate}
 Die Berechnung der neuen Pheromonkonzentration $\tau_{ij}$ zum Zeitpunkt $t + 1$ ist für alle Varianten gleich. Eine wichtige Variable, die hierauf Einfluss hat, ist zum einen $\Delta \tau^k_{ij}(t)$. Diese stellt dabei die Menge an Pheromon dar, die eine Ameise $k$ auf der jeweilige Kante $\{i,j\}$ ablegt. Zum anderen ist das der Parameter $\rho$, der für $1-\rho$ die verdunstende Menge an Pheromon angibt. Dieser Verdunstungsmechanismus hilft über die Zeiten ungünstige Kanten zu \glqq vergessen\grqq. Letztendlich berechnet sich die neue Pheromonkonzentration wie folgt:
 \begin{align}
 \label{eq:Pheromone}
 \tau_{ij}(t+1) = \rho \, \tau_{ij}(t) + \sum_{k=1}^m \Delta \tau^k_{ij}(t)
 \end{align}
-\section{Implementierung des Problems in C$++$}
+\section{Implementierung des Problems in C++}
 \subsection{Programmstruktur und Funktionsweise}
-Das Programm lässt sich grob gesehen in zwei Komponenten aufteilen - zum einen in eine normale $C++$ Anwendung auf Konsolenbasis, welche den Algorithmus an sich ausführt. Die andere Kompononente ist ein in $C++/CLI$ umgesetzte einfache GUI. Wesentlich für das Verständnis der Implementierung ist insgesamt lediglich die Programmstruktur  und der Code der nativen $C++$-Konsolenanwendung.
+Das Programm lässt sich grob gesehen in zwei Komponenten aufteilen - zum einen in eine $C++$ Anwendung auf Konsolenbasis, welche den Algorithmus an sich ausführt. Die andere Kompononente ist ein in $C++/CLI$ umgesetzte einfache GUI. Wesentlich für das Verständnis der Implementierung ist lediglich die Programmstruktur und der Code der nativen $C++$-Konsolenanwendung. 
+\begin{figure}
+\captionsetup{justification=centering}
+  \centering
+     \includegraphics[width=0.9\textwidth]{images/classdiagram.png}
+  \caption{Klassendiagramm zur Umsetzung des C++-Algorithmus mit den wesentlichen Attributen und Methoden}
+  \label{img:classdiagram}
+\end{figure}
+\\\\Wie auch in Abbildung \ref{img:classdiagram} ersichtlich ist, besteht das Programm aus vier verschiedenen Klassen. Von grundlegender Bedeutung ist hierbei die Klasse \texttt{Ant}. Diese stellt die einzelnen Ameisen mit allen wichtigen Parametern und Methoden zur Wegfindung und Routenfindung dar. Jedes dieser \texttt{Ant}-Objekte greift auf eine gemeinsames Datenelement \texttt{XMLData} zu, in welchem die Daten der Städte sowie die Kosten- und Pheromonwerte zwischen den einzelnen Städten gespeichert sind. Beim Ausführen des Programms wird dieses Datenelement angelegt und initialisiert. Hierfür wird dem Konstruktor der Dateipfad zu einer Probleminstanz aus der TSPLIB (siehe Abschnitt \ref{TSPLIB}) übergeben und die dort enthaltenen Daten ausgelesen. Die Daten der Städte werden in einen Container aus \texttt{City}-Objekten gespeichert. Ein solches \texttt{City}-Objekt besteht aus dem Namen der Stadt und den Koordinaten und liefert gleichzeitig die Methode \texttt{measureDistance} zur Berechnung der Distanz zwischen zwei Städten. Im Falle der TSPLIB ist die Distanzberechnung aber überflüssig, da die Distanzwerte in der XML-Datei enthalten sind. Bei Anlage eines \texttt{XMLData}-Objekts werden diese Distanzwerte in einer Distanzmatrix abgespeichert sowie eine Matrix für die Pheromonwerte initialisiert. 
+\\Desweiteren besitzt die Klasse \texttt{Ant} ein Memberobjekt der Klasse \texttt{Route}, in der die Abfolge der besuchten Städte gespeichert wird. 
+\\\\Beim Start des Programms ein dynamischer Container vom Typ \texttt{vector<Ant>} angelegt, in dem sich alle \texttt{Ant}-Objekte befinden. Die weitere Arbeitsweise des Programms hängt nun von dem ausgewählten Algorithmus ab. Wie schon im obigen Abschnitt \ref{enum:Update} vorgestellt, unterscheiden sich die verschiedenen Algorithmen durch die Art und Weise der Aktualisierung der Pheromonkonzentration auf den einzelnen Kanten.
+\\\\Bei der ersten implementierten Methode wird die Pheromonaktualisierung iterativ nach jeder erfolgreichen Tourkonstruktion einer Ameise vorgenommen. Der Algorithmus endet dann, wenn alle Ameisen ihre Tour beendet haben oder wenn nach einer bestimmten Anzahl von Iterationen keine kürzere Route mehr gefunden wurde.
+\begin{algorithm}
+\caption{Iterative Tourkonstruktion}
+\label{IterativeTour}
+\textbf{Eingabe:} Datenobjekt mit $v$ Städten sowie einer Distanzmatrix $D$ und Pheromonmatrix $S$, \texttt{vector} $M$ mit $m$ Ameisen, Iterationsschwelle $n$
+\\\textbf{Ausgabe:} Route $r$ mit der kürzesten gefunden Distanz $d_s$
+\begin{algorithmic}[1]
+\State $i := 1$ (derzeitige Iteration nachdem das letzte Mal eine kürzere Route gefunden wurde)
+\State $d_s := \infty$ (kürzeste gefunden Routenlänge)
+\For{\textbf{each} Ameise $m_i \in M$}
+\If {$i \leq n$}
+\State $b_m := 1$ (Anzahl der besuchten Städte)
+\State $d_m := 0$ (Routenlänge der Ameise $m_i$)
+\State Starte in einer zufälligen Stadt $v_0$
+\While{$b \neq v$}
+\State Ermittle die nächste Stadt $v_i$ und gehe dorthin
+\State $r_{m_i} := v_i$
+\State $d_m := d_m + D_{i-1,i}$
+\State $b_m := b_m + 1$
+\EndWhile
+\If{$d_m \leq d_s$}
+\State $d_s := d_m$
+\State $i := 1$
+\EndIf
+\State Aktualisiere Pheromonmatrix $S$
+\State $i := i + 1$
+\EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+\\Die zweite implementierte Methode ist der ersten sehr ähnlich. Auch hier konstruieren alle Ameisen nacheinander ihre Tour. Jedoch wird die Pheromonmatrix nur durch die Ameise aktualisiert, welche die kürzeste Route gefunden hat. Diese Vorgehensweise basiert auf dem \textit{Max-Min-Ant-System} von Thomas Stüzle und Holger H. Hoos \cite{MaxMin}. Die iterative Tourkonstruktion erfolgt bei diesem Algorithmus notwendigerweise mehrmals. 
+\\Bei der dritten in dieser Arbeit betrachteteten Methode konstruieren die Ameisen ihre Route parallel. Nach jeder erreichten Stadt wird die Pheromonkonzentration der letzten bereisten Kante aktualisiert. Wenn jede Ameise jede Stadt einmal besucht hat, endet der Algorithmus. Die kürzeste Route ergibt sich nun durch den Vergleich der Routenlänge aller Ameisen.
+\begin{algorithm}
+\caption{Parallele Tourkonstruktion}
+\label{ParallelTour}
+\textbf{Eingabe:} Datenobjekt mit $v$ Städten sowie einer Distanzmatrix $D$ und Pheromonmatrix $S$, \texttt{vector} $M$ mit $m$ Ameisen
+\\\textbf{Ausgabe:} Route $r$ mit der kürzesten gefunden Distanz $d_s$
+\begin{algorithmic}[1]
+\State $j := 0$
+\While{$j < v$}
+\For{\textbf{each} Ameise $m_i \in M$}
+\State Ermittle die nächste Stadt $v_i$ und gehe dorthin
+\State $r_{m_i} := v_i$
+\State $d_m := d_m + D_{i-1,i}$
+\State Aktualisiere Pheromonmatrix $S$
+\EndFor
+\State $j := j + 1$
+\EndWhile
+\State $d_s = \infty$
+\For{\textbf{each} Ameise $m_i \in M$}
+\If{Tourlänge $d_m < d_s$}
+\State $d_s := d_m$
+\EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
 \subsection{Vorgehensweise zur Untersuchung von verschiedenen Datensätzen mit verschiedenen Implementierungen}
 \section{Ergebnisse der Durchführung}
 \subsection{Resultate bei Iteration einzelner Ameisen nacheinander}
@@ -177,11 +244,9 @@ Das Programm lässt sich grob gesehen in zwei Komponenten aufteilen - zum einen 
 \subsection{Vergleich mit der Laufzeit und Komplexität von anderen Algorithmen}
 \section{Zusammenfassung und Fazit}
 \newpage
+\appendix
 \section{Anhang}
-\begin{center}
-  \makebox[\textwidth]{\includegraphics[width=500pt,height=600pt]{images/ClassDiagram.png}}
 
-\end{center}
 \newpage
 \bibliography{literatur}{}
 \addcontentsline{toc}{section}{Literatur} 

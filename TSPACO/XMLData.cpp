@@ -35,9 +35,9 @@ XMLData::XMLData(string _path)
 		}
 	}
 
-	cities.reserve(numberofcities);
+	cityVector.reserve(numberofcities);
 	for (int k = 0; k < numberofcities; k++)
-		cities.push_back(City(to_string(k), 0.0, 0.0));
+		cityVector.push_back(City(to_string(k), 0.0, 0.0));
 
 	srand(time(NULL) - _getpid());
 

@@ -16,7 +16,7 @@ public:
 	vector<vector<double>> const &getPheromoneMatrix() const;
 	vector<vector<double>> const &getDistanceMatrix() const;
 
-	vector<City> cities;
+	vector<City> cityVector;
 
 	vector<vector<double>> pheromoneMatrix;
 	vector<vector<double>> distanceMatrix;

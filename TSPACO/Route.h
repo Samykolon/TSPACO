@@ -8,7 +8,7 @@ class Route {
 
 public:
 
-	Route(int _size) : theRoute(_size) { }	
+	Route(int _size) : route(_size) { }	
 
 	vector<int> const &get() const;
 	void setCity(int pos, int value);
@@ -19,7 +19,7 @@ public:
 
 private:
 
-	vector<int> theRoute;
-	int cityIndex;
+	vector<int> route;
+	int cityindex;
 
 };

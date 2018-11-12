@@ -2,22 +2,22 @@
 
 vector<int> const & Route::get() const
 {
-	return this->theRoute;
+	return this->route;
 }
 
 void Route::setCity(int pos, int value)
 {
-	this->theRoute[pos] = value;
+	this->route[pos] = value;
 }
 
 int const Route::getIndex(int index) const
 {
-	return this->theRoute[index];
+	return this->route[index];
 }
 
 void Route::printRoute()
 {
-	for each (int i in this->theRoute)
+	for each (int i in this->route)
 		cout << i << " ";
 	cout << endl;
 }

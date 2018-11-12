@@ -28,7 +28,7 @@ double City::measureDistance(City _ACity, City _BCity)
 	double deltaLatitude = (_ACity.getLatitude() - _BCity.getLatitude());
 	double x = pow(sin(deltaLatitude / 2.0), 2.0) +
 		cos(_BCity.getLatitude()) * cos(_ACity.getLatitude()) * pow(sin(deltaLongitude / 2.0), 2.0);
-	return earthRadius * 2.0 * atan2(sqrt(x), sqrt(1.0 - x));
+	return earthradius * 2.0 * atan2(sqrt(x), sqrt(1.0 - x));
 }
 
 void City::printCity()

@@ -125,13 +125,13 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 				for (auto ant = antarmy.begin(); ant != antarmy.end(); ++ant) {
 					ant->setNumber(currentAntNumber);
 					currentAntNumber++;
-					ant->ovRoute();
+					ant->mmasRoute();
 				}
 
 				currentAntNumber = 1;
 
 				int ovAnt = antarmy[0].getOvAnt();
-				antarmy[ovAnt - 1].ovUpdatePheromone();
+				antarmy[ovAnt - 1].mmasUpdatePheromone();
 
 				if (Vcsv == 0) {
 					cout << "Shortest Path was found by ant number: " << ovAnt << endl;

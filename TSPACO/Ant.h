@@ -49,7 +49,7 @@ private:
 
 	static double shortestdistance;
 	static int iterationsshortestpath;
-	static int ovAnt;
+	static int mmasant;
 
 	double routedistance;
 	int antnumber;
@@ -77,7 +77,7 @@ public:
 
 	double getShortestDistance() { return this->shortestdistance; }
 	void setShortestDistance(double distance) { this->shortestdistance = distance; }
-	int getOvAnt() { return this->ovAnt; }
+	int getOvAnt() { return this->mmasant; }
 
 	double getRouteDistance() { return this->routedistance; }
 
@@ -94,8 +94,8 @@ public:
 
 	void antRoute();
 	void antParallelRoute(int currentCity);
-	void ovRoute();
-	void ovUpdatePheromone();
+	void mmasRoute();
+	void mmasUpdatePheromone();
 	void reset();
 
 	void backToStart();
@@ -106,6 +106,6 @@ public:
 	void printRouteWithCity();
 	void printOnlyRoute();
 	void ShortestDistance(double distance);
-	void ovShortestDistance(double distance);
+	void mmasShortestDistance(double distance);
 
 };

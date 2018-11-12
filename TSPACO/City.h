@@ -24,7 +24,7 @@ private:
 	double longitude;
 	double latitude;
 	string name;
-	double earthRadius = RADIUS;
+	double earthradius = RADIUS;
 
 public:
 	const string getName() const;

@@ -1,34 +1,72 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
   <Class Name="Ant">
-    <Position X="0.5" Y="0.5" Width="10.5" />
+    <Position X="0.5" Y="0.5" Width="3" />
+    <Members>
+      <Method Name="backToStart" Hidden="true" />
+      <Field Name="datacitycount" Hidden="true" />
+      <Method Name="getAntNumber" Hidden="true" />
+      <Method Name="getBool" Hidden="true" />
+      <Method Name="getIterations" Hidden="true" />
+      <Method Name="getOvAnt" Hidden="true" />
+      <Method Name="getRouteDistance" Hidden="true" />
+      <Method Name="getShortestDistance" Hidden="true" />
+      <Method Name="getStartIndex" Hidden="true" />
+      <Method Name="getVisitedCount" Hidden="true" />
+      <Field Name="nextcity" Hidden="true" />
+      <Method Name="printAnt" Hidden="true" />
+      <Method Name="printOnlyRoute" Hidden="true" />
+      <Method Name="printRouteWithCity" Hidden="true" />
+      <Method Name="printVisited" Hidden="true" />
+      <Method Name="setIterations" Hidden="true" />
+      <Method Name="setNumber" Hidden="true" />
+      <Method Name="setProbability" Hidden="true" />
+      <Method Name="setShortestDistance" Hidden="true" />
+      <Method Name="setVisited" Hidden="true" />
+      <Field Name="tempcity" Hidden="true" />
+    </Members>
     <TypeIdentifier>
-      <HashCode>JAAAIJAEiEjANEAskGEBBBDAYgBSAABAAgrUAgCAghE=</HashCode>
+      <HashCode>IAgAMJAEiEjANFAsEGEBBBDAYgBSAAAAAgrUAgAQghE=</HashCode>
       <FileName>Ant.h</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="data" />
-      <Field Name="route" />
-    </ShowAsAssociation>
   </Class>
   <Class Name="City">
-    <Position X="4.75" Y="14.5" Width="5" />
+    <Position X="4.75" Y="5.25" Width="3.75" />
+    <Members>
+      <Method Name="~City" Hidden="true" />
+      <Method Name="getLatitude" Hidden="true" />
+      <Method Name="getLongitude" Hidden="true" />
+      <Method Name="getName" Hidden="true" />
+      <Method Name="printCity" Hidden="true" />
+    </Members>
     <TypeIdentifier>
       <HashCode>AAAAQAAAAACABAAIIgAABAAACAAEAAAAAAAEAAAgAAA=</HashCode>
       <FileName>City.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Route">
-    <Position X="8.5" Y="11.75" Width="2.5" />
+    <Position X="4.75" Y="0.5" Width="2.5" />
+    <Members>
+      <Method Name="get" Hidden="true" />
+      <Method Name="getIndex" Hidden="true" />
+      <Method Name="printRoute" Hidden="true" />
+    </Members>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAAAAAAEAAWAAAAAAAAAAAAAAAhAAAAAA=</HashCode>
+      <HashCode>AAAAACAAAACAAAAAAEAAUABAAAAAAAAAAAAAgAAAAAA=</HashCode>
       <FileName>Route.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="XMLData">
-    <Position X="0.5" Y="11.75" Width="4" />
+    <Position X="4.75" Y="2.75" Width="4" />
+    <Members>
+      <Method Name="getCityCount" Hidden="true" />
+      <Method Name="getDistanceMatrix" Hidden="true" />
+      <Method Name="getPheromoneMatrix" Hidden="true" />
+      <Method Name="printDistanceMatrix" Hidden="true" />
+      <Method Name="printPheromoneMatrix" Hidden="true" />
+    </Members>
     <TypeIdentifier>
-      <HashCode>AAAEAAIIAAAQACAIAAAEAAAAAEAAAACAAAAAABAAAAA=</HashCode>
+      <HashCode>AAAEAAIIAAAQACAIAAAUAAAAAEAAAACAAAAAAAAAAAA=</HashCode>
       <FileName>XMLData.h</FileName>
     </TypeIdentifier>
   </Class>

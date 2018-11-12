@@ -2,7 +2,7 @@
 
 double Ant::shortestdistance = 9999999.9;
 int Ant::iterationsshortestpath = 0;
-int Ant::ovAnt = 0;
+int Ant::mmasant = 0;
 
 void Ant::printAnt()
 {
@@ -127,7 +127,7 @@ void Ant::antParallelRoute(int currentCity)
 	}
 }
 
-void Ant::ovRoute()
+void Ant::mmasRoute()
 {
 	this->route.setCity(0, this->getStartIndex());
 	int nextCity = this->getNextCity(this->getStartIndex());
@@ -149,11 +149,11 @@ void Ant::ovRoute()
 	}
 
 	this->routedistance += this->data->distanceMatrix[nextCity][this->getStartIndex()];
-	ovShortestDistance(this->routedistance);
+	mmasShortestDistance(this->routedistance);
 	
 }
 
-void Ant::ovUpdatePheromone()
+void Ant::mmasUpdatePheromone()
 {
 	vector<int> ovr = this->route.get();
 	for (int i = 0; i < ovr.size() - 1; i++)
@@ -164,7 +164,7 @@ void Ant::reset()
 {
 	shortestdistance = 9999999.9;
 	iterationsshortestpath = 0;
-	ovAnt = 0;
+	mmasant = 0;
 }
 
 void Ant::backToStart()
@@ -203,7 +203,7 @@ void Ant::printRouteWithCity()
 {
 	cout << this->getAntNumber() << ". Ameise: " << endl;
 	for (int i = 0; i < datacitycount; i++)
-		cout << this->data->cities[this->route.getIndex(i)].getName() << " | ";
+		cout << this->data->cityVector[this->route.getIndex(i)].getName() << " | ";
 
 	cout << "Distance: " << this->routedistance << endl;
 }
@@ -211,7 +211,7 @@ void Ant::printRouteWithCity()
 void Ant::printOnlyRoute()
 {
 	for (int i = 0; i < datacitycount; i++)
-		cout << this->data->cities[this->route.getIndex(i)].getName() << " | ";
+		cout << this->data->cityVector[this->route.getIndex(i)].getName() << " | ";
 }
 
 void Ant::ShortestDistance(double distance)
@@ -224,10 +224,10 @@ void Ant::ShortestDistance(double distance)
 
 }
 
-void Ant::ovShortestDistance(double distance)
+void Ant::mmasShortestDistance(double distance)
 {
 	if (this->shortestdistance > distance) {
 		this->shortestdistance = distance;
-		ovAnt = this->antnumber;		
+		mmasant = this->antnumber;		
 	}
 }
