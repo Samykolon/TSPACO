@@ -5,6 +5,7 @@
 #include <string.h>
 #include <msclr\marshal_cppstd.h>
 #include <fstream>
+#include <chrono>  
 
 namespace TSPACOGUI {
 
@@ -38,6 +39,7 @@ namespace TSPACOGUI {
 			tbReduction->Text = reducevalue.ToString();
 			tbIteration->Text = iterationsmax.ToString();
 			tbOV->Text = ovit.ToString();
+			tbOV->Enabled = false;
 			bOpenXML->Enabled = false;
 		}
 
@@ -89,12 +91,14 @@ namespace TSPACOGUI {
 	private: System::Windows::Forms::TextBox^  tbOV;
 	private: System::Windows::Forms::Label^  lOV;
 	private: System::Windows::Forms::RadioButton^  rbOV;
+	private: System::Windows::Forms::Timer^  timer1;
+	private: System::ComponentModel::IContainer^  components;
 
 
 
 	private:
 		
-		System::ComponentModel::Container ^components;
+
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -103,6 +107,7 @@ namespace TSPACOGUI {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			this->components = (gcnew System::ComponentModel::Container());
 			this->lXML = (gcnew System::Windows::Forms::Label());
 			this->ofdxml = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->bXMLFileDialog = (gcnew System::Windows::Forms::Button());
@@ -138,6 +143,7 @@ namespace TSPACOGUI {
 			this->bClear = (gcnew System::Windows::Forms::Button());
 			this->progressBar1 = (gcnew System::Windows::Forms::ProgressBar());
 			this->cbCSV = (gcnew System::Windows::Forms::CheckBox());
+			this->timer1 = (gcnew System::Windows::Forms::Timer(this->components));
 			this->gpSettings->SuspendLayout();
 			this->gpAlgorithm->SuspendLayout();
 			this->gpProbAlgorithm->SuspendLayout();
@@ -656,8 +662,10 @@ private: System::Void bOpenXML_Click(System::Object^  sender, System::EventArgs^
 				startInfo->CreateNoWindow = true;
 				startInfo->RedirectStandardOutput = true;
 
+				timer1->Start();
 				Process^ process = gcnew Process();
 				process->StartInfo = startInfo;
+				auto start = std::chrono::high_resolution_clock::now();
 				process->Start();
 
 				StreamReader^ reader = process->StandardOutput;
@@ -669,7 +677,11 @@ private: System::Void bOpenXML_Click(System::Object^  sender, System::EventArgs^
 				}
 
 				process->WaitForExit();
-				process->Close();
+				process->Close();				
+				auto finish = std::chrono::high_resolution_clock::now();
+				std::chrono::duration<double> elapsed = finish - start;
+				textBox1->Text += "\r\n";
+				textBox1->Text += elapsed.count().ToString();
 				textBox1->Text += "\r\n";
 				progressBar1->Value += 100 / runs;
 			}

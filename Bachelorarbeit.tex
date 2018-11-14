@@ -160,13 +160,15 @@ Jede Ameise merkt sich zudem die Reihenfolge der besuchten Knoten in einer Liste
 \item Aktualisierung der Pheromonkonzentration nur durch die Ameise $m_k$, welche nach Beendigung der Tour die kürzeste Tour gefunden hat
 \item Aktualisierung der Pheromonkonzentration für alle Ameisen $m \in M$ parallel, nachdem der jeweils nächste Knoten erreicht wurde
 \end{enumerate}
-Die Berechnung der neuen Pheromonkonzentration $\tau_{ij}$ zum Zeitpunkt $t + 1$ ist für alle Varianten gleich. Eine wichtige Variable, die hierauf Einfluss hat, ist zum einen $\Delta \tau^k_{ij}(t)$. Diese stellt dabei die Menge an Pheromon dar, die eine Ameise $k$ auf der jeweilige Kante $\{i,j\}$ ablegt. Zum anderen ist das der Parameter $\rho$, der für $1-\rho$ die verdunstende Menge an Pheromon angibt. Dieser Verdunstungsmechanismus hilft über die Zeiten ungünstige Kanten zu \glqq vergessen\grqq. Letztendlich berechnet sich die neue Pheromonkonzentration wie folgt:
+Die Berechnung der neuen Pheromonkonzentration $\tau_{ij}$ zum Zeitpunkt $t + 1$ ist für alle Varianten gleich. Eine wichtige Variable, die hierauf Einfluss hat, ist zum einen $\Delta \tau^k_{ij}(t)$. Diese stellt dabei die Menge an Pheromon dar, die eine Ameise $k$ auf der jeweilige Kante $\{i,j\}$ ablegt. Diese Variable wird der Einfachheit halber im folgenden als $Q$ bezeichnet. 
+\\Zum anderen ist das der Parameter $\rho$, der für $1-\rho$ die verdunstende Menge an Pheromon angibt. Dieser Verdunstungsmechanismus hilft über die Zeiten ungünstige Kanten zu \glqq vergessen\grqq. Letztendlich berechnet sich die neue Pheromonkonzentration wie folgt:
 \begin{align}
 \label{eq:Pheromone}
 \tau_{ij}(t+1) = \rho \, \tau_{ij}(t) + \sum_{k=1}^m \Delta \tau^k_{ij}(t)
 \end{align}
 \section{Implementierung des Problems in C++}
 \subsection{Programmstruktur und Funktionsweise}
+\label{structure}
 Das Programm lässt sich grob gesehen in zwei Komponenten aufteilen - zum einen in eine $C++$ Anwendung auf Konsolenbasis, welche den Algorithmus an sich ausführt. Die andere Kompononente ist ein in $C++/CLI$ umgesetzte einfache GUI. Wesentlich für das Verständnis der Implementierung ist lediglich die Programmstruktur und der Code der nativen $C++$-Konsolenanwendung. 
 \begin{figure}
 \captionsetup{justification=centering}
@@ -209,7 +211,12 @@ Das Programm lässt sich grob gesehen in zwei Komponenten aufteilen - zum einen 
 \end{algorithmic}
 \end{algorithm}
 \\Die zweite implementierte Methode ist der ersten sehr ähnlich. Auch hier konstruieren alle Ameisen nacheinander ihre Tour. Jedoch wird die Pheromonmatrix nur durch die Ameise aktualisiert, welche die kürzeste Route gefunden hat. Diese Vorgehensweise basiert auf dem \textit{Max-Min-Ant-System} von Thomas Stüzle und Holger H. Hoos \cite{MaxMin}. Die iterative Tourkonstruktion erfolgt bei diesem Algorithmus notwendigerweise mehrmals. 
-\\Bei der dritten in dieser Arbeit betrachteteten Methode konstruieren die Ameisen ihre Route parallel. Nach jeder erreichten Stadt wird die Pheromonkonzentration der letzten bereisten Kante aktualisiert. Wenn jede Ameise jede Stadt einmal besucht hat, endet der Algorithmus. Die kürzeste Route ergibt sich nun durch den Vergleich der Routenlänge aller Ameisen.
+\\\\Bei der dritten in dieser Arbeit betrachteteten Methode konstruieren die Ameisen ihre Route parallel. Nach jeder erreichten Stadt wird die Pheromonkonzentration der letzten bereisten Kante aktualisiert. Wenn jede Ameise jede Stadt einmal besucht hat, endet der Algorithmus. Die kürzeste Route ergibt sich nun durch den Vergleich der Routenlänge aller Ameisen.
+\\\\Jeder dieser drei Algorithmen nutzt die selbe Funktion zur Ermittlung der bestmöglichen nächsten Stadt. Dabei sind die schon in Abschnitt \ref{enum:Update} vorgestellten Parameter Alpha und Beta von wichtiger Bedeutung. Im Rahmen dieser Arbeit werden dabei zwei unterschiedliche Implementierungen untersucht. Zum einen wird die Wahrscheinlichkeit durch die Formel \ref{eq:Prob} ermittelt. Zum anderen anderen erfolgt die Wahrscheinlichkeitsermittlung durch eine reduzierte Form dieser Gleichung bei welcher der Quotient der Summe aller Wahrscheinlichkeiten ignoriert wird:
+\begin{align}
+\label{eq:ProbSimple}
+p^k_{ij} = [\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta
+\end{align}
 \begin{algorithm}
 \caption{Parallele Tourkonstruktion}
 \label{ParallelTour}
@@ -235,7 +242,21 @@ Das Programm lässt sich grob gesehen in zwei Komponenten aufteilen - zum einen 
 \end{algorithmic}
 \end{algorithm}
 \subsection{Vorgehensweise zur Untersuchung von verschiedenen Datensätzen mit verschiedenen Implementierungen}
-\section{Ergebnisse der Durchführung}
+Im Rahmen dieser Arbeit werden zur Untersuchung der verschiedenen Algorithmen zur Lösung des TSP der TSPLIB fünf Probleminstanzen entnommen: \texttt{burma14}, \texttt{dantzig42}, \texttt{gr120} und \texttt{si535} als symmetrische Probleminstanzen und \texttt{ft53} als asymmetrische Probleminstanz.
+Die unterschiedlichen Größen der gewählten Instanzen dienen einer besseren Beurteilung der Effektivität und Laufzeit des Programms auch bei größeren Problemen.
+Der Begriff \textit{Effektivität} bezieht sich dabei im folgenden immer auf die Eigenschaft, im Bezug auf die Tourlänge möglichst an das Optimum heranzukommen und desweiteren möglichst wenig Iterationen dafür zu benötigen. Sowohl die Laufzeit als auch die Effektivität hängen von mehreren Parametern ab:
+\begin{enumerate}
+\item Parameter $\alpha$, der die Wichtigkeit der Pheromonkonzentration auf einer Kante bei der Wahl der nächsten zu bereisenden Stadt festlegt
+\item Parameter $\beta$, der die Wichtigkeit der Distanz auf einer Kante bei der Wahl der nächsten zu bereisenden Stadt festlegt
+\item Parameter $Q$, der die Menge des ablegten Pheromons darstellt
+\item Parameter $\rho$, der den Wert der Pheromonpersistenz angibt; $1 - \rho$ steht für die Pheromonverdunstung
+\end{enumerate}
+Im Rahmen der Untersuchung und Auswertung wird anhand der \texttt{dantzig42}-Instanz die Auswirkungen der oben genannten Parameter betrachtet und die Ergebnisse für verschiedene Werte erfasst.
+Dies geschieht für alle drei umgesetzten Methoden unter Berücksichtigung der verschiedener Implementierungen der Ermittlung der Wahrscheinlichkeit $p^k_{ij}$ (Abschnitt \ref{structure}).
+Die dadurch gewonnenen Werte für die Parameter werden hinsichtlich der Effektivität verglichen. Die besten Parameterwerte werden dann für die Untersuchung der verbleibenden vier Probleminstanzen verwendet. 
+\\\\Um die Laufzeit eines Problems zu messen wird die C++ Bibliothek \texttt{chrono} verwendet. Dabei wird die Systemzeit bei Beginn und Ende der Routenberechnung gemessen. Die Laufzeit ergibt sich dann aus der Differenz beider Werte. 
+\\Die Effektivität ergibt sich aus der Abweichung zum Tourlängen-Optimum. Dabei wird der maximale Abstand und der Durchschnitt in mehreren Programmdurchläufen erfasst und prozentual ermittelt.
+\newpage\section{Ergebnisse der Durchführung}
 \subsection{Resultate bei Iteration einzelner Ameisen nacheinander}
 \subsection{Resultate bei paralleler Erschließung}
 \section{Auswertung und Vergleich}
@@ -245,7 +266,23 @@ Das Programm lässt sich grob gesehen in zwei Komponenten aufteilen - zum einen 
 \section{Zusammenfassung und Fazit}
 \newpage
 \appendix
-\section{Anhang}
+\section{Erklärung der implementierten grafischen Oberfläche}
+\begin{figure}
+\captionsetup{justification=centering}
+  \centering
+     \includegraphics[width=0.7\textwidth]{images/TSPACOGUI.png}
+  \caption{Grafische Oberfläche des Programms}
+  \label{img:gui}
+\end{figure}
+Der Button \textbf{Search...} öffnet einen neuen Filedialog, mit dem die gewünschte Probleminstanz im XML-Format geladen werden kann. Alternativ kann der Dateipfad auch in das nebenstehende Textfeld eingegeben werden.
+\\\\Der Paramater im Textfeld \textbf{Runs} gibt an, wie oft das gesamte Programm ausgeführt werden soll. Dies ist hilfreich bei der Ermittlung von Durchschnittswerten für einzelne festgelegte Parameter.
+\\\\Unter \textbf{Settings} befinden sich alle konfigurierbaren Parameter, die Einfluss auf den Algorithmus haben. 
+\\\textbf{Number of Ants} gibt die Anzahl der Ameisen an, welche die Route konstruieren. \textbf{Alpha} steht für die Wichtigkeit der Pheromonspur, \textbf{Beta} für die Wichtigkeit der Distanz bei der Ermittlung der nächsten Stadt im Verlauf der Tourkonstruktion. Der Parameter \textbf{Pheromondeposit} gibt die Menge des ablegten Pheromons an, während \textbf{Pheromonereduction} für die Verdunstungsmenge steht.
+\\Es existiert die Möglichkeit, abhängig vom ausgewählten Algorithmus eine globale Pheromonreduktion durchzuführen, die durch den Parameter \textbf{Overall Reduction} festgelegt wird.
+\\\\Unter \textbf{Switch Algorithm} kann der gewünschte Algorithmus zur Berechnung der kürzesten Route gewählt werden. \textbf{Iterations} gibt dabei für den iterativen Algorithmus die Anzahl von Iterationen an, nach denen der Algorithmus abbricht, wenn keine kürzere Route gefunden wurde. Analag gibt er für die Option \textbf{MMAS} an, wie oft alle Ameisen ihre Tour konstruieren.
+\\\\Mit \textbf{Switch Probability-Function} kann zwischen einem einfachen und einem komplexeren Algorithmus zur Ermittlung der nächsten jeweiligen Stadt bei der Erstellung der Route ausgewählt werden.
+\\\\Ein Klick auf den Button \textbf{Start} startet den Algorithmus. Die Ausgabe erfolgt in das untenstehende Textfeld, welches mit dem Button \textbf{Clear} geleert werden kann.
+\\\\Möchte man zudem eine Ausgabe in eine Tabellendatei erhalten, muss oben rechts die Funktion \textbf{Write into CSV File} aktiviert werden.
 
 \newpage
 \bibliography{literatur}{}
