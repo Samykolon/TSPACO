@@ -4,7 +4,7 @@
 \usepackage{graphicx} 
 \usepackage{amsmath}
 \usepackage{subcaption}
-\usepackage{algorithm}
+\usepackage[Algorithmus]{algorithm}
 \usepackage{algorithmicx}
 \usepackage[noend]{algpseudocode}
 \usepackage[numbers]{natbib}
@@ -173,14 +173,21 @@ Das Programm lässt sich grob gesehen in zwei Komponenten aufteilen - zum einen 
 \begin{figure}
 \captionsetup{justification=centering}
   \centering
-     \includegraphics[width=0.9\textwidth]{images/classdiagram.png}
+     \includegraphics[width=0.8\textwidth]{images/classdiagram.png}
   \caption{Klassendiagramm zur Umsetzung des C++-Algorithmus mit den wesentlichen Attributen und Methoden}
   \label{img:classdiagram}
 \end{figure}
 \\\\Wie auch in Abbildung \ref{img:classdiagram} ersichtlich ist, besteht das Programm aus vier verschiedenen Klassen. Von grundlegender Bedeutung ist hierbei die Klasse \texttt{Ant}. Diese stellt die einzelnen Ameisen mit allen wichtigen Parametern und Methoden zur Wegfindung und Routenfindung dar. Jedes dieser \texttt{Ant}-Objekte greift auf eine gemeinsames Datenelement \texttt{XMLData} zu, in welchem die Daten der Städte sowie die Kosten- und Pheromonwerte zwischen den einzelnen Städten gespeichert sind. Beim Ausführen des Programms wird dieses Datenelement angelegt und initialisiert. Hierfür wird dem Konstruktor der Dateipfad zu einer Probleminstanz aus der TSPLIB (siehe Abschnitt \ref{TSPLIB}) übergeben und die dort enthaltenen Daten ausgelesen. Die Daten der Städte werden in einen Container aus \texttt{City}-Objekten gespeichert. Ein solches \texttt{City}-Objekt besteht aus dem Namen der Stadt und den Koordinaten und liefert gleichzeitig die Methode \texttt{measureDistance} zur Berechnung der Distanz zwischen zwei Städten. Im Falle der TSPLIB ist die Distanzberechnung aber überflüssig, da die Distanzwerte in der XML-Datei enthalten sind. Bei Anlage eines \texttt{XMLData}-Objekts werden diese Distanzwerte in einer Distanzmatrix abgespeichert sowie eine Matrix für die Pheromonwerte initialisiert. 
 \\Desweiteren besitzt die Klasse \texttt{Ant} ein Memberobjekt der Klasse \texttt{Route}, in der die Abfolge der besuchten Städte gespeichert wird. 
 \\\\Beim Start des Programms ein dynamischer Container vom Typ \texttt{vector<Ant>} angelegt, in dem sich alle \texttt{Ant}-Objekte befinden. Die weitere Arbeitsweise des Programms hängt nun von dem ausgewählten Algorithmus ab. Wie schon im obigen Abschnitt \ref{enum:Update} vorgestellt, unterscheiden sich die verschiedenen Algorithmen durch die Art und Weise der Aktualisierung der Pheromonkonzentration auf den einzelnen Kanten.
-\\\\Bei der ersten implementierten Methode wird die Pheromonaktualisierung iterativ nach jeder erfolgreichen Tourkonstruktion einer Ameise vorgenommen. Der Algorithmus endet dann, wenn alle Ameisen ihre Tour beendet haben oder wenn nach einer bestimmten Anzahl von Iterationen keine kürzere Route mehr gefunden wurde.
+\\\\Bei der ersten implementierten Methode wird die Pheromonaktualisierung iterativ nach jeder erfolgreichen Tourkonstruktion einer Ameise vorgenommen. Der Algorithmus endet dann, wenn alle Ameisen ihre Tour beendet haben oder wenn nach einer bestimmten Anzahl von Iterationen keine kürzere Route mehr gefunden wurde (siehe Algorithmus \ref{IterativeTour}).
+\\Die zweite implementierte Methode ist der ersten sehr ähnlich. Auch hier konstruieren alle Ameisen nacheinander ihre Tour. Jedoch wird die Pheromonmatrix nur durch die Ameise aktualisiert, welche die kürzeste Route gefunden hat. Diese Vorgehensweise basiert auf dem \textit{Max-Min-Ant-System} von Thomas Stüzle und Holger H. Hoos \cite{MaxMin}. Die iterative Tourkonstruktion erfolgt bei diesem Algorithmus notwendigerweise mehrmals. 
+\\Bei der dritten in dieser Arbeit betrachteteten Methode konstruieren die Ameisen ihre Route parallel. Nach jeder erreichten Stadt wird die Pheromonkonzentration der letzten bereisten Kante aktualisiert. Wenn jede Ameise jede Stadt einmal besucht hat, endet der Algorithmus. Die kürzeste Route ergibt sich nun durch den Vergleich der Routenlänge aller Ameisen (siehe Algorithmus \ref{ParallelTour}).
+\\Jeder dieser drei Algorithmen nutzt die selbe Funktion zur Ermittlung der bestmöglichen nächsten Stadt. Dabei sind die schon in Abschnitt \ref{enum:Update} vorgestellten Parameter Alpha und Beta von wichtiger Bedeutung. Im Rahmen dieser Arbeit werden dabei zwei unterschiedliche Implementierungen untersucht. Zum einen wird die Wahrscheinlichkeit durch die Formel \ref{eq:Prob} ermittelt. Zum anderen anderen erfolgt die Wahrscheinlichkeitsermittlung durch eine reduzierte Form dieser Gleichung bei welcher der Quotient der Summe aller Wahrscheinlichkeiten ignoriert wird:
+\begin{align}
+\label{eq:ProbSimple}
+p^k_{ij} = [\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta
+\end{align}
 \begin{algorithm}
 \caption{Iterative Tourkonstruktion}
 \label{IterativeTour}
@@ -210,13 +217,6 @@ Das Programm lässt sich grob gesehen in zwei Komponenten aufteilen - zum einen 
 \EndFor
 \end{algorithmic}
 \end{algorithm}
-\\Die zweite implementierte Methode ist der ersten sehr ähnlich. Auch hier konstruieren alle Ameisen nacheinander ihre Tour. Jedoch wird die Pheromonmatrix nur durch die Ameise aktualisiert, welche die kürzeste Route gefunden hat. Diese Vorgehensweise basiert auf dem \textit{Max-Min-Ant-System} von Thomas Stüzle und Holger H. Hoos \cite{MaxMin}. Die iterative Tourkonstruktion erfolgt bei diesem Algorithmus notwendigerweise mehrmals. 
-\\\\Bei der dritten in dieser Arbeit betrachteteten Methode konstruieren die Ameisen ihre Route parallel. Nach jeder erreichten Stadt wird die Pheromonkonzentration der letzten bereisten Kante aktualisiert. Wenn jede Ameise jede Stadt einmal besucht hat, endet der Algorithmus. Die kürzeste Route ergibt sich nun durch den Vergleich der Routenlänge aller Ameisen.
-\\\\Jeder dieser drei Algorithmen nutzt die selbe Funktion zur Ermittlung der bestmöglichen nächsten Stadt. Dabei sind die schon in Abschnitt \ref{enum:Update} vorgestellten Parameter Alpha und Beta von wichtiger Bedeutung. Im Rahmen dieser Arbeit werden dabei zwei unterschiedliche Implementierungen untersucht. Zum einen wird die Wahrscheinlichkeit durch die Formel \ref{eq:Prob} ermittelt. Zum anderen anderen erfolgt die Wahrscheinlichkeitsermittlung durch eine reduzierte Form dieser Gleichung bei welcher der Quotient der Summe aller Wahrscheinlichkeiten ignoriert wird:
-\begin{align}
-\label{eq:ProbSimple}
-p^k_{ij} = [\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta
-\end{align}
 \begin{algorithm}
 \caption{Parallele Tourkonstruktion}
 \label{ParallelTour}
@@ -244,7 +244,7 @@ p^k_{ij} = [\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta
 \subsection{Vorgehensweise zur Untersuchung von verschiedenen Datensätzen mit verschiedenen Implementierungen}
 Im Rahmen dieser Arbeit werden zur Untersuchung der verschiedenen Algorithmen zur Lösung des TSP der TSPLIB fünf Probleminstanzen entnommen: \texttt{burma14}, \texttt{dantzig42}, \texttt{gr120} und \texttt{si535} als symmetrische Probleminstanzen und \texttt{ft53} als asymmetrische Probleminstanz.
 Die unterschiedlichen Größen der gewählten Instanzen dienen einer besseren Beurteilung der Effektivität und Laufzeit des Programms auch bei größeren Problemen.
-Der Begriff \textit{Effektivität} bezieht sich dabei im folgenden immer auf die Eigenschaft, im Bezug auf die Tourlänge möglichst an das Optimum heranzukommen und desweiteren möglichst wenig Iterationen dafür zu benötigen. Sowohl die Laufzeit als auch die Effektivität hängen von mehreren Parametern ab:
+Der Begriff \textit{Effektivität} bezieht sich dabei im folgenden immer auf die Eigenschaft, im Bezug auf die Tourlänge möglichst an das Optimum heranzukommen. Sowohl die Laufzeit als auch die Effektivität hängen von mehreren Parametern ab:
 \begin{enumerate}
 \item Parameter $\alpha$, der die Wichtigkeit der Pheromonkonzentration auf einer Kante bei der Wahl der nächsten zu bereisenden Stadt festlegt
 \item Parameter $\beta$, der die Wichtigkeit der Distanz auf einer Kante bei der Wahl der nächsten zu bereisenden Stadt festlegt
@@ -256,6 +256,7 @@ Dies geschieht für alle drei umgesetzten Methoden unter Berücksichtigung der v
 Die dadurch gewonnenen Werte für die Parameter werden hinsichtlich der Effektivität verglichen. Die besten Parameterwerte werden dann für die Untersuchung der verbleibenden vier Probleminstanzen verwendet. 
 \\\\Um die Laufzeit eines Problems zu messen wird die C++ Bibliothek \texttt{chrono} verwendet. Dabei wird die Systemzeit bei Beginn und Ende der Routenberechnung gemessen. Die Laufzeit ergibt sich dann aus der Differenz beider Werte. 
 \\Die Effektivität ergibt sich aus der Abweichung zum Tourlängen-Optimum. Dabei wird der maximale Abstand und der Durchschnitt in mehreren Programmdurchläufen erfasst und prozentual ermittelt.
+\\Zur besseren Analyse werden die Daten automatisch in eine CSV-Datei geschrieben.
 \newpage\section{Ergebnisse der Durchführung}
 \subsection{Resultate bei Iteration einzelner Ameisen nacheinander}
 \subsection{Resultate bei paralleler Erschließung}
