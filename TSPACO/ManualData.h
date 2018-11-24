@@ -3,6 +3,8 @@
 
 #define PHEROMONEINIT 0.5   // Paramter für den maximalen Pheromonstartwert wenn dieser zu Beginn zufällig generiert wird
 
+// Die Klasse ManualData dient nur dazu, wenn die TSP Probleminstanz nicht aus einer XML-Datei eingelesen wird sondern manuell im Code definiert und initialisert wird
+
 class ManualData {
 
 public:
@@ -20,13 +22,11 @@ public:
 	int getCityCount();
 
 	void printPheromoneMatrix();
-	void printDistanceMatrix();
-
-	
+	void printDistanceMatrix();	
 
 private:
 
-	int citycount;	
+	int citycount;	// Anzahl der Städte
 
 };
 

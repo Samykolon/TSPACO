@@ -3,14 +3,6 @@
 #include "ManualData.h"
 #include "XMLData.h"
 
-//#define REDUCE (double) 0.001     // Paramter für die Reduktion des Pheromons auf allen Kanten
-//
-//#define PHEROMONEDEPOSIT (double) 40	// Parameter für die Menge des platzierten Pheromons
-//#define PHEROMONEREDUCTION (double) 0.15	    // Paramter für die Reduktion des Pheromons
-//
-//#define ALPHA (double) 0.8  // Parameter für die Wichtigkeit des Pheromons
-//#define BETA (double) 0.5		// Parameter für die Wichtigkeit der Distanz
-
 using namespace std;
 
 class Ant {
@@ -20,7 +12,7 @@ public:
 	Ant(XMLData &_data, double _reductionvalue, double _pheromonedeposit, double _pheromonereduction, double _alpha, double _beta, int _boolreduce, int _probalgorithm) : route(_data.getCityCount()) {
 		this->data = &_data;
 		datacitycount = _data.getCityCount();
-		startindex = rand() % _data.getCityCount();
+		startindex = rand() % _data.getCityCount();            // Zufällige Startstadt definieren
 		visitedVector.assign(_data.getCityCount(), 0);
 		countvisitedcities = 1;
 		visitedVector[startindex] = 1;
@@ -37,36 +29,39 @@ public:
 
 private:
 
-	double reductionvalue;
-	double pheromonedeposit;
-	double pheromonereduction;
-	double alpha;
-	double beta;
-	int boolreduce;
-	int probabilityalgorithm;
+	double reductionvalue;                  // Wert für die Verringerung des Pheromons bei allgemeiner Reduktion                 
+	double pheromonedeposit;                // Menge des abgelegten Pheromons
+	double pheromonereduction;              // Menge des Pheromons, welches verdunstet
+	double alpha;                           // Parameter für die Wichtigkeit der Pheromonkonzentration beim Finden der nächsten Stadt
+	double beta;                            // Parameter für die Wichtigkeit der Distanz beim Finden der nächsten Stadt 
 
-	int datacitycount;
+	int boolreduce;                         // Schalter, der entscheidet ob eine allgemeine Pheromonreduktion durchgeführt werden soll                   
+	int probabilityalgorithm;               // Schalter für den ausgewählten Tourkonstruktionsalgorithmus
 
-	static double shortestdistance;
-	static int iterationsshortestpath;
-	static int mmasant;
+	int datacitycount;                      // Anzahl der Städte
 
-	double routedistance;
-	int antnumber;
-	int startindex;
+	static double shortestdistance;         // Kürzeste gefundene Distanz
+	static int iterationsshortestpath;      // Iterationszähler für den iterativen Algorithmus
+	static int mmasant;                     // Ameise, die die kürzeste Route beim iterativen Algorithmus mit eingeschränkter Pheromonaktualisierung gefunden hat
 
-	vector<bool> visitedVector;
-	vector<double> probabilityVector;
+	double routedistance;                   // Routenlänge
+	int antnumber;                          // Nummer der Ameise
+	int startindex;                         // Index der Startstadt
 
-	int countvisitedcities;
+	vector<bool> visitedVector;             // Vector, der den Besuchsstatus aller Städte enthält
+	vector<double> probabilityVector;       // Vector, der die Wahrscheinlichkeit für den Besuch der jeweiligen Städte enthält
 
-	int tempcity; int nextcity;
+	int countvisitedcities;                 // Zählt die Anzahl der besuchten Städte
 
-	XMLData *data;
+	int tempcity; int nextcity;             // Variablen für die Tourkonstruktion
+
+	XMLData *data;                          // Datenobjekt
 
 public:
-
+	 
 	Route route;
+
+	// Getter und Setter 
 
 	int getAntNumber() { return antnumber; }
 	void setNumber(int number) { antnumber = number; }
@@ -74,38 +69,35 @@ public:
 	int getVisitedCount() { return countvisitedcities; }
 	void setVisited(int index) { visitedVector[index] = 1; }
 	void setProbability(int index) { probabilityVector[index] = -1; }
-
 	double getShortestDistance() { return this->shortestdistance; }
 	void setShortestDistance(double distance) { this->shortestdistance = distance; }
 	int getOvAnt() { return this->mmasant; }
-
 	double getRouteDistance() { return this->routedistance; }
-
 	int getIterations() { return this->iterationsshortestpath; }
 	void setIterations(int iterations) { this->iterationsshortestpath = iterations; }
-
 	int getBool(int index) { return visitedVector[index]; }
 
-	void printAnt();
-	void printVisited();
+	// Folgende Methoden und Funktionen sind in cpp-File näher erklärt
+
 	int getNextCity(int currentCity);
-	int probabilityCity(int x);
 	double probPheromone(int i, int j);
 
 	void antRoute();
 	void antParallelRoute(int currentCity);
 	void mmasRoute();
-	void mmasUpdatePheromone();
-	void reset();
-
-	void backToStart();
 
 	void updatePheromone(int i, int j, double distance);
+	void CompleteTourPheromonUpdate();
 	void reducePheromone();
+
+	void ShortestDistance(double distance);
+	void mmasShortestDistance(double distance);
+
+	void reset();
+	void backToStart();
 
 	void printRouteWithCity();
 	void printOnlyRoute();
-	void ShortestDistance(double distance);
-	void mmasShortestDistance(double distance);
+
 
 };

@@ -1,29 +1,14 @@
 #include "Ant.h"
 
+// Statische Member initialisieren
+
 double Ant::shortestdistance = 9999999.9;
 int Ant::iterationsshortestpath = 0;
 int Ant::mmasant = 0;
 
-void Ant::printAnt()
-{
-	cout << "Index: " << getAntNumber() << " StartCity: " << getStartIndex() << endl;
-}
+// Ermittelt nächste Stadt 
 
-void Ant::printVisited()
-{
-	for (int i = 0; i < datacitycount; i++)
-		cout << visitedVector[i] << " ";
-	cout << endl;
-}
-
-int Ant::getNextCity(int currentCity)
-{
-	int nextCity = probabilityCity(currentCity);
-	countvisitedcities++;
-	return nextCity;
-}
-
-int Ant::probabilityCity(int x)
+int Ant::getNextCity(int x)
 {
 	int nextCity = -1;
 	for (int i = 0; i < datacitycount; i++) {
@@ -31,24 +16,33 @@ int Ant::probabilityCity(int x)
 			if (x == i) probabilityVector[i] = -1;
 			else probabilityVector[i] = probPheromone(x, i);
 		}
+		else
+			probabilityVector[i] = 0;
 	}
+
 	vector<double>::iterator result;
-	result = max_element(probabilityVector.begin(), probabilityVector.end());
+	result = max_element(probabilityVector.begin(), probabilityVector.end()); 
 	nextCity = distance(probabilityVector.begin(), result);
+	countvisitedcities++;
 	return nextCity;
 }
+
+// Ermittelt die Wahrscheinlichkeit mit der eine Ameise von Stadt i zu Stadt j reist
 
 double Ant::probPheromone(int i, int j)
 {
 	double prob = 0.0;
 	double pheromoneLevel = this->data->pheromoneMatrix[i][j];
 
+	// Vereinfachte Form
 
-	if (probabilityalgorithm == 0) {
+	if (probabilityalgorithm == 0) {     
 		if (pheromoneLevel != 0.0)
-			prob = pow(pheromoneLevel, alpha) * pow(1 / this->data->distanceMatrix[i][j], beta);	//vereinfachte Form (Test)
+			prob = pow(pheromoneLevel, alpha) * pow(1 / this->data->distanceMatrix[i][j], beta);	
 		return prob;
 	}
+
+	// Komplexere Form
 
 	else {
 
@@ -71,6 +65,8 @@ double Ant::probPheromone(int i, int j)
 	}
 }
 
+// Tourkonstruktion für die iterative Tourkonstruktion
+
 void Ant::antRoute()
 {
 	this->route.setCity(0, this->getStartIndex());
@@ -81,8 +77,7 @@ void Ant::antRoute()
 	this->setProbability(nextCity);
 	this->setVisited(nextCity);
 	this->route.setCity(1, nextCity);
-	updatePheromone(this->getStartIndex(), nextCity, this->routedistance);
-
+	
 	while (this->getVisitedCount() < datacitycount) {
 		tempCity = nextCity;
 		nextCity = this->getNextCity(nextCity);
@@ -90,9 +85,10 @@ void Ant::antRoute()
 		this->setVisited(nextCity);
 		this->route.setCity(i, nextCity);
 		this->routedistance += this->data->distanceMatrix[tempCity][nextCity];
-		updatePheromone(tempCity, nextCity, this->routedistance);
 		i++;
 	}
+
+	CompleteTourPheromonUpdate();
 
 	this->routedistance += this->data->distanceMatrix[nextCity][this->getStartIndex()];
 	if(boolreduce == 1)
@@ -100,6 +96,8 @@ void Ant::antRoute()
 	ShortestDistance(this->routedistance);
 	this->iterationsshortestpath++;
 }
+
+// Tourkonstruktion für die parallele Tourkonstruktion
 
 void Ant::antParallelRoute(int currentCity)
 {
@@ -127,6 +125,8 @@ void Ant::antParallelRoute(int currentCity)
 	}
 }
 
+// Tourkonstruktion für die iterative Tourkonstruktion mit eingeschränkter Pheromonaktualisierung
+
 void Ant::mmasRoute()
 {
 	this->route.setCity(0, this->getStartIndex());
@@ -153,12 +153,16 @@ void Ant::mmasRoute()
 	
 }
 
-void Ant::mmasUpdatePheromone()
+// Updated die Pheromonkonzentration der gesamten Route
+
+void Ant::CompleteTourPheromonUpdate()
 {
 	vector<int> ovr = this->route.get();
 	for (int i = 0; i < ovr.size() - 1; i++)
 		updatePheromone(ovr[i], ovr[i + 1], this->routedistance);
 }
+
+// Resettet die statischen Variablen
 
 void Ant::reset()
 {
@@ -167,10 +171,14 @@ void Ant::reset()
 	mmasant = 0;
 }
 
+// Fügt der Route die Distanz der letzten Stadt zur Stadtstadt hinzu
+
 void Ant::backToStart()
 {
 	this->routedistance += this->data->distanceMatrix[nextcity][this->getStartIndex()];	
 }
+
+// Aktualisiert die Pheromonkonzentration zwischen Stadt i und Stadt j
 
 void Ant::updatePheromone(int i, int j, double distance)
 {
@@ -187,6 +195,8 @@ void Ant::updatePheromone(int i, int j, double distance)
 	}
 }
 
+// Reduziert die Pheromonkonzentration in der gesamten Pheromonmatrix
+
 void Ant::reducePheromone()
 {
 	for (int x = 0; x < datacitycount; x++) {
@@ -199,6 +209,8 @@ void Ant::reducePheromone()
 	}
 }
 
+// Gibt Route mit Städtenamen und Distanz aus
+
 void Ant::printRouteWithCity()
 {
 	cout << this->getAntNumber() << ". Ameise: " << endl;
@@ -208,21 +220,26 @@ void Ant::printRouteWithCity()
 	cout << "Distance: " << this->routedistance << endl;
 }
 
+// Gibt Route mit Städtenamen aus
+
 void Ant::printOnlyRoute()
 {
 	for (int i = 0; i < datacitycount; i++)
 		cout << this->data->cityVector[this->route.getIndex(i)].getName() << " | ";
 }
 
+// Weist dem statischen Member shortestDistance die kürzeste Distanz zu
+
 void Ant::ShortestDistance(double distance)
 {
 	if (this->shortestdistance > distance) {
-		this->shortestdistance = distance;
-		//printRouteWithCity();
+		this->shortestdistance = distance;		
 		this->iterationsshortestpath = 0;
 	}
 
 }
+
+// Ermittelt die Nummer der Ameise mit der kürzesten Route 
 
 void Ant::mmasShortestDistance(double distance)
 {

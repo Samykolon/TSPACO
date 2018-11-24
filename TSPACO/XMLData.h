@@ -7,6 +7,8 @@
 
 using namespace std;
 
+// Klasse, die das Datenobjekt generiert
+
 class XMLData {
 
 public:
@@ -25,8 +27,6 @@ public:
 
 	void printPheromoneMatrix();
 	void printDistanceMatrix();
-
-
 
 private:
 

@@ -11,6 +11,7 @@
 
 \newcommand*\rfrac[2]{{}^{#1}\!/_{#2}}
 
+
 \captionsetup{compatibility=false}
 \bibliographystyle{unsrt}
 \TUBAFFakultaet{Fakultät für Mathematik und Informatik}
@@ -150,6 +151,11 @@ Dabei sind $\alpha$ und $\beta$ Parameter, die im Fall von $\alpha$ die Wichtigk
 \label{eq:Prob}
 p^k_{ij} = \frac{[\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta}{\sum\nolimits_{l\in N^k_i} [\tau_{il}]^\alpha \, [\eta_{il}]^\beta} \; \; \text{if}\: j \in N^k_i
 \end{align}
+Im Rahmen dieser Arbeit wurde zusätzlich eine vereinfachte Formel  implementiert die eine reduzierte Form dieser Gleichung darstellt:
+\begin{align}
+\label{eq:ProbSimple}
+p^k_{ij} = [\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta
+\end{align}
 Jede Ameise merkt sich zudem die Reihenfolge der besuchten Knoten in einer Liste $L$. Falls eine Ameise $m_k$ alle Knoten $n$ besucht hat, kehrt sie zu ihrem Anfangsknoten zurück und beendet ihre Tour. Anhand der Liste mit den besuchten Knoten lässt sich nun ein valider Hamiltonkreis ableiten. 
 \\Außerdem ist diese Liste notwendig, um die Pheromonkonzentration der benutzten Kanten zu aktualisieren.
 \\Für ein Pheromonupdate gibt es verschiedene Möglichkeiten, die für 2., 3. und 4. im Rahmen dieser Bachelorarbeit auch umgesetzt wurden: 
@@ -160,44 +166,59 @@ Jede Ameise merkt sich zudem die Reihenfolge der besuchten Knoten in einer Liste
 \item Aktualisierung der Pheromonkonzentration nur durch die Ameise $m_k$, welche nach Beendigung der Tour die kürzeste Tour gefunden hat
 \item Aktualisierung der Pheromonkonzentration für alle Ameisen $m \in M$ parallel, nachdem der jeweils nächste Knoten erreicht wurde
 \end{enumerate}
-Die Berechnung der neuen Pheromonkonzentration $\tau_{ij}$ zum Zeitpunkt $t + 1$ ist für alle Varianten gleich. Eine wichtige Variable, die hierauf Einfluss hat, ist zum einen $\Delta \tau^k_{ij}(t)$. Diese stellt dabei die Menge an Pheromon dar, die eine Ameise $k$ auf der jeweilige Kante $\{i,j\}$ ablegt. Diese Variable wird der Einfachheit halber im folgenden als $Q$ bezeichnet. 
-\\Zum anderen ist das der Parameter $\rho$, der für $1-\rho$ die verdunstende Menge an Pheromon angibt. Dieser Verdunstungsmechanismus hilft über die Zeiten ungünstige Kanten zu \glqq vergessen\grqq. Letztendlich berechnet sich die neue Pheromonkonzentration wie folgt:
+Die Berechnung der neuen Pheromonkonzentration $\tau_{ij}$ zum Zeitpunkt $t + 1$ ist für alle Varianten gleich. Eine wichtige Variable, die hierauf Einfluss hat, ist zum einen $Q$. Diese stellt dabei die Menge an Pheromon dar, die eine Ameise $k$ auf der jeweilige Kante $\{i,j\}$ ablegt. 
+\\Zum anderen ist das der Parameter für die Pheromonpersistenz $\rho$, der für $1-\rho$ die verdunstende Menge an Pheromon angibt. Dieser Verdunstungsmechanismus hilft über die Zeiten ungünstige Kanten zu \glqq vergessen\grqq. Letztendlich berechnet sich die neue Pheromonkonzentration wie folgt:
 \begin{align}
 \label{eq:Pheromone}
-\tau_{ij}(t+1) = \rho \, \tau_{ij}(t) + \sum_{k=1}^m \Delta \tau^k_{ij}(t)
+\tau_{ij}(t+1) = \rho \, \tau_{ij}(t) + \sum_{k=1}^m Q
 \end{align}
-\section{Implementierung des Problems in C++}
+\section{Implementierung des Problems in C\texttt{++}}
 \subsection{Programmstruktur und Funktionsweise}
 \label{structure}
-Das Programm lässt sich grob gesehen in zwei Komponenten aufteilen - zum einen in eine $C++$ Anwendung auf Konsolenbasis, welche den Algorithmus an sich ausführt. Die andere Kompononente ist ein in $C++/CLI$ umgesetzte einfache GUI. Wesentlich für das Verständnis der Implementierung ist lediglich die Programmstruktur und der Code der nativen $C++$-Konsolenanwendung. 
+Das Programm lässt sich grob gesehen in zwei Komponenten aufteilen - zum einen in eine C\texttt{++} Anwendung auf Konsolenbasis, welche den Algorithmus an sich ausführt. Die andere Kompononente ist ein in C\texttt{++}/CLI umgesetzte einfache GUI. Wesentlich für das Verständnis der Implementierung ist lediglich die Programmstruktur und der Code der nativen C\texttt{++}-Konsolenanwendung. 
 \begin{figure}
 \captionsetup{justification=centering}
   \centering
      \includegraphics[width=0.8\textwidth]{images/classdiagram.png}
-  \caption{Klassendiagramm zur Umsetzung des C++-Algorithmus mit den wesentlichen Attributen und Methoden}
+  \caption{Klassendiagramm zur Umsetzung des C\texttt{++}-Algorithmus mit den wesentlichen Attributen und Methoden}
   \label{img:classdiagram}
 \end{figure}
-\\\\Wie auch in Abbildung \ref{img:classdiagram} ersichtlich ist, besteht das Programm aus vier verschiedenen Klassen. Von grundlegender Bedeutung ist hierbei die Klasse \texttt{Ant}. Diese stellt die einzelnen Ameisen mit allen wichtigen Parametern und Methoden zur Wegfindung und Routenfindung dar. Jedes dieser \texttt{Ant}-Objekte greift auf eine gemeinsames Datenelement \texttt{XMLData} zu, in welchem die Daten der Städte sowie die Kosten- und Pheromonwerte zwischen den einzelnen Städten gespeichert sind. Beim Ausführen des Programms wird dieses Datenelement angelegt und initialisiert. Hierfür wird dem Konstruktor der Dateipfad zu einer Probleminstanz aus der TSPLIB (siehe Abschnitt \ref{TSPLIB}) übergeben und die dort enthaltenen Daten ausgelesen. Die Daten der Städte werden in einen Container aus \texttt{City}-Objekten gespeichert. Ein solches \texttt{City}-Objekt besteht aus dem Namen der Stadt und den Koordinaten und liefert gleichzeitig die Methode \texttt{measureDistance} zur Berechnung der Distanz zwischen zwei Städten. Im Falle der TSPLIB ist die Distanzberechnung aber überflüssig, da die Distanzwerte in der XML-Datei enthalten sind. Bei Anlage eines \texttt{XMLData}-Objekts werden diese Distanzwerte in einer Distanzmatrix abgespeichert sowie eine Matrix für die Pheromonwerte initialisiert. 
+\\\\Wie in Abbildung \ref{img:classdiagram} ersichtlich ist, besteht das Programm aus vier verschiedenen Klassen. Von grundlegender Bedeutung ist hierbei die Klasse \texttt{Ant}. Diese stellt die einzelnen Ameisen mit allen wichtigen Parametern und Methoden zur Wegfindung und Routenfindung dar. Jedes dieser \texttt{Ant}-Objekte greift auf ein gemeinsames Datenelement \texttt{XMLData} zu, in welchem die Daten der Städte sowie die Kosten- und Pheromonwerte zwischen den einzelnen Städten gespeichert sind. Die Daten der Städte werden in einen Container aus \texttt{City}-Objekten gespeichert. Ein solches \texttt{City}-Objekt besteht aus dem Namen der Stadt und den Koordinaten. Im Falle der TSPLIB ist die Distanzberechnung aus den Koordinaten überflüssig, da die Distanzwerte in der XML-Datei enthalten sind.   Es existiert jedoch eine Methode \texttt{measureDistance} zur Berechnung der Distanz zwischen zwei Städten falls die Datendatei nur die Koordinaten liefert. Bei Anlage eines \texttt{XMLData}-Objekts werden die eingelesenen Distanzwerte in einer Distanzmatrix abgespeichert sowie eine Matrix für die Pheromonwerte initialisiert.  
 \\Desweiteren besitzt die Klasse \texttt{Ant} ein Memberobjekt der Klasse \texttt{Route}, in der die Abfolge der besuchten Städte gespeichert wird. 
-\\\\Beim Start des Programms ein dynamischer Container vom Typ \texttt{vector<Ant>} angelegt, in dem sich alle \texttt{Ant}-Objekte befinden. Die weitere Arbeitsweise des Programms hängt nun von dem ausgewählten Algorithmus ab. Wie schon im obigen Abschnitt \ref{enum:Update} vorgestellt, unterscheiden sich die verschiedenen Algorithmen durch die Art und Weise der Aktualisierung der Pheromonkonzentration auf den einzelnen Kanten.
-\\\\Bei der ersten implementierten Methode wird die Pheromonaktualisierung iterativ nach jeder erfolgreichen Tourkonstruktion einer Ameise vorgenommen. Der Algorithmus endet dann, wenn alle Ameisen ihre Tour beendet haben oder wenn nach einer bestimmten Anzahl von Iterationen keine kürzere Route mehr gefunden wurde (siehe Algorithmus \ref{IterativeTour}).
-\\Die zweite implementierte Methode ist der ersten sehr ähnlich. Auch hier konstruieren alle Ameisen nacheinander ihre Tour. Jedoch wird die Pheromonmatrix nur durch die Ameise aktualisiert, welche die kürzeste Route gefunden hat. Diese Vorgehensweise basiert auf dem \textit{Max-Min-Ant-System} von Thomas Stüzle und Holger H. Hoos \cite{MaxMin}. Die iterative Tourkonstruktion erfolgt bei diesem Algorithmus notwendigerweise mehrmals. 
-\\Bei der dritten in dieser Arbeit betrachteteten Methode konstruieren die Ameisen ihre Route parallel. Nach jeder erreichten Stadt wird die Pheromonkonzentration der letzten bereisten Kante aktualisiert. Wenn jede Ameise jede Stadt einmal besucht hat, endet der Algorithmus. Die kürzeste Route ergibt sich nun durch den Vergleich der Routenlänge aller Ameisen (siehe Algorithmus \ref{ParallelTour}).
-\\Jeder dieser drei Algorithmen nutzt die selbe Funktion zur Ermittlung der bestmöglichen nächsten Stadt. Dabei sind die schon in Abschnitt \ref{enum:Update} vorgestellten Parameter Alpha und Beta von wichtiger Bedeutung. Im Rahmen dieser Arbeit werden dabei zwei unterschiedliche Implementierungen untersucht. Zum einen wird die Wahrscheinlichkeit durch die Formel \ref{eq:Prob} ermittelt. Zum anderen anderen erfolgt die Wahrscheinlichkeitsermittlung durch eine reduzierte Form dieser Gleichung bei welcher der Quotient der Summe aller Wahrscheinlichkeiten ignoriert wird:
-\begin{align}
-\label{eq:ProbSimple}
-p^k_{ij} = [\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta
-\end{align}
+\\\\Beim Start des Programms wird ein dynamischer Container vom Typ \texttt{vector<Ant>} angelegt, in dem sich alle \texttt{Ant}-Objekte befinden. Die weitere Arbeitsweise des Programms hängt nun von dem ausgewählten Algorithmus der Pheromonaktualisierung ab ab. Bevor näher auf diese schon im Abschnitt \ref{enum:Update} erwähnten drei implementierten Algorithmen eingegangen wird, wird im folgenden zunächst der Algorithmus zur Ermittlung der jeweils nächsten Stadt während der Tourkonstruktion diskutiert. 
+\subsubsection{Wahrscheinlichkeitsalgorithmus zum Finden der nächsten Stadt}
+Während der Tourkonstruktion einer Ameise $m$ wird beim Erreichen jeder neuen Stadt die Wahrscheinlichkeiten für die restlichen Städte ermittelt. 
+Dazu wird ein \texttt{vector} $P$ angelegt, welcher der Anzahl der Städte entspricht und diese Wahrscheinlichkeiten enthält. Dann wird für alle Städte, die noch nicht besucht wurden, iterativ die Besuchswahrscheinlichkeit berechnet und in $P$ gespeichert. Die Berechnung der Wahrscheinlichkeit erfolgt durch die in Abschnitt \ref{enum:Update} definierte Formel \ref{eq:Prob} bzw. \ref{eq:ProbSimple}. Am Ende wird die Stadt $v_o = v_i$ besucht, welche die größte Wahrscheinlichkeit $p_i$ besitzt. \\Dieser eigens implementierte Wahrscheinlichkeitsalgorithmus wird von im folgenden von allen drei Algorithmen zur Konstruktion der Tour verwendet.
+\begin{algorithm}
+\caption{Ermittlung der nächsten Stadt während der Tourkonstruktion einer Ameise}
+\label{probabilityAlg}
+\textbf{Eingabe:} Datenobjekt mit $v$ Städten sowie einer Distanzmatrix $D$ und Pheromonmatrix $S$, Ameise $m \in M$ mit einem \texttt{vector} $B$ der Indizes aller schon besuchten Städte, Index $v_k$ der aktuellen Stadt
+\\\textbf{Ausgabe:} Index der nächstbesten Stadt $v_o$
+\begin{algorithmic}[1]
+\State $v_o := -1$
+\State $P$ := $\{p_0, ..., p_n\}$ mit $n = v$ 
+\For{\textbf{each} Stadt $v_i$ in V}
+\If{$v_i \not\in B$ and $v_i \neq v_k$}
+\State $p_i$ den Rückgabewert der Wahrscheinlichkeitsformel zuweisen
+\Else 
+\State $p_i := 0$
+\EndIf
+\EndFor
+\State $v_o$ := $v_i$ mit $max(p_i \in P)$
+\end{algorithmic}
+\end{algorithm}
+\subsubsection{Iterative Tourkonstruktion}
+Bei der ersten implementierten Methode wird die Pheromonaktualisierung iterativ nach jeder erfolgreichen Tourkonstruktion einer Ameise $m$ vorgenommen. Die nachfolgenden Ameisen können somit für ihre Tourkonstruktion schon die aktualisierten Pheromondaten der vorangegangenen Ameisen nutzen. Zu Beginn des Algorithmus wird eine Menge $M$ von Ameisen definiert. \\Jede Ameise $m \in M$ startet zunächst in einer zufällig ausgewählten Stadt $v_0$ und besucht dann nacheinander alle Städte. Welche Stadt dabei als nächstes besucht wird, ergibt sich aus dem oben vorgestellten Wahrscheinlichkeitsalgorithmus. Jeder Index einer besuchten Stadt $v_i$ wird in einen Routenvector $r$ geschrieben. Hat eine Ameise ihre Tourkonstruktion abgeschlossen, startet die nächste Ameise ihre Tour. \\Der gesamte Algorithmus endet dann, wenn alle Ameisen in $M$ ihre Tour beendet haben oder wenn nach einer bestimmten Anzahl von Iterationen keine kürzere Route mehr gefunden wurde. Diese Iterationsschwelle $n$ wird ebenso zu Beginn festgelegt.
 \begin{algorithm}
 \caption{Iterative Tourkonstruktion}
 \label{IterativeTour}
 \textbf{Eingabe:} Datenobjekt mit $v$ Städten sowie einer Distanzmatrix $D$ und Pheromonmatrix $S$, \texttt{vector} $M$ mit $m$ Ameisen, Iterationsschwelle $n$
 \\\textbf{Ausgabe:} Route $r$ mit der kürzesten gefunden Distanz $d_s$
 \begin{algorithmic}[1]
-\State $i := 1$ (derzeitige Iteration nachdem das letzte Mal eine kürzere Route gefunden wurde)
+\State $j := 1$ (derzeitige Iteration nachdem das letzte Mal eine kürzere Route gefunden wurde)
 \State $d_s := \infty$ (kürzeste gefunden Routenlänge)
 \For{\textbf{each} Ameise $m_i \in M$}
-\If {$i \leq n$}
+\If {$j \leq n$}
 \State $b_m := 1$ (Anzahl der besuchten Städte)
 \State $d_m := 0$ (Routenlänge der Ameise $m_i$)
 \State Starte in einer zufälligen Stadt $v_0$
@@ -209,14 +230,49 @@ p^k_{ij} = [\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta
 \EndWhile
 \If{$d_m \leq d_s$}
 \State $d_s := d_m$
-\State $i := 1$
+\State $j := 1$
 \EndIf
 \State Aktualisiere Pheromonmatrix $S$
-\State $i := i + 1$
+\State $j := j + 1$
 \EndIf
 \EndFor
 \end{algorithmic}
 \end{algorithm}
+\subsubsection{Iterative Tourkonstruktion mit eingeschränkter Pheromonaktualisierung}
+Die zweite implementierte Methode ist der ersten sehr ähnlich. Auch hier konstruieren alle Ameisen nacheinander iterativ ihre Tour. Jedoch wird die Pheromonmatrix nur durch die Ameise aktualisiert, welche die kürzeste Route gefunden hat. Diese Vorgehensweise basiert auf dem \textit{Max-Min-Ant-System} von Thomas Stüzle und Holger H. Hoos \cite{MaxMin}. Die iterative Tourkonstruktion erfolgt bei diesem Algorithmus notwendigerweise mehrmals. Diese Iterationsanzahl $n$ wird vor dem Start des Programms festgelegt. 
+\begin{algorithm}
+\caption{Iterative Tourkonstruktion mit eingeschränkter Pheromonaktualisierung}
+\label{MMASIterativeTour}
+\textbf{Eingabe:} Datenobjekt mit $v$ Städten sowie einer Distanzmatrix $D$ und Pheromonmatrix $S$, \texttt{vector} $M$ mit $m$ Ameisen, Iterationsanzahl $n$
+\\\textbf{Ausgabe:} Route $r$ mit der kürzesten gefunden Distanz $d_s$
+\begin{algorithmic}[1]
+\State $j := 1$ (Derzeitige Iteration)
+\State $d_s := \infty$ (Kürzeste Routenlänge der Iteration $i$)
+\State $m_o := -1$ (Index der Ameise mit der kürzesten Route)
+\While{$j \leq n$}
+\For{\textbf{each} Ameise $m_i \in M$}
+\State $b_m := 1$ (Anzahl der besuchten Städte)
+\State $d_m := 0$ (Routenlänge der Ameise $m_i$)
+\State Starte in einer zufälligen Stadt $v_0$
+\While{$b \neq v$}
+\State Ermittle die nächste Stadt $v_i$ und gehe dorthin
+\State $r_{m_i} := v_i$
+\State $d_m := d_m + D_{i-1,i}$
+\State $b_m := b_m + 1$
+\EndWhile
+\If{$d_m \leq d_s$}
+\State $d_s := d_m$
+\State $m_o := m_i$
+\EndIf
+\EndFor
+\State Ameise $m_o$ aktualisiert Pheromonmatrix $S$
+\State $j := j + 1$
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+\subsubsection{Parallele Tourkonstruktion}
+Bei der dritten in dieser Arbeit betrachteteten Methode konstruieren die Ameisen ihre Route parallel. Dabei startet jede Ameise in einer zufälligen Stadt $v_0$. Nun ermittelt jede Ameise $m$ zunächst die erste Stadt $v_1$ und aktualisiert die Pheromonkonzentration auf der begangenen Kante. Dieses Vorgehen geschieht analog für jeden weitere Stadt $v_i$. Wenn jede Ameise jede Stadt einmal besucht hat, endet der Algorithmus. Die kürzeste Route ergibt sich nun durch den Vergleich der Routenlänge aller Ameisen.
+\\\\Alle in den Abschnitten 3.1.1 bis 3.1.4 umgesetzten Algorithmen wurden für diese Arbeit entwickelt.
 \begin{algorithm}
 \caption{Parallele Tourkonstruktion}
 \label{ParallelTour}
@@ -226,8 +282,10 @@ p^k_{ij} = [\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta
 \State $j := 0$
 \While{$j < v$}
 \For{\textbf{each} Ameise $m_i \in M$}
+\State Starte in einer zufälligen Stadt $v_0$
 \State Ermittle die nächste Stadt $v_i$ und gehe dorthin
 \State $r_{m_i} := v_i$
+\hspace{17em}\raisebox{.5\baselineskip}[0pt][0pt]{$\left.\rule{0pt}{3.2\baselineskip}\right\}\ \mbox{Parallel}$}
 \State $d_m := d_m + D_{i-1,i}$
 \State Aktualisiere Pheromonmatrix $S$
 \EndFor
@@ -243,21 +301,21 @@ p^k_{ij} = [\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta
 \end{algorithm}
 \subsection{Vorgehensweise zur Untersuchung von verschiedenen Datensätzen mit verschiedenen Implementierungen}
 Im Rahmen dieser Arbeit werden zur Untersuchung der verschiedenen Algorithmen zur Lösung des TSP der TSPLIB fünf Probleminstanzen entnommen: \texttt{burma14}, \texttt{dantzig42}, \texttt{gr120} und \texttt{si535} als symmetrische Probleminstanzen und \texttt{ft53} als asymmetrische Probleminstanz.
-Die unterschiedlichen Größen der gewählten Instanzen dienen einer besseren Beurteilung der Effektivität und Laufzeit des Programms auch bei größeren Problemen.
-Der Begriff \textit{Effektivität} bezieht sich dabei im folgenden immer auf die Eigenschaft, im Bezug auf die Tourlänge möglichst an das Optimum heranzukommen. Sowohl die Laufzeit als auch die Effektivität hängen von mehreren Parametern ab:
+Die unterschiedlichen Größen der gewählten Instanzen dienen einer besseren Beurteilung der Effektivität und Laufzeit des Programms.
+Der Begriff \textit{Effektivität} bezieht sich dabei im folgenden immer auf die Eigenschaft, im Bezug auf die Tourlänge möglichst nah an das Optimum heranzukommen. Sowohl die Laufzeit als auch die Effektivität hängen von mehreren Parametern ab:
 \begin{enumerate}
 \item Parameter $\alpha$, der die Wichtigkeit der Pheromonkonzentration auf einer Kante bei der Wahl der nächsten zu bereisenden Stadt festlegt
-\item Parameter $\beta$, der die Wichtigkeit der Distanz auf einer Kante bei der Wahl der nächsten zu bereisenden Stadt festlegt
-\item Parameter $Q$, der die Menge des ablegten Pheromons darstellt
+\item Parameter $\beta$, der die Wichtigkeit der Distanz auf einer Kante bei der Wahl der nächsten zu bereisenden Stadt bestimmt
+\item Parameter $Q$, der die Menge des abgelegten Pheromons darstellt
 \item Parameter $\rho$, der den Wert der Pheromonpersistenz angibt; $1 - \rho$ steht für die Pheromonverdunstung
 \end{enumerate}
 Im Rahmen der Untersuchung und Auswertung wird anhand der \texttt{dantzig42}-Instanz die Auswirkungen der oben genannten Parameter betrachtet und die Ergebnisse für verschiedene Werte erfasst.
-Dies geschieht für alle drei umgesetzten Methoden unter Berücksichtigung der verschiedener Implementierungen der Ermittlung der Wahrscheinlichkeit $p^k_{ij}$ (Abschnitt \ref{structure}).
+Dies geschieht für alle drei umgesetzten Algorithmen unter Berücksichtigung der verschiedenen Implementierungen der Ermittlung der Wahrscheinlichkeit $p^k_{ij}$ (Abschnitt \ref{structure}).
 Die dadurch gewonnenen Werte für die Parameter werden hinsichtlich der Effektivität verglichen. Die besten Parameterwerte werden dann für die Untersuchung der verbleibenden vier Probleminstanzen verwendet. 
-\\\\Um die Laufzeit eines Problems zu messen wird die C++ Bibliothek \texttt{chrono} verwendet. Dabei wird die Systemzeit bei Beginn und Ende der Routenberechnung gemessen. Die Laufzeit ergibt sich dann aus der Differenz beider Werte. 
-\\Die Effektivität ergibt sich aus der Abweichung zum Tourlängen-Optimum. Dabei wird der maximale Abstand und der Durchschnitt in mehreren Programmdurchläufen erfasst und prozentual ermittelt.
-\\Zur besseren Analyse werden die Daten automatisch in eine CSV-Datei geschrieben.
+\\Zur besseren Analyse werden alle Daten automatisch in eine CSV-Datei geschrieben und von dort aus ausgewertet.
 \newpage\section{Ergebnisse der Durchführung}
+Um die Laufzeit eines Problems zu messen wird die C++ Bibliothek \texttt{chrono} verwendet. Dabei wird die Systemzeit bei Beginn und Ende der Routenberechnung gemessen. Die Laufzeit ergibt sich dann aus der Differenz beider Werte. 
+\\Die Effektivität ergibt sich aus der Abweichung zum Tourlängen-Optimum. Dabei wird der maximale Abstand und der Durchschnitt in mehreren Programmdurchläufen erfasst und prozentual ermittelt.
 \subsection{Resultate bei Iteration einzelner Ameisen nacheinander}
 \subsection{Resultate bei paralleler Erschließung}
 \section{Auswertung und Vergleich}

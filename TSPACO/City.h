@@ -14,6 +14,8 @@ using namespace std;
 #define RADIUS 6378.137
 #define PI 3.14159265358979323846
 
+// Klasse Stadt
+
 class City {
 
 public:

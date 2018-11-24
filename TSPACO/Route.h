@@ -4,6 +4,8 @@
 
 using namespace std;
 
+// Klasse, die die Route darstellt, die eine Ameise generiert - sie besteht im wesentlichen aus einem Int-Vector mit den Indizies der Städte
+
 class Route {
 
 public:
@@ -14,8 +16,7 @@ public:
 	void setCity(int pos, int value);
 	int const getIndex(int index) const;
 
-	void printRoute();
-	
+	void printRoute();	
 
 private:
 

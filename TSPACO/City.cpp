@@ -22,6 +22,8 @@ double City::getLongitude()
 	return this->longitude;
 }
 
+// Berechnet Distanz zwischen zwei Städten aus, wenn Koordinaten in Dezimalschreibweise vorliegen
+
 double City::measureDistance(City _ACity, City _BCity)
 {
 	double deltaLongitude = (_ACity.getLongitude() - _BCity.getLongitude());
@@ -30,6 +32,8 @@ double City::measureDistance(City _ACity, City _BCity)
 		cos(_BCity.getLatitude()) * cos(_ACity.getLatitude()) * pow(sin(deltaLongitude / 2.0), 2.0);
 	return earthradius * 2.0 * atan2(sqrt(x), sqrt(1.0 - x));
 }
+
+// Gibt Stadt aus
 
 void City::printCity()
 {

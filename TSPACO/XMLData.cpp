@@ -3,9 +3,10 @@
 #include <string>
 #include <iostream>
 
-
 XMLData::XMLData(string _path)
 {
+	// Ermittelt Anzahl der Städte aus XML-Datei
+
 	string nbline;
 	ifstream nbin(_path);
 	while (getline(nbin, nbline)) {
@@ -35,6 +36,8 @@ XMLData::XMLData(string _path)
 		}
 	}
 
+	// Definiert Cityvector
+
 	cityVector.reserve(numberofcities);
 	for (int k = 0; k < numberofcities; k++)
 		cityVector.push_back(City(to_string(k), 0.0, 0.0));
@@ -45,6 +48,8 @@ XMLData::XMLData(string _path)
 
 	pheromoneMatrix.assign(numberofcities, vector<double>(numberofcities, 0));
 	distanceMatrix.assign(numberofcities, vector<double>(numberofcities, 0));
+
+	// Initialisiert Pheromonwerte
 
 	for (int i = 0; i < numberofcities; i++) {
 		for (int j = 0; j < numberofcities; j++) {
@@ -57,6 +62,8 @@ XMLData::XMLData(string _path)
 				pheromoneMatrix[i][j] = pheromoneMatrix[j][i];
 		}
 	}
+
+	// Initialisiert Distanzwerte
 
 	string line;
 	ifstream in(_path);

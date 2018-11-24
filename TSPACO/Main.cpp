@@ -6,29 +6,22 @@
 using namespace std;
 using namespace std::chrono;
 
-//#define NUMBERANTS 500    // Anzahl an Ameisen
-//#define ITERATIONSMAX 300   // Maximale Anzahl an Iterationen in den keine kürzere Route gefunden wird
-//#define ALGORITHM 1 // Entscheidet, ob die Lösung iterativ oder parallel gefunden werden soll : 0 = iterativ; 1 = parallel
-//#define PROBABILTYALGORITHM 0 // Entscheidet, welcher Algorithmus zur Berechnung der Wahrscheinlichkeit des nächsten Knotens verwendet werden soll: 0 = einfach; 1 = komplex
+int numberants = 3000;                      // Anzahl an Ameisen
+int iterationsmax = 700;                    // Iterationsschwelle 
+int overalliterations = 20;                 // Anzahl an Iterationen bei iterativer Tourkonstruktion mit eingeschränkter Pheromonaktualisierung
+int algorithm = 0;                          // Schalter für Tourkonstruktionsalgorithmus
+int probabilityalgorithm = 1;               // Schalter für Wahrscheinlichkeitsalgorithmus
+int reduce = 0;                             // Schalter für eine allgemeine Reduktion der Pheromonmatrix
 
-int numberants = 3000;
-int iterationsmax = 700;
-int overalliterations = 20;
-int algorithm = 0;
-int probabilityalgorithm = 1;
-int reduce = 0;
+string filepath = "TSPLIB/burma14.xml";     // Dateipfad der XML-Datei
 
-string filepath = "TSPLIB/burma14.xml";
+double reduceValue = 0.001;                 // Reduktionswert für die allgemeine Reduktion
+double pheromonedeposit = 2;                // Menge des abgelegten Pheromons
+double pheromonereduction = 0.13;           // Menge des Pheromons, welches verdunstet
+double alpha = 0.7;                         // Parameter für die Wichtigkeit der Pheromonkonzentration beim Finden der nächsten Stadt
+double beta = 0.9;                          // Parameter für die Wichtigkeit der Distanz beim Finden der nächsten Stadt 
 
-double reduceValue = 0.001;
-double pheromonedeposit = 2;
-double pheromonereduction = 0.13;
-double alpha = 0.7;
-double beta = 0.9;
-
-int numbercities = 14;
-
-int csv = 0;
+int csv = 0;                                // Schalter für das Schreiben in CSV-Datei
 
 
 
@@ -42,6 +35,7 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 
 		int currentAntNumber = 1;
 
+		// Iterative Tourkonstruktion
 
 		if (Valgorithm == 0) {
 
@@ -68,6 +62,9 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 			}
 
 		}
+
+		// Parallele Tourkonstruktion
+
 		else if (Valgorithm == 1) {
 
 			vector<Ant> antarmy;
@@ -112,6 +109,9 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 
 
 		}
+
+		// Iterative Tourkonstruktion mit eingeschränkter Pheromonaktualisierung
+
 		else if (Valgorithm == 2) {
 			for (int k = 1; k <= VoverallIterions; k++) {
 
@@ -131,13 +131,12 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 				currentAntNumber = 1;
 
 				int ovAnt = antarmy[0].getOvAnt();
-				antarmy[ovAnt - 1].mmasUpdatePheromone();
+				antarmy[ovAnt - 1].CompleteTourPheromonUpdate();
 
 				if (Vcsv == 0) {
 					cout << "Shortest Path was found by ant number: " << ovAnt << endl;
 					cout << "Distance: " << antarmy[ovAnt - 1].getRouteDistance() << endl;
-					antarmy[ovAnt - 1].printOnlyRoute();
-					data1.printPheromoneMatrix();
+					antarmy[ovAnt - 1].printOnlyRoute();					
 				}
 				else {
 					cout << ovAnt << ";" << antarmy[ovAnt - 1].getRouteDistance() << endl;
@@ -168,8 +167,7 @@ int main(int argc, char *argv[]) {
 	string strAlgorithm = argv[10];
 	string strProbabilityAlgorithm = argv[11];
 	string strCSV = argv[12];
-	string strOverallIterations = argv[13];
-	
+	string strOverallIterations = argv[13];	
 
 	numberants = stoi(strAntNumber);
 	iterationsmax = stoi(strIteration);
@@ -185,6 +183,6 @@ int main(int argc, char *argv[]) {
 	overalliterations = stoi(strOverallIterations);
 
 	ACO(filepath, numberants, iterationsmax, reduceValue, pheromonedeposit, pheromonereduction, alpha, beta, reduce, algorithm, probabilityalgorithm, csv, overalliterations);
-	//system("pause");
+	system("pause");
 	return 0;
 }

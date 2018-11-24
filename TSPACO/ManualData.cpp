@@ -15,11 +15,11 @@ ManualData::ManualData(const vector<City> _cities)
 		for (int j = 0; j < citycount; j++) {
 			City A = cities[i];
 			City B = cities[j];
-			distanceMatrix[i][j] = A.measureDistance(A, B);
+			distanceMatrix[i][j] = A.measureDistance(A, B);     // Distanzen ermitteln
 			if (pheromoneMatrix[j][i] == 0 && i != j) {
 				random = (rand() % 1000);
-				pheromonerandom = random / 1000 * PHEROMONEINIT;
-				pheromoneMatrix[i][j] = 0.1; // pheromonerandom;
+				pheromonerandom = random / 1000 * PHEROMONEINIT;        
+				pheromoneMatrix[i][j] = 0.1; // pheromonerandom;      // Startwert der Pheromonwerte in der Pheromonmatrix
 			}
 			else
 				pheromoneMatrix[i][j] = pheromoneMatrix[j][i];
