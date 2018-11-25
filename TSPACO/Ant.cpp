@@ -235,6 +235,7 @@ void Ant::ShortestDistance(double distance)
 	if (this->shortestdistance > distance) {
 		this->shortestdistance = distance;		
 		this->iterationsshortestpath = 0;
+		cout << antnumber << ";" << distance << endl;
 	}
 
 }

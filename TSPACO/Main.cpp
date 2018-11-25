@@ -55,7 +55,7 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 			}
 			if (Vcsv == 0) {
 				cout << "Algorithmus stopped at Ant Number: " << currentAntNumber << endl;
-				antarmy[currentAntNumber - 2].printRouteWithCity();
+				cout << "Shortest Distance: " << antarmy[currentAntNumber - 2].getShortestDistance() << endl;
 			}
 			else {
 				cout << currentAntNumber << ";" << antarmy[currentAntNumber - 2].getShortestDistance();
