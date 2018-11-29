@@ -101,7 +101,6 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 			if (Vcsv == 0) {
 				cout << "Shortest Path was found by ant number: " << shortestPathAntNumber << endl;
 				cout << "Distance: " << shortestPath << endl;
-				antarmy[shortestPathAntNumber - 1].printOnlyRoute();
 			}
 			else {
 				cout << shortestPathAntNumber << ";" << shortestPath;
@@ -134,12 +133,16 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 				antarmy[ovAnt - 1].CompleteTourPheromonUpdate();
 
 				if (Vcsv == 0) {
+					if (k == VoverallIterions)
+						cout << "Final Iteration:" << endl;
+					else
+						cout << k << ". Iteration: " << endl;
+
 					cout << "Shortest Path was found by ant number: " << ovAnt << endl;
-					cout << "Distance: " << antarmy[ovAnt - 1].getRouteDistance() << endl;
-					antarmy[ovAnt - 1].printOnlyRoute();					
+					cout << "Distance: " << antarmy[ovAnt - 1].getRouteDistance() << endl;										
 				}
 				else {
-					cout << ovAnt << ";" << antarmy[ovAnt - 1].getRouteDistance() << endl;
+					cout << ovAnt << ";" << antarmy[ovAnt - 1].getRouteDistance() << ";";
 				}
 
 				antarmy[0].reset();
@@ -155,19 +158,22 @@ void ACO(string Vpath, int Vnumberants, int Viteration, int Vreductionvalue, dou
 
 int main(int argc, char *argv[]) {
 
-	filepath = argv[1];
+	// Einlesen und Konvertierung der Runtime-Parameter
+
+	filepath = argv[1];	
 	string strAntNumber = argv[2];
-	string strIteration = argv[3];
-	string strReductionValue = argv[4];
-	string strPheromoneDeposit = argv[5];
-	string strPheromoneReduction = argv[6];
-	string strAlpha = argv[7];
-	string strBeta = argv[8];
-	string strReduce = argv[9];
-	string strAlgorithm = argv[10];
-	string strProbabilityAlgorithm = argv[11];
-	string strCSV = argv[12];
-	string strOverallIterations = argv[13];	
+	string strAlgorithm = argv[3];
+	string strPheromoneDeposit = argv[4];
+	string strPheromoneReduction = argv[5];
+	string strAlpha = argv[6];
+	string strBeta = argv[7];
+	string strReduce = argv[8];
+	string strReductionValue = argv[9];
+	string strIteration = argv[10];
+	string strOverallIterations = argv[11];	
+	string strProbabilityAlgorithm = argv[12];
+	string strCSV = argv[13];
+
 
 	numberants = stoi(strAntNumber);
 	iterationsmax = stoi(strIteration);
@@ -183,6 +189,7 @@ int main(int argc, char *argv[]) {
 	overalliterations = stoi(strOverallIterations);
 
 	ACO(filepath, numberants, iterationsmax, reduceValue, pheromonedeposit, pheromonereduction, alpha, beta, reduce, algorithm, probabilityalgorithm, csv, overalliterations);
+	cout << endl;
 	system("pause");
 	return 0;
 }

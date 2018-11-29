@@ -28,15 +28,12 @@ namespace TSPACOGUI {
 		MainFrame(void)
 		{
 			InitializeComponent();
-			tbReduction->Enabled = false;
-
 			tbRuns->Text = runs.ToString();
 			tbAlpha->Text = alpha.ToString();
 			tbBeta->Text = beta.ToString();
 			tbNumberAnts->Text = numberants.ToString();
 			tbPheromoneDeposit->Text = pheromonedeposit.ToString();
 			tbPheromoneReduction->Text = pheromonereduction.ToString();
-			tbReduction->Text = reducevalue.ToString();
 			tbIteration->Text = iterationsmax.ToString();
 			tbOV->Text = ovit.ToString();
 			tbOV->Enabled = false;
@@ -67,8 +64,8 @@ namespace TSPACOGUI {
 	private: System::Windows::Forms::Label^  lIteration;
 	private: System::Windows::Forms::RadioButton^  rbParallel;
 	private: System::Windows::Forms::RadioButton^  rbIterative;
-	private: System::Windows::Forms::TextBox^  tbReduction;
-	private: System::Windows::Forms::CheckBox^  cbReduction;
+
+
 	private: System::Windows::Forms::TextBox^  tbPheromoneReduction;
 	private: System::Windows::Forms::Label^  lPheromoneReduction;
 	private: System::Windows::Forms::TextBox^  tbPheromoneDeposit;
@@ -115,8 +112,6 @@ namespace TSPACOGUI {
 			this->bOpenXML = (gcnew System::Windows::Forms::Button());
 			this->lNumberAnts = (gcnew System::Windows::Forms::Label());
 			this->gpSettings = (gcnew System::Windows::Forms::GroupBox());
-			this->tbReduction = (gcnew System::Windows::Forms::TextBox());
-			this->cbReduction = (gcnew System::Windows::Forms::CheckBox());
 			this->tbPheromoneReduction = (gcnew System::Windows::Forms::TextBox());
 			this->lPheromoneReduction = (gcnew System::Windows::Forms::Label());
 			this->tbPheromoneDeposit = (gcnew System::Windows::Forms::TextBox());
@@ -201,8 +196,6 @@ namespace TSPACOGUI {
 			// 
 			// gpSettings
 			// 
-			this->gpSettings->Controls->Add(this->tbReduction);
-			this->gpSettings->Controls->Add(this->cbReduction);
 			this->gpSettings->Controls->Add(this->tbPheromoneReduction);
 			this->gpSettings->Controls->Add(this->lPheromoneReduction);
 			this->gpSettings->Controls->Add(this->tbPheromoneDeposit);
@@ -215,29 +208,10 @@ namespace TSPACOGUI {
 			this->gpSettings->Controls->Add(this->lNumberAnts);
 			this->gpSettings->Location = System::Drawing::Point(15, 74);
 			this->gpSettings->Name = L"gpSettings";
-			this->gpSettings->Size = System::Drawing::Size(563, 201);
+			this->gpSettings->Size = System::Drawing::Size(563, 167);
 			this->gpSettings->TabIndex = 5;
 			this->gpSettings->TabStop = false;
 			this->gpSettings->Text = L"Settings";
-			// 
-			// tbReduction
-			// 
-			this->tbReduction->Location = System::Drawing::Point(159, 159);
-			this->tbReduction->Name = L"tbReduction";
-			this->tbReduction->Size = System::Drawing::Size(135, 20);
-			this->tbReduction->TabIndex = 16;
-			this->tbReduction->TextChanged += gcnew System::EventHandler(this, &MainFrame::tbReduction_TextChanged);
-			// 
-			// cbReduction
-			// 
-			this->cbReduction->AutoSize = true;
-			this->cbReduction->Location = System::Drawing::Point(21, 161);
-			this->cbReduction->Name = L"cbReduction";
-			this->cbReduction->Size = System::Drawing::Size(111, 17);
-			this->cbReduction->TabIndex = 15;
-			this->cbReduction->Text = L"Overall Reduction";
-			this->cbReduction->UseVisualStyleBackColor = true;
-			this->cbReduction->CheckedChanged += gcnew System::EventHandler(this, &MainFrame::cbReduction_CheckedChanged);
 			// 
 			// tbPheromoneReduction
 			// 
@@ -337,18 +311,19 @@ namespace TSPACOGUI {
 			// rbParallel
 			// 
 			this->rbParallel->AutoSize = true;
-			this->rbParallel->Location = System::Drawing::Point(246, 30);
+			this->rbParallel->Location = System::Drawing::Point(226, 30);
 			this->rbParallel->Name = L"rbParallel";
 			this->rbParallel->Size = System::Drawing::Size(59, 17);
 			this->rbParallel->TabIndex = 18;
 			this->rbParallel->Text = L"Parallel";
 			this->rbParallel->UseVisualStyleBackColor = true;
+			this->rbParallel->CheckedChanged += gcnew System::EventHandler(this, &MainFrame::rbParallel_CheckedChanged);
 			// 
 			// rbIterative
 			// 
 			this->rbIterative->AutoSize = true;
 			this->rbIterative->Checked = true;
-			this->rbIterative->Location = System::Drawing::Point(69, 30);
+			this->rbIterative->Location = System::Drawing::Point(79, 30);
 			this->rbIterative->Name = L"rbIterative";
 			this->rbIterative->Size = System::Drawing::Size(63, 17);
 			this->rbIterative->TabIndex = 17;
@@ -376,9 +351,9 @@ namespace TSPACOGUI {
 			this->gpAlgorithm->Controls->Add(this->rbIterative);
 			this->gpAlgorithm->Controls->Add(this->rbParallel);
 			this->gpAlgorithm->Controls->Add(this->lIteration);
-			this->gpAlgorithm->Location = System::Drawing::Point(15, 282);
+			this->gpAlgorithm->Location = System::Drawing::Point(15, 257);
 			this->gpAlgorithm->Name = L"gpAlgorithm";
-			this->gpAlgorithm->Size = System::Drawing::Size(563, 100);
+			this->gpAlgorithm->Size = System::Drawing::Size(563, 125);
 			this->gpAlgorithm->TabIndex = 22;
 			this->gpAlgorithm->TabStop = false;
 			this->gpAlgorithm->Text = L"Switch Algorithm";
@@ -403,12 +378,12 @@ namespace TSPACOGUI {
 			// rbOV
 			// 
 			this->rbOV->AutoSize = true;
-			this->rbOV->Location = System::Drawing::Point(410, 30);
+			this->rbOV->Location = System::Drawing::Point(324, 30);
 			this->rbOV->Name = L"rbOV";
-			this->rbOV->Size = System::Drawing::Size(57, 17);
+			this->rbOV->Size = System::Drawing::Size(221, 17);
 			this->rbOV->TabIndex = 21;
 			this->rbOV->TabStop = true;
-			this->rbOV->Text = L"MMAS";
+			this->rbOV->Text = L"Iterative with restricted Pheromoneupdate";
 			this->rbOV->UseVisualStyleBackColor = true;
 			// 
 			// gpProbAlgorithm
@@ -534,18 +509,17 @@ namespace TSPACOGUI {
 		double reducevalue = 0.001;
 		double pheromonedeposit = 40;
 		double pheromonereduction = 0.15;
-		double alpha = 3.9;
-		double beta = 1.0;
+		double alpha = 1;
+		double beta = 0.25;
 		int numbercities = 14;
 		String^ filename;
 		int csv = 0;
-		int ovit = 20;
+		int ovit = 8;
 
 
 
 private: System::Void bXMLFileDialog_Click(System::Object^  sender, System::EventArgs^  e);
 private: System::Void rbIterative_CheckedChanged(System::Object^  sender, System::EventArgs^  e);
-private: System::Void cbReduction_CheckedChanged(System::Object^  sender, System::EventArgs^  e);
 private: System::Void bOpenXML_Click(System::Object^  sender, System::EventArgs^  e);
 private: System::Void rbProbSimple_CheckedChanged(System::Object^  sender, System::EventArgs^  e);
 private: System::Void tbNumberAnts_Leave(System::Object^  sender, System::EventArgs^  e);
@@ -554,11 +528,11 @@ private: System::Void tbAlpha_Leave(System::Object^  sender, System::EventArgs^ 
 private: System::Void tbBeta_Leave(System::Object^  sender, System::EventArgs^  e);
 private: System::Void tbPheromoneDeposit_Leave(System::Object^  sender, System::EventArgs^  e);
 private: System::Void tbPheromoneReduction_Leave(System::Object^  sender, System::EventArgs^  e);
-private: System::Void tbReduction_TextChanged(System::Object^  sender, System::EventArgs^  e);
 private: System::Void tbLoadXML_TextChanged(System::Object^  sender, System::EventArgs^  e);
 private: System::Void tbRuns_Leave(System::Object^  sender, System::EventArgs^  e);
 private: System::Void bClear_Click(System::Object^  sender, System::EventArgs^  e);
 private: System::Void cbCSV_CheckedChanged(System::Object^  sender, System::EventArgs^  e);
 private: System::Void tbOV_Leave(System::Object^  sender, System::EventArgs^  e);
+private: System::Void rbParallel_CheckedChanged(System::Object^  sender, System::EventArgs^  e);
 };
 }

@@ -55,23 +55,12 @@ inline System::Void TSPACOGUI::MainFrame::rbIterative_CheckedChanged(System::Obj
 
 }
 
-inline System::Void TSPACOGUI::MainFrame::cbReduction_CheckedChanged(System::Object ^ sender, System::EventArgs ^ e) {
-	if (cbReduction->Checked == true) {
-		tbReduction->Enabled = true;
-		reduce = 1;
-	}
-	else if (cbReduction->Checked == false) {
-		tbReduction->Enabled = false;
-		reduce = 0;
-	}
-}
 
 inline System::Void TSPACOGUI::MainFrame::bOpenXML_Click(System::Object ^ sender, System::EventArgs ^ e) {
 
 	try {
 		String^ strNumberAnts = tbNumberAnts->Text;
 		String^ strIterations = tbIteration->Text;
-		String^ strReductionValue = tbReduction->Text;
 		String^ strPheromoneDeposit = tbPheromoneDeposit->Text;
 		String^ strPheromoneReduction = tbPheromoneReduction->Text;
 		String^ strAlpha = tbAlpha->Text;
@@ -84,41 +73,41 @@ inline System::Void TSPACOGUI::MainFrame::bOpenXML_Click(System::Object ^ sender
 		String^ strOV = tbOV->Text;
 
 
-		strReductionValue = strReductionValue->Replace(",", ".");
+		String^ strReductionValue = "0.01";
 		strPheromoneDeposit = strPheromoneDeposit->Replace(",", ".");
 		strPheromoneReduction = strPheromoneReduction->Replace(",", ".");
 		strAlpha = strAlpha->Replace(",", ".");
 		strBeta = strBeta->Replace(",", ".");
 		runs = Convert::ToInt32(strRuns);
 
-		/*for (double j = 1; j < 80; j += 0.5) {
-
-		textBox1->Text += "PheromoneReduction = " + j.ToString() + "\r\n";*/
-
-		String^ parameters = tbLoadXML->Text + " " + tbNumberAnts->Text + " " + tbIteration->Text + " " + strReductionValue + " " + strPheromoneDeposit + " " + strPheromoneReduction + " " + strAlpha + " " + strBeta + " " + reduce.ToString() + " " + algorithm.ToString() + " " + probabilityalgorithm.ToString() + " " + csv.ToString() + " " + tbOV->Text;
+			String^ parameters = tbLoadXML->Text + " " + tbNumberAnts->Text + " " + tbIteration->Text + " " + strReductionValue + " " + strPheromoneDeposit + " " + strPheromoneReduction + " " + strAlpha + " " + strBeta + " " + reduce.ToString() + " " + algorithm.ToString() + " " + probabilityalgorithm.ToString() + " " + csv.ToString() + " " + tbOV->Text;
 
 		std::ofstream file;
-		file.open("Data.csv");
+		file.open("Data.csv", fstream::app);
 		if (csv == 1) {
+			String^ csvdeposit = strPheromoneDeposit->Replace(".", ",");
+			String^ csvreduction = strPheromoneReduction->Replace(".", ",");
+			String^ csvalpha = strAlpha->Replace(".", ",");
+			String^ csvbeta = strBeta->Replace(".", ",");
+
+
 			if (algorithm == 0)
 				file << "Algorithm:;Iterativ" << endl;
 			else if (algorithm == 1)
 				file << "Algorithm:;Parallel" << endl;
 			else
-				file << "Algorithm:;MMAS-Adaption" << endl;
+				file << "Algorithm:;Iterative with restricted Pheromoneupdate" << endl;
 			file << "Number of Ants:;" << msclr::interop::marshal_as<std::string>(strNumberAnts) << endl;
 			if (algorithm == 0)
 				file << "Iterations:;" << msclr::interop::marshal_as<std::string>(strIterations) << endl;
 			else if (algorithm == 1)
 				;
 			else
-				file << "Iterations:;" << msclr::interop::marshal_as<std::string>(strOV) << endl;
-			if (reduce == 1)
-				file << "Overall Reductionvalue:;" << msclr::interop::marshal_as<std::string>(strReductionValue) << endl;
-			file << "Pheromonedeposit:;" << msclr::interop::marshal_as<std::string>(strPheromoneDeposit) << endl;
-			file << "Pheromonereduction:;" << msclr::interop::marshal_as<std::string>(strPheromoneReduction) << endl;
-			file << "Alpha:;" << msclr::interop::marshal_as<std::string>(strAlpha) << endl;
-			file << "Beta:;" << msclr::interop::marshal_as<std::string>(strBeta) << endl;
+				file << "Iterations:;" << msclr::interop::marshal_as<std::string>(strOV) << endl;			
+			file << "Pheromonedeposit:;" << msclr::interop::marshal_as<std::string>(csvdeposit) << endl;
+			file << "Pheromonereduction:;" << msclr::interop::marshal_as<std::string>(csvreduction) << endl;
+			file << "Alpha:;" << msclr::interop::marshal_as<std::string>(csvalpha) << endl;
+			file << "Beta:;" << msclr::interop::marshal_as<std::string>(csvbeta) << endl;
 			if (probabilityalgorithm == 0)
 				file << "ProbabilityAlgorithm:;Simple" << endl;
 			else
@@ -127,6 +116,7 @@ inline System::Void TSPACOGUI::MainFrame::bOpenXML_Click(System::Object ^ sender
 		}
 
 		for (int i = 1; i <= runs; i++) {
+			progressBar1->Value += 100 / runs;
 			ProcessStartInfo^ startInfo = gcnew ProcessStartInfo();
 			startInfo->FileName = "TSPACO.exe";
 			startInfo->Arguments = parameters;
@@ -134,7 +124,7 @@ inline System::Void TSPACOGUI::MainFrame::bOpenXML_Click(System::Object ^ sender
 			startInfo->CreateNoWindow = true;
 			startInfo->RedirectStandardOutput = true;
 
-			timer1->Start();
+			
 			Process^ process = gcnew Process();
 			process->StartInfo = startInfo;
 			auto start = std::chrono::high_resolution_clock::now();
@@ -143,6 +133,16 @@ inline System::Void TSPACOGUI::MainFrame::bOpenXML_Click(System::Object ^ sender
 			StreamReader^ reader = process->StandardOutput;
 			String^ output = reader->ReadToEnd();
 
+			if (csv == 0 && algorithm == 0) {
+				textBox1->Text += "Iterative Algorithm";
+				textBox1->Text += "\r\n";
+			} else if (csv == 0 && algorithm == 1) {
+				textBox1->Text += "Parallel Algorithm";
+				textBox1->Text += "\r\n";
+			} else if (csv == 0 && algorithm == 2) {
+				textBox1->Text += "Iterative Algorithm with restricted Pheromonupdate";
+				textBox1->Text += "\r\n";
+			}
 			textBox1->Text += output;
 			if (csv == 1) {
 				file << msclr::interop::marshal_as<std::string>(output) << endl;
@@ -152,16 +152,25 @@ inline System::Void TSPACOGUI::MainFrame::bOpenXML_Click(System::Object ^ sender
 			process->Close();
 			auto finish = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double> elapsed = finish - start;
-			textBox1->Text += "\r\n";
+			if(csv == 1 && algorithm != 2)
+				textBox1->Text += ";";
+
+			if(csv == 0)
+				textBox1->Text += "Runtime in [s]: ";
+
 			textBox1->Text += elapsed.count().ToString();
 			textBox1->Text += "\r\n";
-			progressBar1->Value += 100 / runs;
+			
+			if (csv == 1) {
+				file << msclr::interop::marshal_as<std::string>(elapsed.count().ToString()) << endl;
+			}
 		}
 		file.close();
 		progressBar1->Value = 0;
 
-
-		//}
+		
+		
+		
 	}
 	catch (Exception^ ex) {
 		MessageBox::Show(ex->Message);
@@ -229,9 +238,9 @@ inline System::Void TSPACOGUI::MainFrame::tbAlpha_Leave(System::Object ^ sender,
 
 	try {
 		na = Convert::ToDouble(tbAlpha->Text);
-		if (na <= 0 || na > 50) {
+		if (na <= 0 || na > 1) {
 			bOpenXML->Enabled = false;
-			MessageBox::Show("Alpha has to be between 0 and 50");
+			MessageBox::Show("Alpha has to be between 0 and 1");
 			this->tbAlpha->BackColor = System::Drawing::Color::Salmon;
 
 		}
@@ -253,9 +262,9 @@ inline System::Void TSPACOGUI::MainFrame::tbBeta_Leave(System::Object ^ sender, 
 
 	try {
 		na = Convert::ToDouble(tbBeta->Text);
-		if (na <= 0 || na > 50) {
+		if (na <= 0 || na > 1) {
 			bOpenXML->Enabled = false;
-			MessageBox::Show("Beta has to be between 0 and 50");
+			MessageBox::Show("Beta has to be between 0 and 1");
 			this->tbBeta->BackColor = System::Drawing::Color::Salmon;
 
 		}
@@ -301,9 +310,9 @@ inline System::Void TSPACOGUI::MainFrame::tbPheromoneReduction_Leave(System::Obj
 
 	try {
 		na = Convert::ToDouble(tbPheromoneReduction->Text);
-		if (na <= 0 || na > 80) {
+		if (na <= 0 || na > 1) {
 			bOpenXML->Enabled = false;
-			MessageBox::Show("PheromoneReduction has to be between 0 and 80");
+			MessageBox::Show("PheromoneReduction has to be between 0 and 1");
 			this->tbPheromoneReduction->BackColor = System::Drawing::Color::Salmon;
 
 		}
@@ -320,29 +329,6 @@ inline System::Void TSPACOGUI::MainFrame::tbPheromoneReduction_Leave(System::Obj
 	}
 }
 
-inline System::Void TSPACOGUI::MainFrame::tbReduction_TextChanged(System::Object ^ sender, System::EventArgs ^ e) {
-	double na;
-
-	try {
-		na = Convert::ToDouble(tbReduction->Text);
-		if (na <= 0 || na > 1) {
-			bOpenXML->Enabled = false;
-			MessageBox::Show("Overall-Reduction has to be between 0 and 1");
-			this->tbReduction->BackColor = System::Drawing::Color::Salmon;
-
-		}
-		else {
-			bOpenXML->Enabled = true;
-			this->tbReduction->BackColor = System::Drawing::SystemColors::Window;
-		}
-
-	}
-	catch (Exception^ ex) {
-		bOpenXML->Enabled = false;
-		MessageBox::Show("Invalid Input!");
-		this->tbReduction->BackColor = System::Drawing::Color::Salmon;
-	}
-}
 
 inline System::Void TSPACOGUI::MainFrame::tbLoadXML_TextChanged(System::Object ^ sender, System::EventArgs ^ e) {
 	if (tbLoadXML->Text == "" || tbLoadXML->Text == " ")
@@ -407,5 +393,23 @@ inline System::Void TSPACOGUI::MainFrame::tbOV_Leave(System::Object ^ sender, Sy
 		bOpenXML->Enabled = false;
 		MessageBox::Show("Invalid Input!");
 		this->tbOV->BackColor = System::Drawing::Color::Salmon;
+	}
+}
+
+inline System::Void TSPACOGUI::MainFrame::rbParallel_CheckedChanged(System::Object ^ sender, System::EventArgs ^ e) {
+	if (rbIterative->Checked == true) {
+		tbIteration->Enabled = true;
+		tbOV->Enabled = false;
+		algorithm = 0;
+	}
+	else if (rbParallel->Checked == true) {
+		tbIteration->Enabled = false;
+		tbOV->Enabled = false;
+		algorithm = 1;
+	}
+	else if (rbOV->Checked == true) {
+		tbIteration->Enabled = false;
+		tbOV->Enabled = true;
+		algorithm = 2;
 	}
 }

@@ -8,8 +8,22 @@
 \usepackage{algorithmicx}
 \usepackage[noend]{algpseudocode}
 \usepackage[numbers]{natbib}
+\usepackage{booktabs}
+\usepackage{rotating}
+\usepackage{lscape}
+\usepackage{mwe}
+\usepackage{listings}
+\usepackage{xcolor}
 
 \newcommand*\rfrac[2]{{}^{#1}\!/_{#2}}
+
+\lstset { %
+    language=C++,
+    backgroundcolor=\color{black!5}, % set backgroundcolor
+    basicstyle=\footnotesize,% basic font setting
+    numbers=left
+}
+
 
 
 \captionsetup{compatibility=false}
@@ -149,7 +163,7 @@ Die Wahrscheinlichkeit $p^k_{ij}$, mit der eine Ameise $k \in M$ ausgehend von e
 Dabei sind $\alpha$ und $\beta$ Parameter, die im Fall von $\alpha$ die Wichtigkeit der Pheromonkonzentration und im Fall von $\beta$ die Wichtigkeit der Distanzinformationen zur Entscheidungsfindung angeben. $N^k_i$ ist die Menge der erreichbaren unbesuchten Knoten der Ameise $m_k$.
 \begin{align}
 \label{eq:Prob}
-p^k_{ij} = \frac{[\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta}{\sum\nolimits_{l\in N^k_i} [\tau_{il}]^\alpha \, [\eta_{il}]^\beta} \; \; \text{if}\: j \in N^k_i
+p^k_{ij} = \frac{[\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta}{\sum\nolimits_{l\in N^k_i} [\tau_{il}]^\alpha \, [\eta_{il}]^\beta} \; \; \text{if}\: j \in N^k_i    
 \end{align}
 Im Rahmen dieser Arbeit wurde zusätzlich eine vereinfachte Formel  implementiert die eine reduzierte Form dieser Gleichung darstellt:
 \begin{align}
@@ -188,7 +202,7 @@ Das Programm lässt sich grob gesehen in zwei Komponenten aufteilen - zum einen 
 \\\\Beim Start des Programms wird ein dynamischer Container vom Typ \texttt{vector<Ant>} angelegt, in dem sich alle \texttt{Ant}-Objekte befinden. Die weitere Arbeitsweise des Programms hängt nun von dem ausgewählten Algorithmus der Pheromonaktualisierung ab ab. Bevor näher auf diese schon im Abschnitt \ref{enum:Update} erwähnten drei implementierten Algorithmen eingegangen wird, wird im folgenden zunächst der Algorithmus zur Ermittlung der jeweils nächsten Stadt während der Tourkonstruktion diskutiert. 
 \subsubsection{Wahrscheinlichkeitsalgorithmus zum Finden der nächsten Stadt}
 Während der Tourkonstruktion einer Ameise $m$ wird beim Erreichen jeder neuen Stadt die Wahrscheinlichkeiten für die restlichen Städte ermittelt. 
-Dazu wird ein \texttt{vector} $P$ angelegt, welcher der Anzahl der Städte entspricht und diese Wahrscheinlichkeiten enthält. Dann wird für alle Städte, die noch nicht besucht wurden, iterativ die Besuchswahrscheinlichkeit berechnet und in $P$ gespeichert. Die Berechnung der Wahrscheinlichkeit erfolgt durch die in Abschnitt \ref{enum:Update} definierte Formel \ref{eq:Prob} bzw. \ref{eq:ProbSimple}. Am Ende wird die Stadt $v_o = v_i$ besucht, welche die größte Wahrscheinlichkeit $p_i$ besitzt. \\Dieser eigens implementierte Wahrscheinlichkeitsalgorithmus wird von im folgenden von allen drei Algorithmen zur Konstruktion der Tour verwendet.
+Dazu wird ein \texttt{vector} $P$ angelegt, dessen Größe der Anzahl der Städte entspricht und diese Wahrscheinlichkeiten enthält. Dann wird für alle Städte, die noch nicht besucht wurden, iterativ die Besuchswahrscheinlichkeit berechnet und in $P$ gespeichert. Die Berechnung der Wahrscheinlichkeit erfolgt durch die in Abschnitt \ref{enum:Update} definierte Formel \ref{eq:Prob} bzw. \ref{eq:ProbSimple}. Am Ende wird die Stadt $v_o = v_i$ besucht, welche die größte Wahrscheinlichkeit $p_i$ besitzt. \\Dieser eigens implementierte Wahrscheinlichkeitsalgorithmus wird von im folgenden von allen drei Algorithmen zur Konstruktion der Tour verwendet.
 \begin{algorithm}
 \caption{Ermittlung der nächsten Stadt während der Tourkonstruktion einer Ameise}
 \label{probabilityAlg}
@@ -300,7 +314,8 @@ Bei der dritten in dieser Arbeit betrachteteten Methode konstruieren die Ameisen
 \end{algorithmic}
 \end{algorithm}
 \subsection{Vorgehensweise zur Untersuchung von verschiedenen Datensätzen mit verschiedenen Implementierungen}
-Im Rahmen dieser Arbeit werden zur Untersuchung der verschiedenen Algorithmen zur Lösung des TSP der TSPLIB fünf Probleminstanzen entnommen: \texttt{burma14}, \texttt{dantzig42}, \texttt{gr120} und \texttt{si535} als symmetrische Probleminstanzen und \texttt{ft53} als asymmetrische Probleminstanz.
+\label{sec:vorgehensweise}
+Im Rahmen dieser Arbeit werden zur Untersuchung der verschiedenen Algorithmen zur Lösung des TSP der TSPLIB vier symmetrische Probleminstanzen entnommen: \texttt{burma14}, \texttt{dantzig42}, \texttt{gr120} und \texttt{si535}.
 Die unterschiedlichen Größen der gewählten Instanzen dienen einer besseren Beurteilung der Effektivität und Laufzeit des Programms.
 Der Begriff \textit{Effektivität} bezieht sich dabei im folgenden immer auf die Eigenschaft, im Bezug auf die Tourlänge möglichst nah an das Optimum heranzukommen. Sowohl die Laufzeit als auch die Effektivität hängen von mehreren Parametern ab:
 \begin{enumerate}
@@ -311,13 +326,208 @@ Der Begriff \textit{Effektivität} bezieht sich dabei im folgenden immer auf die
 \end{enumerate}
 Im Rahmen der Untersuchung und Auswertung wird anhand der \texttt{dantzig42}-Instanz die Auswirkungen der oben genannten Parameter betrachtet und die Ergebnisse für verschiedene Werte erfasst.
 Dies geschieht für alle drei umgesetzten Algorithmen unter Berücksichtigung der verschiedenen Implementierungen der Ermittlung der Wahrscheinlichkeit $p^k_{ij}$ (Abschnitt \ref{structure}).
-Die dadurch gewonnenen Werte für die Parameter werden hinsichtlich der Effektivität verglichen. Die besten Parameterwerte werden dann für die Untersuchung der verbleibenden vier Probleminstanzen verwendet. 
-\\Zur besseren Analyse werden alle Daten automatisch in eine CSV-Datei geschrieben und von dort aus ausgewertet.
+Die dadurch gewonnenen Werte für die Parameter werden hinsichtlich der Effektivität verglichen. 
 \newpage\section{Ergebnisse der Durchführung}
-Um die Laufzeit eines Problems zu messen wird die C++ Bibliothek \texttt{chrono} verwendet. Dabei wird die Systemzeit bei Beginn und Ende der Routenberechnung gemessen. Die Laufzeit ergibt sich dann aus der Differenz beider Werte. 
-\\Die Effektivität ergibt sich aus der Abweichung zum Tourlängen-Optimum. Dabei wird der maximale Abstand und der Durchschnitt in mehreren Programmdurchläufen erfasst und prozentual ermittelt.
-\subsection{Resultate bei Iteration einzelner Ameisen nacheinander}
-\subsection{Resultate bei paralleler Erschließung}
+Die Untersuchung der implementierten Algorithmen und der Einfluss der einzelnen Parameter wurde auf einem 3800 Mhz QuadCore-Rechner mit 8 Gigabyte RAM durchgeführt. 
+\\Zur besseren Analyse werden alle Daten automatisch in eine CSV-Datei geschrieben und von dort aus ausgewertet.
+\\Um die Laufzeit eines Problems zu messen wird die C++ Bibliothek \texttt{chrono} verwendet. Dabei wird die Systemzeit bei Beginn und Ende der Routenberechnung gemessen. Die Laufzeit ergibt sich dann aus der Differenz beider Werte. 
+\\Die Effektivität ergibt sich aus der Abweichung zum Tourlängen-Optimum. Dabei wird der maximale bzw. minimale Abstand und der Durchschnitt in mehreren Programmdurchläufen erfasst und prozentual ermittelt.
+\\Für alle nachfolgenden Experimente wurde die Pheromonkonzentration auf allen Kanten mit dem Wert $0,01$ initialisiert.
+\subsection{Einfluss der Parameter auf die implementierter Algorithmen}
+\label{sec:einflussparameter}
+In diesem Abschnitt wird zunächst der Einfluss der in Abschnitt \ref{sec:vorgehensweise} besprochenen wesentlichen Parameter diskutiert und grafisch dargestellt. Die jeweiligen nicht untersuchten Parameter in den einzelnen Experimenten wurden empirisch auf $\alpha = 1$ und $\beta = 0,25$ bzw. $Q = 40$ und $\rho = 0,15$ festgelegt.
+\subsubsection{Parametereinfluss auf den iterativen Algorithmus}
+Der iterative Algorithmus ist die klassische Umsetzung zur Lösung einer TSP-Probleminstanz mit dem Ameisenalgorithmus. Deswegen wird dieser und der Einfluss der einzelnen Parameter zuerst betrachtet. \\Bei der Untersuchung wurden zunächst die Parameter Alpha $\alpha$ und Beta $\beta$ für das Intervall $0,05 \leq \{\alpha,\beta\} \leq 1$ mit einer Schrittweite von $0,05$ iteriert. Dies wurde mit einer doppelten \texttt{For}-Schleife umgesetzt:
+\begin{lstlisting}
+for (double alpha = 0.05; alpha <= 1,0; alpha += 0,05)
+	for (double beta = 0,05; beta <= 1,0; beta += 0,05) 
+		RunAlgorithm();
+\end{lstlisting}
+Somit ergibt sich für jeden Wert von Alpha $\alpha$ die Abhängigkeit von allen Werten für Beta $\beta$. Dies gilt natürlich auch umgekehrt.
+\\Die gleiche Vorgehensweise wurde analog für die Parameter $Q$ (Menge des abgelegten Pheromons) und $\rho$ (Pheromonpersistenz durchgeführt.
+Hierbei wurde für $Q$ das Intervall $2 \leq Q \leq 42$ und für $\rho$ das Intervall $0,05 \leq \rho \leq 0,95$ gewählt.
+\\Die Ergebnisse finden sich grafisch dargestellt in Abbildung \ref{fig:iterativeDiagram}. Es lässt sich deutlich erkennen, das sowohl der Parameter $\alpha$, der über die Wichtigkeit der Pheromonspur Auskunft gibt, als auch der Parameter $Q$, der die abgelegte Pheromonmenge darstellt, bei Veränderung im gewählten Wertebereich keinen großen Einfluss auf die Tourlängen hat. Mit einem steigenden Einfluss von Parameter $\beta$ werden die Routen insgesamt kürzer. Am meisten beeinflusst jedoch der Parameter $\rho$ für die Pheromonpersistenz die gefundenen Tourlängen. Umso mehr sich dieser Parameter dem Wert $1$ nähert, umso kürzer werden die Routen im Durchschnitt.
+\begin{figure}
+        \centering
+        \captionsetup[subfigure]{oneside,margin={0.5cm,0cm}}
+        \begin{subfigure}[b]{0.475\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{images/diagramiterativealpha}
+            \caption{Alpha $\alpha$}               
+            \label{fig:iterativeAlpha}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.475\textwidth}  
+            \centering 
+            \includegraphics[width=\textwidth]{images/diagramiterativebeta}
+            \caption{Beta $\beta$}   
+            \label{fig:iterativeBeta}
+        \end{subfigure}
+        \vskip\baselineskip
+        \begin{subfigure}[b]{0.475\textwidth}   
+            \centering 
+            \includegraphics[width=\textwidth]{images/diagramiterativedeposit}
+            \caption{Menge des abgelegten Pheromons}   
+            \label{fig:iterativeDeposit}
+        \end{subfigure}
+        \quad
+        \begin{subfigure}[b]{0.475\textwidth}   
+            \centering 
+            \includegraphics[width=\textwidth]{images/diagramiterativereduction}
+            \caption{Pheromonpersistenz}   
+            \label{fig:iterativeReduction}
+        \end{subfigure}
+        \caption{Abhängigkeit der Tourlänge von den einzelnen Parametern bei der iterativen Tourkonstruktion } 
+        \label{fig:iterativeDiagram}
+    \end{figure}
+\subsubsection{Parametereinfluss auf den iterativen Algorithmus mit eingeschränkter Pheromonaktualisierung}
+Wie bei dem oben untersuchten iterativen Algorithmus wurden auch hier die Parameter Alpha $\alpha$ und Beta $\beta$ sowie $Q$ und $\rho$ kombiniert untersucht. Dazu wurden wie schon oben gezeigt jeweils eine doppelte \texttt{For}-Schleife verwendet. Aufgrund der höheren Komplexität und damit der höheren Laufzeit wurden die Schrittweiten zwischen den einzelnen Werten doppelt so groß gewählt. Der Wertebereich für die einzelnen Parameter ist für Alpha $\alpha$ und Beta $\beta$ derselbe; für die Pheromonablagemenge wurde eine Wertebereich von $2 \leq Q \leq$, für die Pheromonpersistenz eine Wertebereich von $0,1 \leq \rho \leq 1$ gewählt.
+\\Auch wenn dieser Algorithmus vom Namen her auf eine ähnliche Tourlängenbeeinflussung durch die einzelnen Parameter wie der iterative Algorithmus ohne eingeschränkte Pheromonaktualisierung schließen lässt, gestaltet sich diese wesentlich anders. Dies geht aus Abbildung \ref{fig:mmasDiagram} hervor. Der Parameter Beta $\beta$, der die Wichtigkeit der Distanz bei der Ermittlung der nächsten Stadt während der Tourkonstruktion angibt, 
+lässt das Finden leicht kürzerer Routen bei Annäherung gegen $1$ zu. Der Parameter Alpha $\alpha$ dagegen beeinflusst das Finden kurzer Touren bei Annäherung gegen $1$ eher negativ. Jedoch ist die Streuung bei kleinen Werten für $\alpha$ wesentlich höher. \\Über den Einfluss der Menge des abgelegten Pheromons lässt sich bei diesem Algorithmus sagen, dass diese ab circa ab einem Wert von $10$ die besten Werte mit einer sehr geringen Streuung erzielt. Für einen Wert von $Q = 2$ erreicht der Algorithmus teilweise Tourlängen mit einer Abweichung von fast $300 \%$ vom Optimum. Die Pheromonpersistenz $\rho$ steigt für höhere Werte leicht an und ist für einen Wert im Bereich von $0,05$ bis $0,10$ optimal im Hinblick auf die Tourlänge sowie vor allem auf eine geringe Streuung.
+\begin{figure}
+        \centering
+        \captionsetup[subfigure]{oneside,margin={0.5cm,0cm}}
+        \begin{subfigure}[b]{0.475\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{images/diagrammmasalpha}
+            \caption{Alpha $\alpha$}               
+            \label{fig:iterativeAlpha}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.475\textwidth}  
+            \centering 
+            \includegraphics[width=\textwidth]{images/diagrammmasbeta}
+            \caption{Beta $\beta$}   
+            \label{fig:iterativeBeta}
+        \end{subfigure}
+        \vskip\baselineskip
+        \begin{subfigure}[b]{0.475\textwidth}   
+            \centering 
+            \includegraphics[width=\textwidth]{images/diagrammmasdeposit}
+            \caption{Menge des abgelegten Pheromons}   
+            \label{fig:iterativeDeposit}
+        \end{subfigure}
+        \quad
+        \begin{subfigure}[b]{0.475\textwidth}   
+            \centering 
+            \includegraphics[width=\textwidth]{images/diagrammmasreduction}
+            \caption{Pheromonpersistenz}   
+            \label{fig:iterativeReduction}
+        \end{subfigure}
+        \caption{Abhängigkeit der Tourlänge von den einzelnen Parametern bei der iterativen Tourkonstruktion mit eingeschränkter Pheromonaktualisierung } 
+        \label{fig:mmasDiagram}
+    \end{figure}
+\subsubsection{Parametereinfluss auf den parallelen Algorithmus}
+Beim dritten und letzten implementierten Algorithmus wird der Parametereinfluss wie bei den zwei vorhergehenden Algorithmen auch durch Kombination der Parameter untersucht. Auch hier wird Alpha $\alpha$ und Beta $\beta$ zusammen im Intervall von $0,05 \leq \{\alpha,\beta\} \leq 1$ untersucht - jeweils mit einer Schrittweite von $0,05$. Anhand von Abbildung \ref{fig:parallelDiagram} lässt sich erkennen, dass für Alpha $\alpha$ bessere Tourlängenwerte bei Annäherung gegen $1$ erzielt werden. Für Beta $\beta$ ist dieser Sachverhalt genau umgekehrt - hier werden die besten Werte bei einem geringen Einfluss der Distanz auf die Tourkonstruktion erzielt.\\Für die Pheromonablage- und Pheromonpersistenzwerte werde wurde ein Wertebereich von $2 \leq Q \leq 42$ bzw. $0,05 \leq \rho \leq 0,95$ gewählt. Für diese Parameter lässt sich keine große Veränderung der Tourlängen feststellen; die gefundenen Tourlängen sind im Mittel konstant für alle unterschiedlichen Werte.
+\begin{figure}
+        \centering
+        \captionsetup[subfigure]{oneside,margin={0.5cm,0cm}}
+        \begin{subfigure}[b]{0.475\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{images/diagramparallelalpha}
+            \caption{Alpha $\alpha$}               
+            \label{fig:iterativeAlpha}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.475\textwidth}  
+            \centering 
+            \includegraphics[width=\textwidth]{images/diagramparallelbeta}
+            \caption{Beta $\beta$}   
+            \label{fig:iterativeBeta}
+        \end{subfigure}
+        \vskip\baselineskip
+        \begin{subfigure}[b]{0.475\textwidth}   
+            \centering 
+            \includegraphics[width=\textwidth]{images/diagramparalleldeposit}
+            \caption{Menge des abgelegten Pheromons}   
+            \label{fig:iterativeDeposit}
+        \end{subfigure}
+        \quad
+        \begin{subfigure}[b]{0.475\textwidth}   
+            \centering 
+            \includegraphics[width=\textwidth]{images/diagramparallelreduction}
+            \caption{Pheromonpersistenz}   
+            \label{fig:iterativeReduction}
+        \end{subfigure}
+        \caption{Abhängigkeit der Tourlänge von den einzelnen Parametern bei der parallelen Tourkonstruktion } 
+        \label{fig:parallelDiagram}
+    \end{figure}
+\subsection{Auswirkung des gewählten Wahrscheinlichkeitsalgorithmus}
+Wie schon in Abschnitt \ref{enum:Update} vorgestellt, wurden für die Erstellung dieser Arbeit zwei verschiedene Algorithmen zur Ermittlung der Wahrscheinlichkeiten der nächsten Städte bei der Tourkonstruktion implementiert. Diesen Algorithmen liegt zum einen die Formel \ref{eq:Prob} zugrunde, die auch von Thomas Stützle und Holger H. Hoos in ihrem vorgestellten \textit{MAX-MIN Ant System} verwendet wurde. Im folgenden wird der Algorithmus, der diese Formel verwendet, der Einfachheit halber \textit{Komplexer Wahrscheinlichkeitsalgorithmus} genannt. Der andere Algorithmus verwendet eine stark vereinfachte Form dieser Formel (Gleichung \ref{eq:ProbSimple}) und wird im folgenden als \textit{Einfacher Wahrscheinlichkeitsalgorithmus} bezeichnet.
+\\Bei der Untersuchung wurden für die einzelnen Parameter folgende empirische Werte verwendet: $\alpha = 1$, $\beta = 0,25$, $Q = 40$ und $\rho = 0,15$. Für die Erhebung von statischen Daten wurde jeder Algorithmus zur Tourkonstruktion mit jedem Wahrscheinlichkeitsalgorithmus zehnmal getestet. Die verwendete Probleminstanz war \texttt{dantzig42} mit einem Tourlängenoptimum von $699$.
+\\\\Die Ergebnisse sind in folgender Tabelle dargestellt:
+\begin{table}[]
+\captionsetup{justification=centering}
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lllllll@{}}
+\toprule
+ & \multicolumn{6}{c}{Wahrscheinlichkeitsermittlung} \\
+ & \multicolumn{3}{c|}{Einfach} & \multicolumn{3}{c}{Komplex} \\
+\multicolumn{1}{c|}{Algorithmus} & \begin{tabular}[c]{@{}l@{}}Tourlänge\\ (Durchschnitt)\end{tabular} & {[}\%{]} & \multicolumn{1}{l|}{Zeit in $s$} & \begin{tabular}[c]{@{}l@{}}Tourlänge\\ (Durchschnitt)\end{tabular} & {[}\%{]} & Zeit in $s$ \\ \midrule
+\multicolumn{1}{l|}{Iterativ} & 746,3 & 6,77 & \multicolumn{1}{l|}{3,49} & 733,1 & 4,88 & 55,46 \\
+\multicolumn{1}{l|}{Iterativ mit eingeschränkter Pheromonaktualisierung} & 849,7 & 21,56 & \multicolumn{1}{l|}{5,13} & 880,5 & 25,97 & 71,23 \\
+\multicolumn{1}{l|}{Parallel} & 818 & 17,02 & \multicolumn{1}{l|}{23,33} & 832,6 & 19,11 & 447,45 \\ \bottomrule
+\multicolumn{7}{l}{}
+\end{tabular}%
+}
+\caption{Ergebnisse für die einzelnen in Algorithmen in Abhängigkeit von dem gewählten Wahrscheinlichkeitsalgorithmus. Die Prozentzahl hinter der Tourlänge zeigt die Abweichung vom Tourlängenoptimum $d = 699$ an}
+\label{table:Prob}
+\end{table}
+\\Auffallend ist zu aller erst, dass der komplexe Wahrscheinlichkeitsalgorithmus im Vergleich zu dem einfachen Algorithmus sehr viel mehr Zeit zur Berechnung benötigt. Dieser Unterschied beträgt teilweise bis zu $2000 \,\%$.
+Im Hinblick auf die gefundenen Routenlängen lässt  sich kein großer Unterschied feststellen. Bei dem Iterativen Algorithmus mit eingeschränkter Pheromonaktualisierung und der parallelen Tourkonstruktion sind die durchschnittlichen Routenlängen bei Benutzung des einfachen Wahrscheinlichkeitsalgorithmus sogar kleiner.
+\subsection{Ergebnisse der Algorithmen bei verschiedenen TSP-Probleminstanzen}
+Abschließend werden nun die drei implementierten Tourkonstruktionsalgorithmen auf vier verschiedenen TSP-Probleminstanzen angewendet, die der \texttt{TSPLIB95} entnommen wurden. Gewählt wurden die Instanzen \texttt{burma14}, \texttt{dantzig42}, \texttt{gr120} und \texttt{si535}. Für alle Algorithmen wurde der eigene, einfache Wahrscheinlichkeitsalgorithmus verwendet.
+\\In der untenstehenden Tabelle \ref{table1} sind die Ergebnisse und die jeweiligen verwendeten Werte für die verschiedenen Parameter aufgelistet.
+\\Die Probleminstanz \texttt{si535} wurde aufgrund der absehbar hohen Laufzeit nicht mit dem \textit{Iterativen Algorithmus mit eingeschränkter Pheromonaktualisierung} untersucht. Die Angabe der Laufzeit ist in dem Fall ein geschätzter Wert, der durch den Vergleich mit anderen Laufzeiten zustande kommt.
+\\Für die beiden iterativen Algorithmen wurden unterschiedliche Werte der Parameter abhängig von der Anzahl der Städte einen Problems verwendet. Diese Vorgehensweise resultiert resultiert aus einem besseren Ergebnis im Hinblick auf die Effektivität. Dabei sind sowohl die einzelnen Parameterwerte als auch die Städtezahl, bei sich diese Parameter ändern, empirisch bestimmte Werte die unter anderem auf den Ergebnissen von Abschnitt \ref{sec:einflussparameter} basieren.
+\\Die Auswertung der Ergebnisse folgt im nächsten Abschnitt dieser Arbeit. Grob gesehen lässt sich aber erkennen, dass der iterative Algorithmus die besten Werte erzielt während der Iterative Algorithmus mit eingeschränkter Pheromonaktualisierung am schlechtesten abschneidet; auch was die Laufzeit des Algorithmus betrifft.
+\newpage
+\begin{landscape}
+\begin{table}[]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}llllllllllll@{}}
+\toprule
+          &         &                                            & \multicolumn{6}{c}{gefundene Routen}                                                   & \multicolumn{3}{c}{Laufzeiten in Sekunden}             \\
+Name      & Optimum & \multicolumn{1}{l|}{Algorithmus}           & Minimum & {[}\%{]} & Maximum & {[}\%{]} & Durchschnitt & \multicolumn{1}{l|}{{[}\%{]}} & Minimum          & Maximum          & Durchschnitt     \\ \midrule
+burma14   & 3323    & \multicolumn{1}{l|}{Iterativ}              & 3336    & 0,3      & 3803    & 14,4     & 3450,2       & \multicolumn{1}{l|}{3,8}      & 0,53             & 0,54             & 0,53             \\
+                 &         & \multicolumn{1}{l|}{Iterativ mit eing. PA} & 3381    & 1,7      & 3381    & 1,7      & 3381         & \multicolumn{1}{l|}{1,7}      & 3,34             & 3,38             & 3,31             \\ 
+ &         & \multicolumn{1}{l|}{Parallel}              & 3323    & 0        & 3323    & 0        & 3323         & \multicolumn{1}{l|}{0}        & 0,50             & 0,55             & 0,52             \\ \midrule
+dantzig42 & 699     & \multicolumn{1}{l|}{Iterativ}              & 704     & 0,7      & 755     & 8        & 721,9        & \multicolumn{1}{l|}{3,2}      & 4,32             & 5,84             & 5,51             \\
+&         & \multicolumn{1}{l|}{Iterativ mit eing. PA} & 814     & 16,4     & 836     & 19,6     & 824,2        & \multicolumn{1}{l|}{17,9}     & 22,74            & 23,59            & 23,01            \\
+          &         & \multicolumn{1}{l|}{Parallel}              & 731     & 4,6      & 764     & 9,3      & 749,3        & \multicolumn{1}{l|}{7,2}      & 3,34             & 3,39             & 3,37             \\  \midrule
+gr120     & 6942    & \multicolumn{1}{l|}{Iterativ}              & 8166    & 17,63    & 8286    & 19,3     & 8221,6       & \multicolumn{1}{l|}{18,4}     & 32,22            & 44,45            & 42,77            \\       
+          &         & \multicolumn{1}{l|}{Iterativ mit eing. PA} & 8322    & 27,2     & 8832    & 27,2     & 8832         & \multicolumn{1}{l|}{27,2}     & 173,53           & 202,95           & 182,84           \\ 
+   &         & \multicolumn{1}{l|}{Parallel}              & 8198    & 18,1     & 8778    & 26,4     & 8540,2       & \multicolumn{1}{l|}{21,7}     & 24,02            & 26,08            & 24,64            \\\midrule
+si535     & 48450   & \multicolumn{1}{l|}{Iterativ}              & 50101   & 3,4      & 53532   & 10,4     & 51529,3      & \multicolumn{1}{l|}{6,35}     & 657,10           & 687,36           & 673,59           \\
+    &         & \multicolumn{1}{l|}{Iterativ mit eing. PA} & -       & -        & -       & -        & -            & \multicolumn{1}{l|}{-}        & ($\sim$1 Stunde) & ($\sim$1 Stunde) & ($\sim$1 Stunde) \\
+          &         & \multicolumn{1}{l|}{Parallel}              & 70438   & 45,3     & 74246   & 53,2     & 72137,8      & \multicolumn{1}{l|}{48,89}    & 466,01           & 570,11           & 503,40           \\  \bottomrule
+\end{tabular}%
+}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{ll|llllll}
+\multicolumn{8}{l}{}  \\
+\multicolumn{8}{l}{}  \\ 
+\multicolumn{8}{l}{}  \\ 
+\multicolumn{8}{l}{}  \\
+\multicolumn{8}{l}{}  \\
+\multicolumn{8}{l}{}  \\
+\multicolumn{8}{l}{}  \\ 
+\multicolumn{8}{l}{}  \\ \toprule
+Algorithmus           &                      & Alpha $\alpha$ & Beta $\beta$ & Pheromonablagemenge $Q$ & Pheromonpersistenz $\rho$ & Anzahl an Ameisen & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Iterationen\\ bzw. Iterationsschwelle\end{tabular}} \\ \hline
+Iterativ              & $|V| \textless{}=$ 100 & 1     & 0,25 & 40                    & 0,15                      & 1000              & 500                                                                                               \\
+                      & $|V| \textgreater 100$ & 0,1   & 0,9  & 10                    & 0,9                       & 1000              & 500                                                                                               \\ \hline
+Iterativ mit eing. PA & $|V| \textless{}= 100$ & 1     & 0,25 & 10                    & 0,15                      & 500               & 8                                                                                                 \\
+                      & $|V| \textgreater 100$ & 0,1   & 0,9  & 10                    & 0,05                      & 500               & 8                                                                                                 \\ \hline
+Parallel              &                      & 1     & 0,1  & 42                    & 0,15                      & 500               & -                                                                                                 \\ \bottomrule
+\multicolumn{8}{l}{}  \\ 
+\end{tabular}%
+}
+\\\caption{Gefundene Touren von Probleminstanzen aus der \texttt{TSPLIB95} in Abhängigkeit von dem gewählten Algorithmus. Der \textit{Iterative Algorithmus mit eingeschränkter Pheromonaktualisierung} wird in dieser Tabelle mit \glqq Iterativ mit eing. PA\grqq{} abgekürzt. Die Zahl in dem Namen der Probleminstanz gibt die Anzahl der Städte in dieser an. Weiterhin stehen die Prozentangaben hinter den Tourlängen für die Abweichung vom jeweiligen Optimum. Die untere Tabelle gibt Auskunft über die verwendeten Parameter beim Versuchsdurchlauf. Um statistisch verwertbare Daten zu erhalten wurde jeder Versuch zehnmal durchgeführt.}
+\label{table1}
+\end{table}
+\end{landscape}
 \section{Auswertung und Vergleich}
 \subsection{Vergleich der iterativen und parallelen Implementierung}
 \subsection{Vergleich mit der optimalen Lösung}
@@ -337,11 +547,32 @@ Der Button \textbf{Search...} öffnet einen neuen Filedialog, mit dem die gewün
 \\\\Der Paramater im Textfeld \textbf{Runs} gibt an, wie oft das gesamte Programm ausgeführt werden soll. Dies ist hilfreich bei der Ermittlung von Durchschnittswerten für einzelne festgelegte Parameter.
 \\\\Unter \textbf{Settings} befinden sich alle konfigurierbaren Parameter, die Einfluss auf den Algorithmus haben. 
 \\\textbf{Number of Ants} gibt die Anzahl der Ameisen an, welche die Route konstruieren. \textbf{Alpha} steht für die Wichtigkeit der Pheromonspur, \textbf{Beta} für die Wichtigkeit der Distanz bei der Ermittlung der nächsten Stadt im Verlauf der Tourkonstruktion. Der Parameter \textbf{Pheromondeposit} gibt die Menge des ablegten Pheromons an, während \textbf{Pheromonereduction} für die Verdunstungsmenge steht.
-\\Es existiert die Möglichkeit, abhängig vom ausgewählten Algorithmus eine globale Pheromonreduktion durchzuführen, die durch den Parameter \textbf{Overall Reduction} festgelegt wird.
-\\\\Unter \textbf{Switch Algorithm} kann der gewünschte Algorithmus zur Berechnung der kürzesten Route gewählt werden. \textbf{Iterations} gibt dabei für den iterativen Algorithmus die Anzahl von Iterationen an, nach denen der Algorithmus abbricht, wenn keine kürzere Route gefunden wurde. Analag gibt er für die Option \textbf{MMAS} an, wie oft alle Ameisen ihre Tour konstruieren.
+\\\\Unter \textbf{Switch Algorithm} kann der gewünschte Algorithmus zur Berechnung der kürzesten Route gewählt werden. \textbf{Iterations} gibt dabei für den iterativen Algorithmus die Anzahl von Iterationen an, nach denen der Algorithmus abbricht, wenn keine kürzere Route gefunden wurde. Analag gibt er für die Option \textbf{Iterative with restricted Pheromoneupdate} an, wie oft alle Ameisen ihre Tour konstruieren.
 \\\\Mit \textbf{Switch Probability-Function} kann zwischen einem einfachen und einem komplexeren Algorithmus zur Ermittlung der nächsten jeweiligen Stadt bei der Erstellung der Route ausgewählt werden.
 \\\\Ein Klick auf den Button \textbf{Start} startet den Algorithmus. Die Ausgabe erfolgt in das untenstehende Textfeld, welches mit dem Button \textbf{Clear} geleert werden kann.
 \\\\Möchte man zudem eine Ausgabe in eine Tabellendatei erhalten, muss oben rechts die Funktion \textbf{Write into CSV File} aktiviert werden.
+\newpage
+\section{Hinweise zur Nutzung des Programms als Konsolenapplikation}
+Die Implementierung des Ameisenalgorithmus zur Lösung von TSP-Probleminstanzen kann auch auf Konsolenbasis unter Windows genutzt werden. Hierbei wird der Pfad und die einzelnen Optionen als Runtime-Parameter übergeben. Insgesamt müssen dabei jeweils 13 Parameter gesetzt werden.
+\begin{enumerate}
+\item Dateipfad (Datei muss dabei als \texttt{XML}-Datei vorliegen)
+\item Anzahl der Ameisen, die eine Tour generieren
+\item Gewünschter Algorithmus: \glqq 0\grqq\, entspricht dem Iterativen Algorithmus, \glqq 1\grqq\, dem parallelen Algorithmus und \glqq 2\grqq\, dem Iterativen Algorithmus mit eingeschränkter Pheromonaktualisierung
+\item Wert für die Menge an abgelegtem Pheromon $Q$ - sollte zwischen $0.05$ und $80$ liegen
+\item Wert für die Pheromonverdunstung $1 - \rho$ - sollte zwischen $0.01$ und $0.99$ liegen
+\item Wert für den Parameter Alpha $\alpha$ - sollte zwischen $0.01$ und $1$ liegen
+\item Wert für den Parameter Beta $\beta$ - sollte zwischen $0.01$ und $1$ liegen
+\item Schalter für eine optionale allgemeine Reduzierung der Pheromonmatrix nach jeder Tourkonstruktion - für \glqq 0\grqq\, ist die Option deaktiviert, für \glqq 1\grqq\, aktiviert
+\item Wert für die optionale allgemeine Reduzierung der Pheromonmatrix - sollte zwischen $0.001$ und $0.1$ liegen
+\item Anzahl der Iterationen für den Iterativen Algorithmus, bei der Wahl von anderen Algorithmen \glqq 0\grqq\, eintragen
+\item Anzahl der Iterationen beim Iterativen Algorithmus mit eingeschränkter Pheromonaktualisierung, bei der Wahl von anderen Algorithmen \glqq 0\grqq\, eintragen
+\item Schalter für den Wahrscheinlichkeitsalgorithmus - bei \glqq 0\grqq\, wird der einfache Algorithmus verwendet, bei \glqq 1\grqq\, der komplexe Algorithmus
+\item Schalter für die Ausgabe in eine CSV-Datei - dieser ändert den Output des Programms sodass für eine einfache weitere Verwendung in einem CSV-Datensatz - für \glqq 0\grqq\, ist die Option deaktiviert, für \glqq 1\grqq\, aktiviert
+\end{enumerate}
+Für die Verwendung des Iterativen Algorithmus mit $1000$ Ameisen und einer Iterationsschwelle von $500$ zur Lösung der \texttt{burma14}-Probleminstanz könnte der Prozessaufruf so aussehen:
+\begin{lstlisting}
+TSPACO.exe burma14.xml 1000 1 40.0 0.14 1.0 0.25 0 0.001 500 0 0 0
+\end{lstlisting}
 
 \newpage
 \bibliography{literatur}{}
