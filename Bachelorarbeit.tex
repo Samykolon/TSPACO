@@ -41,6 +41,7 @@
 \TUBAFDatum[2018-11-05]{05. November 2018}
 \begin{document}
 \maketitle
+\TUBAFErklaerungsseite
 \tableofcontents
 \newpage
 \section{Einleitung}
@@ -163,12 +164,12 @@ Die Wahrscheinlichkeit $p^k_{ij}$, mit der eine Ameise $k \in M$ ausgehend von e
 Dabei sind $\alpha$ und $\beta$ Parameter, die im Fall von $\alpha$ die Wichtigkeit der Pheromonkonzentration und im Fall von $\beta$ die Wichtigkeit der Distanzinformationen zur Entscheidungsfindung angeben. $N^k_i$ ist die Menge der erreichbaren unbesuchten Knoten der Ameise $m_k$.
 \begin{align}
 \label{eq:Prob}
-p^k_{ij} = \frac{[\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta}{\sum\nolimits_{l\in N^k_i} [\tau_{il}]^\alpha \, [\eta_{il}]^\beta} \; \; \text{if}\: j \in N^k_i    
+p^k_{ij} = \frac{[\tau_{ij}]^\alpha \, [\rfrac{1}{\eta_{ij}}]^\beta}{\sum\nolimits_{l\in N^k_i} [\tau_{il}]^\alpha \, [\rfrac{1}{\eta_{ij}}]^\beta} \; \; \text{if}\: j \in N^k_i    
 \end{align}
 Im Rahmen dieser Arbeit wurde zusätzlich eine vereinfachte Formel  implementiert die eine reduzierte Form dieser Gleichung darstellt:
 \begin{align}
 \label{eq:ProbSimple}
-p^k_{ij} = [\tau_{ij}]^\alpha \, [\eta_{ij}]^\beta
+p^k_{ij} = [\tau_{ij}]^\alpha \, [\rfrac{1}{\eta_{ij}}]^\beta
 \end{align}
 Jede Ameise merkt sich zudem die Reihenfolge der besuchten Knoten in einer Liste $L$. Falls eine Ameise $m_k$ alle Knoten $n$ besucht hat, kehrt sie zu ihrem Anfangsknoten zurück und beendet ihre Tour. Anhand der Liste mit den besuchten Knoten lässt sich nun ein valider Hamiltonkreis ableiten. 
 \\Außerdem ist diese Liste notwendig, um die Pheromonkonzentration der benutzten Kanten zu aktualisieren.
@@ -186,6 +187,7 @@ Die Berechnung der neuen Pheromonkonzentration $\tau_{ij}$ zum Zeitpunkt $t + 1$
 \label{eq:Pheromone}
 \tau_{ij}(t+1) = \rho \, \tau_{ij}(t) + \sum_{k=1}^m Q
 \end{align}
+\newpage
 \section{Implementierung des Problems in C\texttt{++}}
 \subsection{Programmstruktur und Funktionsweise}
 \label{structure}
@@ -200,16 +202,33 @@ Das Programm lässt sich grob gesehen in zwei Komponenten aufteilen - zum einen 
 \\\\Wie in Abbildung \ref{img:classdiagram} ersichtlich ist, besteht das Programm aus vier verschiedenen Klassen. Von grundlegender Bedeutung ist hierbei die Klasse \texttt{Ant}. Diese stellt die einzelnen Ameisen mit allen wichtigen Parametern und Methoden zur Wegfindung und Routenfindung dar. Jedes dieser \texttt{Ant}-Objekte greift auf ein gemeinsames Datenelement \texttt{XMLData} zu, in welchem die Daten der Städte sowie die Kosten- und Pheromonwerte zwischen den einzelnen Städten gespeichert sind. Die Daten der Städte werden in einen Container aus \texttt{City}-Objekten gespeichert. Ein solches \texttt{City}-Objekt besteht aus dem Namen der Stadt und den Koordinaten. Im Falle der TSPLIB ist die Distanzberechnung aus den Koordinaten überflüssig, da die Distanzwerte in der XML-Datei enthalten sind.   Es existiert jedoch eine Methode \texttt{measureDistance} zur Berechnung der Distanz zwischen zwei Städten falls die Datendatei nur die Koordinaten liefert. Bei Anlage eines \texttt{XMLData}-Objekts werden die eingelesenen Distanzwerte in einer Distanzmatrix abgespeichert sowie eine Matrix für die Pheromonwerte initialisiert.  
 \\Desweiteren besitzt die Klasse \texttt{Ant} ein Memberobjekt der Klasse \texttt{Route}, in der die Abfolge der besuchten Städte gespeichert wird. 
 \\\\Beim Start des Programms wird ein dynamischer Container vom Typ \texttt{vector<Ant>} angelegt, in dem sich alle \texttt{Ant}-Objekte befinden. Die weitere Arbeitsweise des Programms hängt nun von dem ausgewählten Algorithmus der Pheromonaktualisierung ab ab. Bevor näher auf diese schon im Abschnitt \ref{enum:Update} erwähnten drei implementierten Algorithmen eingegangen wird, wird im folgenden zunächst der Algorithmus zur Ermittlung der jeweils nächsten Stadt während der Tourkonstruktion diskutiert. 
+\\\\Alle in den folgendenen Abschnitten 3.1.1 bis 3.1.4 umgesetzten Algorithmen wurden für diese Arbeit entwickelt.
 \subsubsection{Wahrscheinlichkeitsalgorithmus zum Finden der nächsten Stadt}
 Während der Tourkonstruktion einer Ameise $m$ wird beim Erreichen jeder neuen Stadt die Wahrscheinlichkeiten für die restlichen Städte ermittelt. 
-Dazu wird ein \texttt{vector} $P$ angelegt, dessen Größe der Anzahl der Städte entspricht und diese Wahrscheinlichkeiten enthält. Dann wird für alle Städte, die noch nicht besucht wurden, iterativ die Besuchswahrscheinlichkeit berechnet und in $P$ gespeichert. Die Berechnung der Wahrscheinlichkeit erfolgt durch die in Abschnitt \ref{enum:Update} definierte Formel \ref{eq:Prob} bzw. \ref{eq:ProbSimple}. Am Ende wird die Stadt $v_o = v_i$ besucht, welche die größte Wahrscheinlichkeit $p_i$ besitzt. \\Dieser eigens implementierte Wahrscheinlichkeitsalgorithmus wird von im folgenden von allen drei Algorithmen zur Konstruktion der Tour verwendet.
+Dazu wird ein \texttt{vector} $P$ angelegt, dessen Größe der Anzahl der Städte entspricht und diese Wahrscheinlichkeiten enthält. Dann wird für alle Städte, die noch nicht besucht wurden, iterativ die Besuchswahrscheinlichkeit berechnet und in $P$ gespeichert. Die Berechnung der Wahrscheinlichkeit erfolgt durch die in Abschnitt \ref{enum:Update} definierte Formel \ref{eq:Prob} bzw. \ref{eq:ProbSimple}. Am Ende wird die Stadt $v_{opt} = v_i$ besucht, welche die größte Wahrscheinlichkeit $p_i$ besitzt. \\Dieser eigens implementierte Wahrscheinlichkeitsalgorithmus wird von im folgenden von allen drei Algorithmen zur Konstruktion der Tour verwendet.
+\\\\Die untenstehende Abbildung \ref{img:probimage} zeigt ein Beispiel für diesen Algorithmus. 
+\begin{figure}
+\captionsetup{justification=centering}
+  \centering
+     \includegraphics[width=0.8\textwidth]{images/probimage.png}
+  \caption{Beispiel für den implementierten Wahrscheinlichkeitsalgorithmus. Die Ameise $m$ ermittelt anhand der Parametern $\alpha = 0,9$ und $\beta = 0,3$ und der gegebenen Daten für $d$ und $s$ die jeweilige Wahrscheinlichkeit $p$ und reist dann in die Stadt mit dem höchsten Wert für $p$; in diesem Fall die Stadt C.}
+  \label{img:probimage}
+\end{figure}
+\\Die Ameise $m$ befindet sich in der als \textit{Anfangsstadt} bezeichneten Stadt. Sie hat nun die Möglichkeit in eine von drei Städten zu reisen. Sie ermittelt nun die Besuchswahrscheinlichkeiten von allen drei Städten. Dazu dienen die Angaben $d$ für die Distanz und $s$ für den Pheromonwert als Grundlage. \\\\Wird ein Parameter Alpha $\alpha$ von $0,9$ und ein Parameter Beta $\beta$ mit $0,3$ gewählt, ergeben sich durch nutzen von Formel \ref{eq:ProbSimple} folgende Wahrscheinlichkeiten $p_i$:
+\begin{align}
+\label{examplePheromone}
+p_{Stadt A} = [\tau_{ij}]^\alpha \, [\rfrac{1}{\eta_{ij}}]^\beta = 0,2^{0,9} \cdot (\rfrac{1}{2})^{0,3} = 0,191 \nonumber
+\\p_{Stadt B} = [\tau_{ij}]^\alpha \, [\rfrac{1}{\eta_{ij}}]^\beta = 0,05^{0,9} \cdot (\rfrac{1}{4})^{0,3} = 0,045 \nonumber
+\\p_{Stadt C} = [\tau_{ij}]^\alpha \, [\rfrac{1}{\eta_{ij}}]^\beta = 0,3^{0,9} \cdot (\rfrac{1}{2})^{0,3} = 0,356 \nonumber
+\end{align}
+Die Ameise reist nun in die Stadt, welche den größten Wert für $p$ besitzt, dies ist in unserem Beispiel die Stadt C mit $p_{Stadt C} = 0,356$.
 \begin{algorithm}
 \caption{Ermittlung der nächsten Stadt während der Tourkonstruktion einer Ameise}
 \label{probabilityAlg}
 \textbf{Eingabe:} Datenobjekt mit $v$ Städten sowie einer Distanzmatrix $D$ und Pheromonmatrix $S$, Ameise $m \in M$ mit einem \texttt{vector} $B$ der Indizes aller schon besuchten Städte, Index $v_k$ der aktuellen Stadt
 \\\textbf{Ausgabe:} Index der nächstbesten Stadt $v_o$
 \begin{algorithmic}[1]
-\State $v_o := -1$
+\State $v_{opt} := -1$
 \State $P$ := $\{p_0, ..., p_n\}$ mit $n = v$ 
 \For{\textbf{each} Stadt $v_i$ in V}
 \If{$v_i \not\in B$ and $v_i \neq v_k$}
@@ -218,33 +237,36 @@ Dazu wird ein \texttt{vector} $P$ angelegt, dessen Größe der Anzahl der Städt
 \State $p_i := 0$
 \EndIf
 \EndFor
-\State $v_o$ := $v_i$ mit $max(p_i \in P)$
+\State $v_{opt}$ := $v_i$ mit $max(p_i \in P)$
 \end{algorithmic}
 \end{algorithm}
 \subsubsection{Iterative Tourkonstruktion}
-Bei der ersten implementierten Methode wird die Pheromonaktualisierung iterativ nach jeder erfolgreichen Tourkonstruktion einer Ameise $m$ vorgenommen. Die nachfolgenden Ameisen können somit für ihre Tourkonstruktion schon die aktualisierten Pheromondaten der vorangegangenen Ameisen nutzen. Zu Beginn des Algorithmus wird eine Menge $M$ von Ameisen definiert. \\Jede Ameise $m \in M$ startet zunächst in einer zufällig ausgewählten Stadt $v_0$ und besucht dann nacheinander alle Städte. Welche Stadt dabei als nächstes besucht wird, ergibt sich aus dem oben vorgestellten Wahrscheinlichkeitsalgorithmus. Jeder Index einer besuchten Stadt $v_i$ wird in einen Routenvector $r$ geschrieben. Hat eine Ameise ihre Tourkonstruktion abgeschlossen, startet die nächste Ameise ihre Tour. \\Der gesamte Algorithmus endet dann, wenn alle Ameisen in $M$ ihre Tour beendet haben oder wenn nach einer bestimmten Anzahl von Iterationen keine kürzere Route mehr gefunden wurde. Diese Iterationsschwelle $n$ wird ebenso zu Beginn festgelegt.
+Bei der ersten implementierten Methode (Algorithmus \ref{IterativeTour}) wird die Pheromonaktualisierung iterativ nach jeder erfolgreichen Tourkonstruktion einer Ameise $m$ vorgenommen. Die nachfolgenden Ameisen können somit für ihre Tourkonstruktion schon die aktualisierten Pheromondaten der vorangegangenen Ameisen nutzen. Der Algorithmus beinhaltet beinhaltet eine Abbruchbedingung: Wurde in $n$ Iterationen keine kürzere Route gefunden, bricht der Algorithmus ab. Diese Iterationsschwelle $n$ wird dem Algorithmus als Parameter übergeben. Vor dem Beginn der Tourkonstruktion wird zum einen eine Hilfsvariable $j$ definiert und mit $0$ initialisiert, welche für die derzeitige Iteration steht. Zum anderen wird die insgesamt kürzeste gefundene Routenlänge $d_s$ mit $\infty$ initialisiert. 
+\\Dann startet die Tourkonstruktion. Jede Ameise $m \in M$ startet zunächst in einer zufällig ausgewählten Stadt $v_0$. Diese Stadt stellt auch die erste Stadt $r_{m_0}$ der Route $r$ dar. An diese Stelle wird eine zweite Hilfsvariable $b$ hinzugefügt, welche die Anzahl der besuchten Städte zählt. Solange diese Variable $b$ nicht der Anzahl der Städte $v$ entspricht, wird nun die Tour iterativ konstruiert. Welche Stadt $v_b$dabei als nächstes besucht wird, ergibt sich aus dem oben vorgestellten Wahrscheinlichkeitsalgorithmus. Jeder Index einer besuchten Stadt $v_b$ wird in einen Routenvector $r$ geschrieben; die Distanz $d_m$ wird beim Erreichen einer neuen Stadt mit der Länge der bereisten Kante erweitert und $b$ wird um $1$ erhöht. Hat eine Ameise alle Städte besucht ($b = v$), wird die Tourlänge mit der Distanz von der letzten Stadt $r_{m_b}$ zur ersten Stadt $r_{m_0}$ erweitert. Nun wird die gefundene Routenlänge $d_m$ mit der insgesamt kürzesten Routenlänge $d_s$ verglichen. Ist $d_m$ kleiner als $d_s$, wird $d_s$ mit $d_m$ ersetzt und der Wert der derzeitigen Iteration $j$ wird wieder auf $0$ gesetzt. Abschließend aktualisiert die Ameise $m$ die Pheromonmatrix $S$ und $j$ wird um $1$ erhöht. Hat eine Ameise ihre Tourkonstruktion abgeschlossen, startet die nächste Ameise ihre Tour.
+\\Der gesamte Algorithmus endet dann, wenn alle Ameisen in $M$ ihre Tour beendet haben oder wenn nach einer bestimmten Anzahl $n$ von Iterationen keine kürzere Route mehr gefunden wurde. 
 \begin{algorithm}
 \caption{Iterative Tourkonstruktion}
 \label{IterativeTour}
 \textbf{Eingabe:} Datenobjekt mit $v$ Städten sowie einer Distanzmatrix $D$ und Pheromonmatrix $S$, \texttt{vector} $M$ mit $m$ Ameisen, Iterationsschwelle $n$
 \\\textbf{Ausgabe:} Route $r$ mit der kürzesten gefunden Distanz $d_s$
 \begin{algorithmic}[1]
-\State $j := 1$ (derzeitige Iteration nachdem das letzte Mal eine kürzere Route gefunden wurde)
-\State $d_s := \infty$ (kürzeste gefunden Routenlänge)
-\For{\textbf{each} Ameise $m_i \in M$}
+\State $j := 0$ (derzeitige Iteration nachdem das letzte Mal eine kürzere Route gefunden wurde)
+\State $d_s := \infty$ (kürzeste gefundene Routenlänge)
+\For{\textbf{each} Ameise $m \in M$}
 \If {$j \leq n$}
-\State $b_m := 1$ (Anzahl der besuchten Städte)
-\State $d_m := 0$ (Routenlänge der Ameise $m_i$)
 \State Starte in einer zufälligen Stadt $v_0$
+\State $r_{m_0} := v_0$
+\State $b := 1$ (Anzahl der besuchten Städte)
 \While{$b \neq v$}
-\State Ermittle die nächste Stadt $v_i$ und gehe dorthin
-\State $r_{m_i} := v_i$
-\State $d_m := d_m + D_{i-1,i}$
-\State $b_m := b_m + 1$
+\State Ermittle die nächste Stadt $v_b$ und gehe dorthin
+\State $r_{m_b} := v_b$
+\State $d_m := d_m + D_{r_{m_{b-1}},r_{m_b}}$
+\State $b := b + 1$
 \EndWhile
+\State $d_m := d_m + D_{r_{m_b},r_{m_0}}$
 \If{$d_m \leq d_s$}
 \State $d_s := d_m$
-\State $j := 1$
+\State $j := 0$
 \EndIf
 \State Aktualisiere Pheromonmatrix $S$
 \State $j := j + 1$
@@ -253,40 +275,47 @@ Bei der ersten implementierten Methode wird die Pheromonaktualisierung iterativ 
 \end{algorithmic}
 \end{algorithm}
 \subsubsection{Iterative Tourkonstruktion mit eingeschränkter Pheromonaktualisierung}
-Die zweite implementierte Methode ist der ersten sehr ähnlich. Auch hier konstruieren alle Ameisen nacheinander iterativ ihre Tour. Jedoch wird die Pheromonmatrix nur durch die Ameise aktualisiert, welche die kürzeste Route gefunden hat. Diese Vorgehensweise basiert auf dem \textit{Max-Min-Ant-System} von Thomas Stüzle und Holger H. Hoos \cite{MaxMin}. Die iterative Tourkonstruktion erfolgt bei diesem Algorithmus notwendigerweise mehrmals. Diese Iterationsanzahl $n$ wird vor dem Start des Programms festgelegt. 
+Die zweite implementierte Methode ist der ersten sehr ähnlich. Auch hier konstruieren alle Ameisen nacheinander iterativ ihre Tour. Jedoch wird die Pheromonmatrix nur durch die Ameise aktualisiert, welche die kürzeste Route gefunden hat. Diese Vorgehensweise basiert auf dem \textit{Max-Min-Ant-System} von Thomas Stützle und Holger H. Hoos \cite{MaxMin}. Die gesamte Tourkonstruktion erfolgt bei diesem Algorithmus notwendigerweise mehrmals. 
+\\Wie bei obigen Algorithmus der normalen iterativen Tourkonstruktion wird auch hier eine Hilfsvariable $j$ mit $0$ initialisiert, welche im weiteren Verlauf des Algorithmus für die aktuelle Iteration steht. Weiterhin wird die Variable $d_s$ für die kürzeste gefundene Distanz mit $\infty$ initalisiert. Zusätzlich wird eine Variable $m_opt$ eingeführt, welche den Index der Ameise mit der kürzesten Route jedes Iterationsschritts enthält. Dieser wird zunächst der Wert $-1$ zugewiesen.
+\\Bei der nun beginnenden Tourkonstruktion konstruieren alle Ameisen iterativ a$m \in M$ ihre Tour. Jede Ameise beginnt in einer Stadt $v_0$. Diese Stadt ist gleichzeitig auch die erste Stadt der Route $r$. Ein Zählvariable $b$ zählt die Anzahl der besuchten Städte. Solange $b \neq v$ gilt, also die jeweilige Ameise nicht alle Städte $v$ besucht hat, ermittelt sie die nächste Stadt $v_b$. Die Ermittlung der jeweils nächsten Stadt erfolgt mit dem oben vorgestellten Wahrscheinlichkeitsalgorithmus (siehe Algorithmus \ref{probabilityAlg}). Nach der Reise in die nächste Stadt wird der Zähler $b$ um $1$ erhöht und die bisherige Routenlänge $d_m$ entsprechend erhöht.
+\\Hat eine Ameise alle Städte besucht, reist sie wieder in ihre Anfangsstadt zurück und auch die damit bereiste Kante wird zu der Routenlänge $d_m$ addiert. Abschließend wird diese Länge $d_m$ mit der insgesamt kürzesten Routenlänge $d_s$ verglichen. Wurde mit $d_m$ eine kürzere Tour gefunden, so wird $d_s$ mit dieser ersetzt und $m_opt$ enthält den Index dieser Ameise. 
+\\Wurden alle Touren in einem Iterationsschritt konstruiert, aktualisiert die Ameise $m_opt$ die Pheromonmatrix $S$ und der Iterationszähler $j$ wird um $1$ erhöht. 
+\\Dieser gesamte Vorgang wird $n$-mal wiederholt, d.h. wenn $j \leq n$ gilt. Diese Iterationsanzahl $n$ wird vor dem Start des Programms festgelegt. 
 \begin{algorithm}
 \caption{Iterative Tourkonstruktion mit eingeschränkter Pheromonaktualisierung}
 \label{MMASIterativeTour}
 \textbf{Eingabe:} Datenobjekt mit $v$ Städten sowie einer Distanzmatrix $D$ und Pheromonmatrix $S$, \texttt{vector} $M$ mit $m$ Ameisen, Iterationsanzahl $n$
 \\\textbf{Ausgabe:} Route $r$ mit der kürzesten gefunden Distanz $d_s$
 \begin{algorithmic}[1]
-\State $j := 1$ (Derzeitige Iteration)
-\State $d_s := \infty$ (Kürzeste Routenlänge der Iteration $i$)
-\State $m_o := -1$ (Index der Ameise mit der kürzesten Route)
+\State $j := 0$ (Derzeitige Iteration)
+\State $d_s := \infty$ (Kürzeste gefundene Routenlänge)
+\State $m_{opt} := -1$ (Index der Ameise mit der kürzesten Route)
 \While{$j \leq n$}
-\For{\textbf{each} Ameise $m_i \in M$}
-\State $b_m := 1$ (Anzahl der besuchten Städte)
-\State $d_m := 0$ (Routenlänge der Ameise $m_i$)
+\For{\textbf{each} Ameise $m \in M$}
 \State Starte in einer zufälligen Stadt $v_0$
+\State $r_{m_0} := v_0$
+\State $b := 1$ (Anzahl der besuchten Städte)
 \While{$b \neq v$}
-\State Ermittle die nächste Stadt $v_i$ und gehe dorthin
-\State $r_{m_i} := v_i$
-\State $d_m := d_m + D_{i-1,i}$
-\State $b_m := b_m + 1$
+\State Ermittle die nächste Stadt $v_b$ und gehe dorthin
+\State $r_{m_b} := v_b$
+\State $d_m := d_m + D_{r_{m_{b-1}},r_{m_b}}$
+\State $b := b + 1$
 \EndWhile
+\State $d_m := d_m + D_{r_{m_b},r_{m_0}}$
 \If{$d_m \leq d_s$}
 \State $d_s := d_m$
-\State $m_o := m_i$
+\State $m_{opt} := m_i$
 \EndIf
 \EndFor
-\State Ameise $m_o$ aktualisiert Pheromonmatrix $S$
+\State Ameise $m_{opt}$ aktualisiert Pheromonmatrix $S$
 \State $j := j + 1$
 \EndWhile
 \end{algorithmic}
 \end{algorithm}
 \subsubsection{Parallele Tourkonstruktion}
-Bei der dritten in dieser Arbeit betrachteteten Methode konstruieren die Ameisen ihre Route parallel. Dabei startet jede Ameise in einer zufälligen Stadt $v_0$. Nun ermittelt jede Ameise $m$ zunächst die erste Stadt $v_1$ und aktualisiert die Pheromonkonzentration auf der begangenen Kante. Dieses Vorgehen geschieht analog für jeden weitere Stadt $v_i$. Wenn jede Ameise jede Stadt einmal besucht hat, endet der Algorithmus. Die kürzeste Route ergibt sich nun durch den Vergleich der Routenlänge aller Ameisen.
-\\\\Alle in den Abschnitten 3.1.1 bis 3.1.4 umgesetzten Algorithmen wurden für diese Arbeit entwickelt.
+Bei der dritten in dieser Arbeit betrachteteten Methode (Algorithmus \ref{ParallelTour}) konstruieren die Ameisen ihre Route parallel.
+Als erstes wird hierfür eine Hilfsvariable $j$ definiert und mit $0$ initialisiert. Diese dient als Zähler für die derzeitige Stadt $v_j$. Weiterhin wird eine Variable für die kürzeste gefundene Distanz $d_s$ mit $\infty$ initialisiert. \\Dann startet die Tourkonstruktion, die mithilfe einer \texttt{For}-Schleife realisiert wird. Jede Ameise startet in einer zufälligen Stadt $v_0$ die gleichzeitig auch die erste Stadt $r_{m_0}$ der Route ist. Nun ermittelt jede Ameise $m$ zunächst die erste Stadt $v_1$. Die 1. Stadt der Route $r$ einer jeden Ameise $m$ ist nun die Stadt $v_1$. Dann wird die Tourlänge $d_m$ mit der Distanz von der Stadt $v_0$ zur Stadt $v_1$ verlängert. Abschließend aktualisiert jede Ameise die Pheromonkonzentration auf der begangenen Kante und der Wert von $j$ wird um $1$ erhöht.
+\\Dieses Vorgehen geschieht analog für jeden weitere Stadt $v_j$. Wenn jede Ameise jede Stadt einmal besucht hat, endet der Algorithmus. Abschließend wird ein weiteres Mal durch die Menge $M$ der Ameisen iteriert, um zunächst die Tourlänge mit der Distanz von der letzten Stadt $r_{m_j}$ zur ersten Stadt $r_{m_0}$ zu erweitern. Die insgesamt kürzeste Route $d_s$ ergibt sich abschließend durch den Vergleich der Routenlängen aller Ameisen.
 \begin{algorithm}
 \caption{Parallele Tourkonstruktion}
 \label{ParallelTour}
@@ -294,19 +323,23 @@ Bei der dritten in dieser Arbeit betrachteteten Methode konstruieren die Ameisen
 \\\textbf{Ausgabe:} Route $r$ mit der kürzesten gefunden Distanz $d_s$
 \begin{algorithmic}[1]
 \State $j := 0$
+\State $d_s = \infty$
 \While{$j < v$}
-\For{\textbf{each} Ameise $m_i \in M$}
+\For{\textbf{each} Ameise $m \in M$}
+\If{$j = 0$}
+\State $r_{m_0} := v_0$
+\EndIf
 \State Starte in einer zufälligen Stadt $v_0$
-\State Ermittle die nächste Stadt $v_i$ und gehe dorthin
-\State $r_{m_i} := v_i$
-\hspace{17em}\raisebox{.5\baselineskip}[0pt][0pt]{$\left.\rule{0pt}{3.2\baselineskip}\right\}\ \mbox{Parallel}$}
-\State $d_m := d_m + D_{i-1,i}$
+\State Ermittle die nächste Stadt $v_j$ und gehe dorthin
+\State $r_{m_j} := v_j$
+\hspace{17em}\raisebox{1.3\baselineskip}[0pt][0pt]{$\left.\rule{0pt}{3.8\baselineskip}\right\}\ \mbox{Parallel}$}
+\State $d_m := d_m + D_{r_{m_{j-1}},r_{m_j}}$
 \State Aktualisiere Pheromonmatrix $S$
 \EndFor
 \State $j := j + 1$
 \EndWhile
-\State $d_s = \infty$
-\For{\textbf{each} Ameise $m_i \in M$}
+\For{\textbf{each} Ameise $m \in M$} 
+\State $d_m := d_m + D_{r_{m_j},r_{m_0}}$
 \If{Tourlänge $d_m < d_s$}
 \State $d_s := d_m$
 \EndIf
@@ -324,7 +357,8 @@ Der Begriff \textit{Effektivität} bezieht sich dabei im folgenden immer auf die
 \item Parameter $Q$, der die Menge des abgelegten Pheromons darstellt
 \item Parameter $\rho$, der den Wert der Pheromonpersistenz angibt; $1 - \rho$ steht für die Pheromonverdunstung
 \end{enumerate}
-Im Rahmen der Untersuchung und Auswertung wird anhand der \texttt{dantzig42}-Instanz die Auswirkungen der oben genannten Parameter betrachtet und die Ergebnisse für verschiedene Werte erfasst.
+\newpage
+Zunächst wird deshalb anhand der \texttt{dantzig42}-Instanz die Auswirkungen der oben genannten Parameter betrachtet und die Ergebnisse für verschiedene Werte erfasst.
 Dies geschieht für alle drei umgesetzten Algorithmen unter Berücksichtigung der verschiedenen Implementierungen der Ermittlung der Wahrscheinlichkeit $p^k_{ij}$ (Abschnitt \ref{structure}).
 Die dadurch gewonnenen Werte für die Parameter werden hinsichtlich der Effektivität verglichen. 
 \newpage\section{Ergebnisse der Durchführung}
