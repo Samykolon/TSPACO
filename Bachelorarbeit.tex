@@ -14,6 +14,7 @@
 \usepackage{mwe}
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{amssymb}
 
 \newcommand*\rfrac[2]{{}^{#1}\!/_{#2}}
 
@@ -45,7 +46,12 @@
 \tableofcontents
 \newpage
 \section{Einleitung}
+Die kombinatorische Optimierung als Teilgebiet der diskreten Mathematik und die darin enthaltenen Probleme haben in den vergangenen Jahrzehnten mehr und mehr an Bedeutung gewonnen. Dies liegt vor allem an ihrer Wichtigkeit beim Einsatz in der Industrie, Wirtschaft und Forschung. Wie der Name \glqq Kombinatorische Optimierung\grqq\, schon sagt, geht es darum in unterschiedlichen Anwendungen Kosten in vielerlei Ausprägung zu minimieren und zu optimieren. 
+\\Ein prominentes Beispiel der kombinatorischen Optimierung ist das Travelling-Salesman-Problem, zu deutsch \glqq Problem des Handlungsreisenden\grqq\,. Hierbei soll eine Reihenfolge für den Besuch mehrerer Städte so gewählt werden, dass keine Stadt mehrmals besucht wird, die gesamte Reisestrecke möglichst kurz ist und die Reise letztendlich wieder in der Anfangsstadt endet. Eine naheliegende Anwendung ist hierbei sicherlich die Tourenplanung in der Logistik, jedoch findet sich das Problem bei der Herstellung von Mikrochips oder auch bei der Genom-Sequenzierung wieder. Die Begriffe \glqq Stadt\grqq\, und \glqq Routenlänge\grqq\, sind in diesen Fällen dann nur repräsentativ.
+\\Aufgrund der Wichtigkeit dieses Problems haben sich in der Vergangenheit viele Wissenschaftler damit beschäftigt, einen Algorithmus für die Lösung des TSP zu entwerfen. Mittlerweile gibt es deswegen eine Reihe von schnellen und effizienten Algorithmen. Eine Möglichkeit, das TSP heuristisch zu lösen, ist der Ameisenalgorithmus.
+\\In dieser Arbeit soll die Anwendung dieses Ameisenalgorithmus auf die Lösung des TSP erklärt und für verschiedene Implementierung in der objektorientierten Programmiersprache C\texttt{++} untersucht und hinsichtlich der Laufzeit und der Annäherung an Optimalwerte ausgewertet werden.
 \section{Grundlagen}
+In diesem Kapitel werden die benötigten theoretischen Grundlagen definiert. Dabei wird zunächst auf den Ameisenalgorithmus und das Travelling-Salesman-Problem (TSP) im einzelnen eingegangen. Abschließend wird die die Herangehensweise zur Lösung des TSP mit dem Ameisenalgorithmus erklärt.
 \subsection{Der Ameisenalgorithmus (Ant Colony Optimization)}
 \subsubsection{Biologische Grundlagen}
 Für das weitere Verständnis des \textit{Ameisenalgorithmus} (auch Ant Colony Optimization Algorithm oder kurz ACO) ist zunächst ein Blick auf die biologischen Grundlagen notwendig. Ein Tierstaat, wie er bei den Ameisen zu finden ist, funktioniert nur mit einer effektiven und sinnvollen Kommunikation. Methoden zur Verständigung wie das Kommunizieren über Vibrationen und Berührungen sind eher die Ausnahme und kommen nur in speziellen Situationen zum Tragen \cite{Ameisen}. Dagegen kommt zum größten Teil der Informationsaustausch über Duftstoffe (sog. Pheromone) zur Anwendung. Diese werden durch verschiedene Drüsen erzeugt und wiederum in unterschiedlicher Kombination und Konzentration abgegeben.
@@ -348,7 +354,7 @@ Als erstes wird hierfür eine Hilfsvariable $j$ definiert und mit $0$ initialisi
 \end{algorithm}
 \subsection{Vorgehensweise zur Untersuchung von verschiedenen Datensätzen mit verschiedenen Implementierungen}
 \label{sec:vorgehensweise}
-Im Rahmen dieser Arbeit werden zur Untersuchung der verschiedenen Algorithmen zur Lösung des TSP der TSPLIB vier symmetrische Probleminstanzen entnommen: \texttt{burma14}, \texttt{dantzig42}, \texttt{gr120} und \texttt{si535}.
+Im Rahmen dieser Arbeit werden zur Untersuchung der verschiedenen Algorithmen zur Lösung des TSP der TSPLIB vier symmetrische Probleminstanzen entnommen: \texttt{burma14}, \texttt{dantzig42}, \texttt{gr120} und \texttt{si535}; die Zahl im Namen der TSPLIB-Probleminstanz gibt die jeweilige Anzahl der Städte in dieser an.
 Die unterschiedlichen Größen der gewählten Instanzen dienen einer besseren Beurteilung der Effektivität und Laufzeit des Programms.
 Der Begriff \textit{Effektivität} bezieht sich dabei im folgenden immer auf die Eigenschaft, im Bezug auf die Tourlänge möglichst nah an das Optimum heranzukommen. Sowohl die Laufzeit als auch die Effektivität hängen von mehreren Parametern ab:
 \begin{enumerate}
@@ -487,6 +493,7 @@ Beim dritten und letzten implementierten Algorithmus wird der Parametereinfluss 
         \label{fig:parallelDiagram}
     \end{figure}
 \subsection{Auswirkung des gewählten Wahrscheinlichkeitsalgorithmus}
+\label{AuswirkungWA}
 Wie schon in Abschnitt \ref{enum:Update} vorgestellt, wurden für die Erstellung dieser Arbeit zwei verschiedene Algorithmen zur Ermittlung der Wahrscheinlichkeiten der nächsten Städte bei der Tourkonstruktion implementiert. Diesen Algorithmen liegt zum einen die Formel \ref{eq:Prob} zugrunde, die auch von Thomas Stützle und Holger H. Hoos in ihrem vorgestellten \textit{MAX-MIN Ant System} verwendet wurde. Im folgenden wird der Algorithmus, der diese Formel verwendet, der Einfachheit halber \textit{Komplexer Wahrscheinlichkeitsalgorithmus} genannt. Der andere Algorithmus verwendet eine stark vereinfachte Form dieser Formel (Gleichung \ref{eq:ProbSimple}) und wird im folgenden als \textit{Einfacher Wahrscheinlichkeitsalgorithmus} bezeichnet.
 \\Bei der Untersuchung wurden für die einzelnen Parameter folgende empirische Werte verwendet: $\alpha = 1$, $\beta = 0,25$, $Q = 40$ und $\rho = 0,15$. Für die Erhebung von statischen Daten wurde jeder Algorithmus zur Tourkonstruktion mit jedem Wahrscheinlichkeitsalgorithmus zehnmal getestet. Die verwendete Probleminstanz war \texttt{dantzig42} mit einem Tourlängenoptimum von $699$.
 \\\\Die Ergebnisse sind in folgender Tabelle dargestellt:
@@ -558,15 +565,105 @@ Parallel              &                      & 1     & 0,1  & 42                
 \multicolumn{8}{l}{}  \\ 
 \end{tabular}%
 }
-\\\caption{Gefundene Touren von Probleminstanzen aus der \texttt{TSPLIB95} in Abhängigkeit von dem gewählten Algorithmus. Der \textit{Iterative Algorithmus mit eingeschränkter Pheromonaktualisierung} wird in dieser Tabelle mit \glqq Iterativ mit eing. PA\grqq{} abgekürzt. Die Zahl in dem Namen der Probleminstanz gibt die Anzahl der Städte in dieser an. Weiterhin stehen die Prozentangaben hinter den Tourlängen für die Abweichung vom jeweiligen Optimum. Die untere Tabelle gibt Auskunft über die verwendeten Parameter beim Versuchsdurchlauf. Um statistisch verwertbare Daten zu erhalten wurde jeder Versuch zehnmal durchgeführt.}
+\\\caption{Gefundene Touren von Probleminstanzen aus der \texttt{TSPLIB95} in Abhängigkeit von dem gewählten Algorithmus. Der \textit{Iterative Algorithmus mit eingeschränkter Pheromonaktualisierung} wird in dieser Tabelle mit \glqq Iterativ mit eing. PA\grqq{} abgekürzt. Die Zahl in dem Namen der Probleminstanz gibt die Anzahl der Städte in dieser an. Weiterhin stehen die Prozentangaben hinter den Tourlängen für die Abweichung vom jeweiligen Optimum. Die untere Tabelle gibt Auskunft über die verwendeten Parameter beim Versuchsdurchlauf. Um statistisch verwertbare Daten zu erhalten wurde jeder Versuch zehnmal durchgeführt. Die Tests wurden ohne eine parallele Rechenlast durch andere Programme absolviert; durch Hintergrundprozesse des verwendeten WINDOWS-Systems kann es natürlich trotzdem zu einer Ungenauigkeit bei den ermittelten Laufzeiten kommen.}
 \label{table1}
 \end{table}
 \end{landscape}
 \section{Auswertung und Vergleich}
-\subsection{Vergleich der iterativen und parallelen Implementierung}
-\subsection{Vergleich mit der optimalen Lösung}
-\subsection{Vergleich mit der Laufzeit und Komplexität von anderen Algorithmen}
-\section{Zusammenfassung und Fazit}
+In diesem Kapitel werden die einzelnen Algorithmen verglichen. Zum einen im Hinblick auf den Einfluss der verschiedenen Parameter, zum anderen natürlich im Hinblick auf die Laufzeit und die Effektivität. Desweiteren werden die erzielten Ergebnisse mit anderen Algorithmen zur Lösung einer TSP-Instanz verglichen und ausgewertet.
+\subsection{Vergleich und Auswertung der implementierten Algorithmen}
+Zunächst wird der Einfluss der Parameter auf die einzelnen Algorithmen zur Tourkonstruktion betrachtet. Dieser wird vergleichend in der folgenden Abbildung \ref{fig:ParameterDiagram} dargestellt:
+\begin{figure}
+        \centering
+        \captionsetup[subfigure]{oneside,margin={0.5cm,0cm}}
+        \begin{subfigure}[b]{0.475\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{images/diagramalpha}
+            \caption{Alpha $\alpha$}               
+            \label{fig:iterativeAlpha}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.475\textwidth}  
+            \centering 
+            \includegraphics[width=\textwidth]{images/diagrambeta}
+            \caption{Beta $\beta$}   
+            \label{fig:iterativeBeta}
+        \end{subfigure}
+        \vskip\baselineskip
+        \begin{subfigure}[b]{0.475\textwidth}   
+            \centering 
+            \includegraphics[width=\textwidth]{images/diagramdeposit}
+            \caption{Menge des abgelegten Pheromons}   
+            \label{fig:iterativeDeposit}
+        \end{subfigure}
+        \quad
+        \begin{subfigure}[b]{0.475\textwidth}   
+            \centering 
+            \includegraphics[width=\textwidth]{images/diagramreduction}
+            \caption{Pheromonpersistenz}   
+            \label{fig:iterativeReduction}
+        \end{subfigure}
+        \captionsetup{justification=centering}
+        \caption{Abhängigkeit der Tourlänge von den einzelnen Parametern für die drei implementierten Algorithmen zur Tourkonstruktion} 
+        \label{fig:ParameterDiagram}
+    \end{figure}
+\\Für die Parameter Alpha $\alpha$ und Beta $\beta$ ist deutlich zu sehen, dass die beiden iterativen Algorithmen sich bei Wertänderung dieser Parameter ähnlich verhalten. Für beide Algorithmen ist die Tourlänge für einen niedrigen Wert für $\alpha$ und einen höheren Wert für $\beta$ näher am Tourlängenoptimum. Für die parallele Implementierung verhält sich dieser Sachverhalt genau umgekehrt. Die höchste Streuung der Tourlängen hat dabei der iterative Algorithmus mit einigen Ausreißern die bis zu 50 Prozent über dem Tourlängenoptimum liegen.
+\\Im Hinblick auf die Pheromonablagemenge und die Pheromonpersistenz fällt vor allem der iterative Algorithmus mit eingeschränkter Pheromonaktualisierung auf. Während der iterative und der parallele Algorithmus sich nahezu konstant verhalten, wirken sich diese beiden Parameter enorm auf die Ergebnisse dieses Algorithmus auf. Für den Pheromonablageparameter $Q$ ergibt sich eine annäherungsweise exponentielle Funktion, die sich ungefähr bei $Q = 20$ normalisiert. Die Pheromonpersistenz $\rho$ lässt sich dagegen annäherungsweise als lineare ansteigende Funktion beschreiben. Auch für diese beiden Parameter hat der iterative Algorithmus im Hinblick auf die Tourlängen die größte Streuung.
+\\Für die einzelnen Algorithmen sind nun folgende Parameterwerte nahezu optimal:
+\begin{table}[]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{l|llll}
+Algorithmus           & Alpha $\alpha$ & Beta $\beta$ & Pheromonablagemenge $Q$ & Pheromonpersistenz $\rho$ \\ \hline
+Iterativ              & 0,1            & 1            & 10                      & 0,9                       \\
+Iterativ mit eing. PA & 0,1            & 1            & 20                      & 0,1                       \\
+Parallel              & 1              & 0,1          & 40                      & 0,9   \\
+\multicolumn{5}{l}{}                    
+\end{tabular}%
+}
+\captionsetup{justification=centering}
+\caption{Übersicht der Parameterwerte, die bei dem jeweiligen Algorithmus zu den besten Ergebnissen im Hinblick auf eine kurze Tourlänge führen}
+\label{tableParameterOptimum}
+\end{table}
+Für die Auswertung der zwei implementierten Wahrscheinlichkeitsalgorithmen zeigen die Ergebnisse in Abschnitt \ref{AuswirkungWA}, dass bei Verwendung des komplexeren Wahrscheinlichkeitsalgorithmus keine besseren Ergebnisse erzielt werden sondern lediglich die Laufzeit stark zunimmt. Deswegen ist es sinnvoller, den einfachen Wahrscheinlichkeitsalgorithmus mit einer wesentlich geringeren Berechnungszeit zu wählen.
+\\\\Abschließend werden die Ergebnisse betrachtet, die bei der Anwendung aller drei Tourkonstruktionsalgorithmen auf die vier ausgewählten TSP-Probleminstanzen \texttt{burma14}, \texttt{dantzig42}, \texttt{gr120} und \texttt{si535} erreicht wurden. 
+\\Während der Versuchsdurchläufe wurde festgestellt, dass bei den beiden iterativen Vorgehensweisen bei den Problemen mit weniger als $100$ Städten andere Parameter zu guten Ergebnissen führten als bei den Problemen mit mehr als $100$ Städten. Diese unterschiedlichen Parameter finden sich zusammen mit den ausführlichen Ergebnissen Tabelle \ref{table1} auf Seite \pageref{table1}. Die jeweils besten und schlechtesten Ergebnisse sind in folgender Tabelle zusammengefasst:
+\begin{table}[]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lllllll@{}}
+\toprule
+          &         & \multicolumn{1}{l|}{}                   & \multicolumn{2}{c|}{gefundene Routenlängen}                 & \multicolumn{2}{c}{gemessene Laufzeiten in {[}s{]}} \\
+Name      & Optimum & \multicolumn{1}{l|}{}                   & Algorithmus  & \multicolumn{1}{l|}{Tourlänge $\varnothing$} & Algorithmus         & Laufzeit $\varnothing$        \\ \midrule
+burma14   & 3323    & \multicolumn{1}{l|}{beste Werte}        & Parallel     & \multicolumn{1}{l|}{3323 ($0 \%$)}           & Parallel            & 0,52                          \\
+          &         & \multicolumn{1}{l|}{schlechteste Werte} & Iterativ     & \multicolumn{1}{l|}{3450,2 ($3,8 \%$)}       & Iterativ ePA        & 3,31                          \\ \midrule
+dantzig42 & 699     & \multicolumn{1}{l|}{beste Werte}        & Iterativ     & \multicolumn{1}{l|}{721,9 ($3,2 \%$)}        & Parallel            & 3,37                          \\
+          &         & \multicolumn{1}{l|}{schlechteste Werte} & Iterativ ePA & \multicolumn{1}{l|}{824,2 ($17,9 \%$)}       & Iterativ ePA        & 23,01                         \\ \midrule
+gr120     & 6942    & \multicolumn{1}{l|}{beste Werte}        & Iterativ     & \multicolumn{1}{l|}{8221,6 ($18,4 \%$)}      & Parallel            & 24,64                         \\
+          &         & \multicolumn{1}{l|}{schlechteste Werte} & Iterativ ePA & \multicolumn{1}{l|}{8832 ($27,2 \%$)}        & Iterativ ePA        & 182,84                        \\ \midrule
+si535     & 48450   & \multicolumn{1}{l|}{beste Werte}        & Iterativ     & \multicolumn{1}{l|}{51529,3 ($6,35 \%$)}     & Parallel            & 503,4                         \\
+          &         & \multicolumn{1}{l|}{schlechteste Werte} &              & \multicolumn{1}{l|}{}                        & Iterativ ePA        & ($\sim$1 Stunde)              \\ \bottomrule
+\multicolumn{7}{l}{}                                                                                                                                                                      
+\end{tabular}%
+}
+\captionsetup{justification=centering}
+\caption{Zusammenfassung der jeweils besten und schlechtesten Algorithmen im Bezug auf die Laufzeit und die Effektivität für jedes der vier untersuchten TSP-Probleminstanzen. Die Prozentangabe hinter den Distanzwerten steht für die Abweichung vom Optimalwert. Die Abkürzung \glqq Iterativ ePA\grqq\, steht für den Iterativen Algorithmus mit eingeschränkter Pheromonaktualisierung.}
+\label{tablebestworst}
+\end{table}
+\\Betrachtet man die kleinste TSP-Instanz \texttt{burma14}, so ist der parallele Tourkonstruktionsalgorithmus ideal. Dieser fand in allen Durchgängen die optimale Route. Der iterative Algorithmus erzielte die schlechtesten Ergebnisse mit einer maximalen Abweichung von $14,4 \%$. Die Laufzeit ist für alle Algorithmen bei der Anwendung auf dieses Problem akzeptabel - die wesentlich höhere Laufzeit bei dem iterativen Algorithmus mit eingeschränkter Pheromonaktualisierung war aufgrund des mehrfachen Durchlaufs der Tourkonstruktion zu erwarten.
+\\Für die drei verbleibenden Probleme erweist sich nun der iterative Algorithmus als der Algorithmus mit der höchsten Effektivität, d.h. mit der größten Annäherung an das Tourlängenoptimum. Der iterative Algorithmus mit eingeschränkter Pheromonaktualisierung ist dagegen sowohl was die Effektivität als auch die Laufzeit angeht der schlechteste Algorithmus. Bei der \texttt{si535}-Probleminstanz mit $535$ Städten dauert ein Durchlauf geschätzt eine Stunde was ihn für einen heuristischen Algorithmus bei dieser Problemgröße unbrauchbar macht. Die kürzesten Laufzeiten erzielt durchweg der parallele Algorithmus zur Tourkonstruktion.
+\\\\Die nachfolgende Abbildung zeigt die Laufzeit in Abhängigkeit von der Anzahl der Städte:
+\begin{figure}
+\captionsetup{justification=centering}
+  \centering
+     \includegraphics[width=\textwidth]{images/diagramruntimes.png}
+  \caption{Darstellung der Laufzeit in Abhängigkeit von der Anzahl der Städte für alle drei implementierten Tourkonstruktionsalgorithmen}
+  \label{img:runtimecity}
+\end{figure}
+\\Betrachtet man diese Graphen als eine logarithmische Funktion, so erhält man für den iterativen Algorithmus den Koeffizient $180$, für den iterativen Algorithmus mit eingeschränkter Pheromonaktualisierung den Koeffizient $1439$ und für den parallelen Algorithmus den Koeffizient $135$. Diese Werte verdeutlichen noch einmal die wesentliche höhere Komplexität des iterativen Algorithmus mit eingeschränkter Pheromonaktualisierung im Gegensatz zu den anderen zwei Algorithmen.
+\\\\Zusammenfassend lässt sich sagen, dass die Wahl des iterativen Algorithmus für mittlere und große Probleme im Bezug auf die Anzahl der Städte die beste Wahl ist. Bei kleinen Problemen eignet sich der parallele Algorithmus am besten, da er dort mit hoher Wahrscheinlichkeit die optimale Lösung finden wird. Vom Gebrauch des iterativen Algorithmus mit eingeschränkter Pheromonaktualisierung ist abzuraten.
+\subsection{Vergleich mit der Effektivität und Komplexität von anderen Algorithmen zur Lösung des TSP}
+\section{Zusammenfassung und Ausblick}
 \newpage
 \appendix
 \section{Erklärung der implementierten grafischen Oberfläche}
